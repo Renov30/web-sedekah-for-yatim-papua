@@ -18,19 +18,19 @@ export const metadata: Metadata = {
 export default function TransparansiPage() {
   return (
     <div className="flex flex-col gap-14 sm:gap-20">
-      {/* Inset Header Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 w-full">
-        <div className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F4F6F2] border border-[#DFE7DB] p-8 sm:p-14 lg:p-16 overflow-hidden">
+      {/* Header Banner */}
+      <section className="w-full bg-[#F4F6F2] border-b border-[#DFE7DB] pt-28 sm:pt-36 pb-14 sm:pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E4EFE0] text-[#122A1C] text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-[#C6F24D]" />
-              <span>AKUNTABILITAS & INTEGRITAS LEMBAGA</span>
+              <span>AKUNTABILITAS & INTEGRITAS AMANAH</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">
-              Amanah yang Dikelola dengan Keterbukaan & Hati Bersih.
+              Amanah Sedekah Dikelola dengan Keterbukaan & Hati Bersih.
             </h1>
             <p className="text-base sm:text-lg text-stone-600 leading-relaxed">
-              Kami memandang dana sedekah dan donasi sebagai titipan suci. Tanggung jawab kami tidak hanya kepada para dermawan dan anak-anak binaan, namun yang utama adalah pertanggungjawaban di hadapan Tuhan Yang Maha Esa.
+              Kami memandang dana sedekah dan donasi bagi anak-anak yatim sebagai titipan suci umat. Tanggung jawab kami tidak hanya kepada para dermawan dan anak-anak binaan, melainkan yang utama adalah pertanggungjawaban di hadapan Allah SWT.
             </p>
           </div>
         </div>

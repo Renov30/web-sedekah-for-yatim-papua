@@ -14,19 +14,19 @@ export const metadata: Metadata = {
 export default function ProgramPage() {
   return (
     <div className="flex flex-col gap-14 sm:gap-20">
-      {/* Inset Header Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 w-full">
-        <div className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F4F6F2] border border-[#DFE7DB] p-8 sm:p-14 lg:p-16 overflow-hidden">
+      {/* Header Banner */}
+      <section className="w-full bg-[#F4F6F2] border-b border-[#DFE7DB] pt-28 sm:pt-36 pb-14 sm:pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E4EFE0] text-[#122A1C] text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-[#C6F24D]" />
               <span>PILAR AKSI & INTERVENSI SOSIAL</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">
-              Inisiatif Nyata untuk Masa Depan Berkelanjutan Anak Papua.
+              Inisiatif Nyata untuk Masa Depan Berkelanjutan Anak Yatim Papua.
             </h1>
             <p className="text-base sm:text-lg text-stone-600 leading-relaxed">
-              Kami membagi intervensi sosial ke dalam empat pilar terpadu. Setiap pilar dirancang untuk menjawab akar persoalan anak-anak yatim dan dhuafa di Papua: dari pemenuhan gizi hingga kesiapan meraih masa depan mandiri.
+              Kami membagi ikhtiar kepedulian ke dalam empat pilar terpadu. Setiap pilar dirancang untuk menjawab akar persoalan anak-anak yatim di Papua—khususnya anak yatim muslim—mulai dari pemenuhan gizi halal, perlengkapan madrasah/sekolah, hingga pembinaan akhlak mulia dan Al-Qur&apos;an.
             </p>
           </div>
         </div>

@@ -7,7 +7,11 @@ import { mainNavigation, actionNavigation } from "@/data/navigation";
 import { organization } from "@/data/organization";
 import { BrandLogo } from "@/components/BrandLogo";
 
-export function MobileNav() {
+export interface MobileNavProps {
+  dark?: boolean;
+}
+
+export function MobileNav({ dark = false }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
@@ -45,7 +49,11 @@ export function MobileNav() {
         aria-label="Buka menu navigasi"
         aria-expanded={isOpen}
         aria-controls="mobile-menu"
-        className="px-3.5 py-1.5 text-xs font-bold tracking-wider uppercase border border-editorial text-forest-900 hover:bg-forest-900/5 rounded-xs cursor-pointer"
+        className={`px-4 py-1.5 text-xs font-bold tracking-wider uppercase rounded-full cursor-pointer transition-colors ${
+          dark
+            ? "border border-white/30 text-white bg-black/20 hover:bg-black/30"
+            : "border border-stone-200 text-stone-900 bg-white hover:bg-stone-50 shadow-2xs"
+        }`}
       >
         Menu
       </button>

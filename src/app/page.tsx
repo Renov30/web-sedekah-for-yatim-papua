@@ -11,100 +11,105 @@ export default function HomePage() {
     {
       id: "w-1",
       number: "01",
-      title: "Verifikasi Lapangan Langsung",
+      title: "Verifikasi Lapangan ke Asrama & Keluarga Yatim",
       content:
-        "Relawan meninjau langsung kondisi tempat tinggal anak asuh di Jayapura dan Sentani untuk memastikan kebutuhan perlengkapan sekolah dan pangan terdata secara akurat.",
+        "Relawan meninjau langsung kondisi tempat tinggal anak-anak asuh di panti yatim, pondok pesantren, dan keluarga dhuafa di Jayapura dan Sentani untuk memastikan bantuan tepat sasaran.",
     },
     {
       id: "w-2",
       number: "02",
-      title: "Pengadaan Berbasis Pedagang Lokal Papua",
+      title: "Pengadaan Pangan Halal dari Pedagang Lokal Papua",
       content:
-        "Seluruh paket sembako dan kebutuhan logistik dibelanjakan langsung di pasar-pasar lokal Papua untuk menjamin kesegaran pangan sekaligus memberdayakan pedagang setempat.",
+        "Seluruh paket sembako dan kebutuhan konsumsi dibelanjakan langsung di pasar-pasar tradisional Papua untuk menjamin kehalalan dan kesegaran pangan sekaligus memberdayakan pedagang lokal.",
     },
     {
       id: "w-3",
       number: "03",
-      title: "Pendampingan Belajar & Ruang Aman Anak",
+      title: "Bimbingan Akhlak, Literasi Quran, & Pelajaran Sekolah",
       content:
-        "Bantuan materi diimbangi dengan kelas belajar akhir pekan, membaca dongeng inspiratif, serta bimbingan moral yang menghormati kenyamanan anak.",
+        "Bantuan materi diimbangi dengan kelas belajar akhir pekan, bimbingan mengaji Al-Qur'an, sirah nabawiyah, serta penguatan pelajaran sekolah bersama kakak relawan.",
     },
     {
       id: "w-4",
       number: "04",
-      title: "Perlindungan Martabat Anak (Child Safeguarding)",
+      title: "Memuliakan Anak Yatim & Menjaga Martabat (Safeguarding)",
       content:
-        "Kami menolak eksploitasi visual kemiskinan demi memancing rasa iba. Seluruh dokumentasi menjaga kehormatan anak dan mematuhi etika keselamatan anak.",
+        "Kami menolak eksploitasi visual kemiskinan demi memancing rasa iba. Seluruh dokumentasi menjaga kehormatan anak yatim dan mematuhi etika keselamatan anak.",
     },
     {
       id: "w-5",
       number: "05",
-      title: "Pelaporan Rekapitulasi Terbuka Tanpa Rekayasa",
+      title: "Pelaporan Rekapitulasi Sedekah Terbuka Tanpa Rekayasa",
       content:
-        "Pencatatan nota riil dan rekapitulasi penyaluran per aksi dilaporkan secara terbuka tanpa melebih-lebihkan angka atau membuat statistik fiktif.",
+        "Pencatatan nota riil dan rekapitulasi penyaluran amanah umat dilaporkan secara jujur tanpa melebih-lebihkan angka atau membuat statistik fiktif.",
     },
   ];
 
   const faqItems = [
     {
       id: "faq-1",
-      title: "Bagaimana donasi disalurkan kepada anak-anak yatim binaan?",
+      title: "Bagaimana donasi dan sedekah disalurkan kepada anak-anak yatim?",
       content:
-        "Donasi disalurkan dalam bentuk paket perlengkapan sekolah langsung (tas, seragam, sepatu, buku teks) dan sembako bernutrisi tinggi yang diserahkan langsung oleh relawan kepada anak di hadapan wali asuh.",
+        "Sedekah disalurkan dalam bentuk paket perlengkapan sekolah & madrasah (tas, seragam, sepatu, mushaf Al-Qur'an, buku tulis) serta sembako halal bernutrisi yang diserahkan langsung oleh relawan kepada anak di hadapan wali asuh atau pengurus asrama.",
     },
     {
       id: "faq-2",
-      title: "Apakah Sedekah for Yatim Papua memiliki nomor rekening resmi?",
+      title: "Apakah Sedekah for Yatim Papua memiliki nomor rekening resmi yayasan?",
       content:
-        "Ya. Demi keamanan donatur dan mencegah penipuan oleh oknum yang mengatasnamakan lembaga, nomor rekening resmi dibagikan dengan konfirmasi langsung melalui WhatsApp Sekretariat di +62 821-9800-4411.",
+        "Ya. Demi menjaga amanah donatur dan mencegah penipuan oleh pihak tidak bertanggung jawab, nomor rekening resmi dibagikan dengan konfirmasi langsung melalui WhatsApp Sekretariat di +62 821-9800-4411.",
     },
     {
       id: "faq-3",
-      title: "Bagaimana proses seleksi dan orientasi relawan baru?",
+      title: "Siapa saja sasaran penerima manfaat program SFY Papua?",
       content:
-        "Pendaftaran diawali dengan pengisian formulir minat, sesi penyelarasan nilai bersama koordinator, dan pembekalan etika perlindungan anak (Child Safeguarding) sebelum terjun ke jadwal aksi lapangan.",
+        "Fokus utama kami adalah anak-anak yatim, piatu, dan dhuafa di tanah Papua, khususnya anak-anak yatim muslim di panti asuhan, pondok pesantren yatim dhuafa, serta keluarga ibu tunggal yang merawat anak yatim di pelosok dan perkotaan Papua.",
     },
     {
       id: "faq-4",
-      title: "Apakah ada pungutan biaya dalam pendaftaran relawan?",
+      title: "Bagaimana proses bergabung menjadi relawan SFY Papua?",
       content:
-        "Sama sekali tidak ada. Seluruh proses pendaftaran dan pembekalan relawan bersifat 100% gratis dan berlandaskan gotong royong kerelawanan.",
+        "Pendaftaran relawan diawali dengan pengisian formulir minat, sesi silaturahmi & penyelarasan nilai bersama koordinator, dan pembekalan etika pendampingan anak (Child Safeguarding) sebelum terjun ke jadwal aksi lapangan. Seluruh proses 100% gratis.",
     },
     {
       id: "faq-5",
       title: "Bagaimana cara memverifikasi keaslian kegiatan SFY Papua?",
       content:
-        "Anda dapat memeriksa dokumentasi riil pada laman Kegiatan, menghubungi koordinator kami di posko Jayapura, atau meminta salinan rekapitulasi penyaluran resmi melalui email sekretariat@sfypapua.org.",
+        "Anda dapat memeriksa dokumentasi riil pada laman Dokumentasi Kegiatan, menghubungi koordinator kami di posko Jayapura, atau meminta salinan rekapitulasi penyaluran resmi melalui email sekretariat@sfypapua.org.",
     },
   ];
 
   return (
     <div className="flex flex-col bg-[#F8F9FA] min-h-screen">
       {/* =========================================================================
-          1. HERO SECTION: Framed scenic landscape backdrop with giant wordmark
+          1. HERO SECTION: Full-width scenic landscape backdrop behind transparent navbar
       ========================================================================= */}
-      <section className="px-3 sm:px-5 lg:px-6 pt-3 sm:pt-4 pb-12 sm:pb-16">
-        <div className="relative w-full min-h-[580px] sm:min-h-[640px] lg:min-h-[720px] rounded-3xl sm:rounded-[2.5rem] overflow-hidden shadow-sm flex flex-col justify-between p-6 sm:p-10 lg:p-14 bg-forest-950">
-          {/* Background Landscape Photo */}
-          <Image
-            src="/images/hero-landscape.jpg"
-            alt="Lansekap alam hijau pegunungan Papua yang asri dan cerah"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
+      <section className="relative w-full min-h-[700px] sm:min-h-[780px] lg:min-h-[860px] overflow-hidden flex flex-col justify-between bg-forest-950">
+        {/* Background Landscape Photo */}
+        <Image
+          src="/images/hero-landscape.jpg"
+          alt="Lansekap alam hijau pegunungan Papua yang asri dan cerah"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
 
-          {/* Atmospheric vignette overlays to ensure readable text */}
-          <div className="absolute inset-0 bg-gradient-to-t from-forest-950/85 via-forest-950/30 to-forest-950/50" />
+        {/* Atmospheric vignette overlays to ensure readable text */}
+        <div className="absolute inset-0 bg-gradient-to-t from-forest-950/90 via-forest-950/40 to-forest-950/60" />
 
-          {/* Top-Left Hero Content */}
-          <div className="relative z-10 max-w-2xl space-y-5 pt-4 sm:pt-8">
+        {/* Top-Left Hero Content (Padded to clear transparent fixed header) */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 sm:pt-40 lg:pt-44">
+          <div className="max-w-3xl space-y-5">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/40 backdrop-blur-md text-[#C6F24D] text-xs font-semibold border border-white/15">
+              <span className="w-2 h-2 rounded-full bg-[#C6F24D]" />
+              <span>{organization.eyebrow}</span>
+            </div>
+
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
-              Menumbuhkan Harapan, Menguatkan Masa Depan Anak Papua.
+              Menumbuhkan Harapan, Menguatkan Masa Depan Anak Yatim Papua.
             </h1>
 
-            <p className="text-sm sm:text-base lg:text-lg text-white/90 leading-relaxed max-w-xl font-normal">
+            <p className="text-sm sm:text-base lg:text-lg text-white/90 leading-relaxed max-w-2xl font-normal">
               {organization.heroSupportingCopy}
             </p>
 
@@ -127,12 +132,12 @@ export default function HomePage() {
               </Button>
             </div>
           </div>
+        </div>
 
-          {/* Bottom Giant Typographic Wordmark (Greenova Style) */}
-          <div className="relative z-10 pt-16 sm:pt-24 select-none pointer-events-none">
-            <div className="text-4xl sm:text-7xl md:text-8xl lg:text-[7.5rem] xl:text-[9.5rem] font-black text-white/95 tracking-tighter leading-none opacity-90">
-              SFY<span className="text-[#C6F24D]">.</span>Papua
-            </div>
+        {/* Bottom Giant Typographic Wordmark */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-16 sm:pt-24 pb-8 sm:pb-12 select-none pointer-events-none">
+          <div className="text-4xl sm:text-7xl md:text-8xl lg:text-[7.5rem] xl:text-[9.5rem] font-black text-white/95 tracking-tighter leading-none opacity-90">
+            SFY<span className="text-[#C6F24D]">.</span>Papua
           </div>
         </div>
       </section>
@@ -152,7 +157,7 @@ export default function HomePage() {
 
           <div className="lg:col-span-9">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal-950 tracking-tight leading-snug">
-              Dari ruang belajar pelosok hingga pemenuhan nutrisi harian, menyalakan harapan bagi masa depan generasi anak-anak di tanah Papua.
+              Dari asrama santri yatim hingga keluarga binaan di pelosok, ikhtiar bersama memuliakan dan mendampingi masa depan anak-anak yatim di tanah Papua.
             </h2>
           </div>
         </div>
@@ -163,7 +168,7 @@ export default function HomePage() {
           <div className="md:col-span-6 lg:col-span-6 relative aspect-4/3 sm:aspect-5/4 md:aspect-auto md:min-h-[460px] rounded-3xl overflow-hidden shadow-xs bg-ivory-200 group">
             <Image
               src="/images/hero-community.jpg"
-              alt="Anak-anak dan relawan berkumpul dengan penuh keceriaan"
+              alt="Anak-anak yatim dan relawan berkumpul dengan penuh keceriaan"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover group-hover:scale-102 transition-transform duration-500"
@@ -171,10 +176,10 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             <div className="absolute bottom-6 inset-x-6 space-y-2 text-white">
               <span className="inline-block text-[11px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-                Aksi Lapangan Berkelanjutan
+                Aksi Santunan & Pendampingan Yatim
               </span>
               <p className="text-sm sm:text-base font-semibold leading-snug">
-                Pendampingan langsung ke pintu-pintu keluarga asuh di wilayah Jayapura dan distrik sekitarnya.
+                Penyaluran langsung ke panti asuhan, pondok pesantren, dan keluarga binaan anak yatim di Jayapura dan distrik sekitarnya.
               </p>
             </div>
           </div>
@@ -185,7 +190,7 @@ export default function HomePage() {
             <div className="relative h-56 sm:h-64 rounded-3xl overflow-hidden shadow-xs bg-ivory-200 group">
               <Image
                 src="/images/about-story.jpg"
-                alt="Relawan berdiskusi dan berkoordinasi bersama"
+                alt="Relawan berdiskusi dan berkoordinasi bersama tokoh komunitas"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover group-hover:scale-102 transition-transform duration-500"
@@ -193,10 +198,10 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
               <div className="absolute bottom-5 inset-x-5 text-white">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#C6F24D] block mb-1">
-                  Gotong Royong
+                  Ukhuwah & Gotong Royong
                 </span>
                 <h3 className="text-base sm:text-lg font-bold leading-snug">
-                  Kemitraan Erat Bersama Tokoh & Komunitas Lokal Papua
+                  Sinergi Bersama Pengurus Asrama, Ustadz, & Warga Papua
                 </h3>
               </div>
             </div>
@@ -206,14 +211,14 @@ export default function HomePage() {
               {/* Card 3: Fresh Lime Accent Card with Stat */}
               <div className="bg-[#C6F24D] text-[#0C1D13] p-6 sm:p-7 rounded-3xl flex flex-col justify-between space-y-4 shadow-xs">
                 <span className="text-[11px] uppercase tracking-wider font-bold text-black/60">
-                  Prinsip Amanah
+                  Prinsip Amanah Umat
                 </span>
                 <div className="space-y-1">
                   <div className="text-4xl sm:text-5xl font-black tracking-tight leading-none">
                     100%
                   </div>
                   <p className="text-xs sm:text-sm font-semibold leading-snug pt-1">
-                    Penyaluran langsung tanpa perantara fiktif dan tanpa potongan tak bertanggung jawab.
+                    Sedekah disalurkan langsung kepada anak yatim tanpa potongan fiktif.
                   </p>
                 </div>
                 <Link
@@ -239,7 +244,7 @@ export default function HomePage() {
                     Wilayah Jangkauan
                   </span>
                   <p className="text-xs font-bold leading-tight">
-                    Jayapura, Sentani, & Distrik Terdekat
+                    Jayapura, Sentani, Keerom, & Distrik Sekitar
                   </p>
                 </div>
               </div>
@@ -249,7 +254,7 @@ export default function HomePage() {
       </section>
 
       {/* =========================================================================
-          3. ACCORDION SPLIT SECTION: "Smarter energy, with clear and proven impact"
+          3. ACCORDION SPLIT SECTION: How SFY Works
       ========================================================================= */}
       <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 max-w-7xl mx-auto w-full space-y-12">
         {/* Section Header */}
@@ -265,7 +270,7 @@ export default function HomePage() {
           </div>
 
           <div className="lg:col-span-5 text-sm sm:text-base text-charcoal-700 leading-relaxed">
-            Kami memastikan setiap donasi dan tenaga relawan berbuah manfaat terukur bagi pendidikan dan kesejahteraan anak-anak yatim di Papua.
+            Kami memastikan setiap donasi sedekah dan ikhtiar relawan berbuah manfaat nyata bagi pendidikan, akidah, dan kesejahteraan anak-anak yatim di tanah Papua.
           </div>
         </div>
 
@@ -275,7 +280,7 @@ export default function HomePage() {
           <div className="lg:col-span-6">
             <InteractiveAccordion
               items={whyItWorksItems}
-              defaultOpenId="w-2"
+              defaultOpenId="w-1"
               variant="highlight"
             />
           </div>
@@ -285,14 +290,14 @@ export default function HomePage() {
             <div className="relative aspect-4/3 sm:aspect-16/11 rounded-3xl overflow-hidden shadow-sm bg-ivory-200">
               <Image
                 src="/images/program-basic-needs.jpg"
-                alt="Penyaluran paket bahan pokok dan nutrisi bagi anak-anak"
+                alt="Penyaluran paket bahan pokok dan nutrisi bagi anak-anak yatim"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               <div className="absolute bottom-6 inset-x-6 text-white text-xs sm:text-sm font-medium">
-                Penyaluran terverifikasi di distrik Sentani bersama keluarga asuh binaan.
+                Penyaluran amanah di asrama dan keluarga asuh anak yatim di Jayapura.
               </div>
             </div>
           </div>
@@ -300,7 +305,7 @@ export default function HomePage() {
       </section>
 
       {/* =========================================================================
-          4. HORIZONTAL PROGRAMS GALLERY: "Powering a cleaner, smarter future"
+          4. HORIZONTAL PROGRAMS GALLERY
       ========================================================================= */}
       <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 bg-white border-y border-editorial">
         <div className="max-w-7xl mx-auto space-y-12">
@@ -312,7 +317,7 @@ export default function HomePage() {
             </span>
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal-950 tracking-tight">
-                Empat Pilar Aksi untuk Kemandirian Anak Papua
+                Empat Pilar Aksi untuk Kemandirian Anak Yatim Papua
               </h2>
               <Button href="/program" variant="outline" size="sm">
                 Lihat Semua Program →
@@ -358,7 +363,7 @@ export default function HomePage() {
       </section>
 
       {/* =========================================================================
-          5. ACTIVITIES & FIELD STORIES: "What Our Customers Say" style
+          5. ACTIVITIES & FIELD STORIES
       ========================================================================= */}
       <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-24 max-w-7xl mx-auto w-full space-y-12">
         <div className="space-y-2">
@@ -380,12 +385,12 @@ export default function HomePage() {
                 CATATAN 01
               </span>
               <p className="text-sm sm:text-base text-charcoal-800 leading-relaxed font-medium">
-                &ldquo;Melihat anak-anak di Sentani menyambut paket buku tulis dengan mata berbinar menegaskan bahwa langkah kecil kita benar-benar menyalakan harapan mereka.&rdquo;
+                &ldquo;Melihat santri yatim di Sentani tersenyum memeluk mushaf Al-Qur&apos;an dan tas sekolah baru menjadi peneguh hati bahwa amanah ini sungguh bermakna bagi masa depan mereka.&rdquo;
               </p>
             </div>
             <div className="pt-4 border-t border-editorial text-xs text-charcoal-600">
-              <strong className="text-charcoal-900 block font-semibold">Sarah Maria K.</strong>
-              <span>Relawan Bimbingan Literasi Sentani</span>
+              <strong className="text-charcoal-900 block font-semibold">Ustadz M. Fadli</strong>
+              <span>Pengasuh Asrama Yatim Sentani</span>
             </div>
           </div>
 
@@ -393,14 +398,14 @@ export default function HomePage() {
           <div className="relative min-h-[300px] rounded-3xl overflow-hidden shadow-xs bg-ivory-200">
             <Image
               src="/images/activity-mentoring.jpg"
-              alt="Suasana membaca dan belajar bersama anak-anak"
+              alt="Suasana bimbingan belajar dan mengaji santai bersama anak-anak yatim"
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
             <div className="absolute bottom-5 inset-x-5 text-white text-xs font-medium">
-              Kelas belajar gembira akhir pekan di posko Abepura, Kota Jayapura.
+              Kelas bimbingan belajar dan literasi Quran akhir pekan di Jayapura.
             </div>
           </div>
 
@@ -411,11 +416,11 @@ export default function HomePage() {
                 CATATAN 02
               </span>
               <p className="text-sm sm:text-base text-charcoal-800 leading-relaxed font-medium">
-                &ldquo;Setiap paket sembako dibelanjakan langsung di pasar lokal untuk memastikan kesegaran pangan sekaligus mendukung para pedagang mama-mama Papua.&rdquo;
+                &ldquo;Setiap paket sembako dibelanjakan langsung di pasar lokal untuk memastikan kesegaran bahan pangan halal sekaligus mendukung roda usaha mama-mama pedagang Papua.&rdquo;
               </p>
             </div>
             <div className="pt-4 border-t border-editorial text-xs text-charcoal-600">
-              <strong className="text-charcoal-900 block font-semibold">Robert Wanimbo</strong>
+              <strong className="text-charcoal-900 block font-semibold">Ahmad Yani W.</strong>
               <span>Relawan Logistik & Penyaluran</span>
             </div>
           </div>
@@ -437,7 +442,7 @@ export default function HomePage() {
               Pertanyaan yang Sering Diajukan
             </h2>
             <p className="text-sm text-charcoal-600 leading-relaxed">
-              Masih memiliki pertanyaan seputar alokasi donasi, verifikasi rekening resmi, atau pendaftaran relawan?
+              Masih memiliki pertanyaan seputar alokasi sedekah, verifikasi nomor rekening resmi yayasan, atau pendaftaran relawan?
             </p>
             <div className="pt-2">
               <Button
@@ -459,7 +464,7 @@ export default function HomePage() {
       </section>
 
       {/* =========================================================================
-          7. CLOSING CTA BANNER: Immersive landscape photo card ("Ready to Power...")
+          7. CLOSING CTA BANNER: Immersive landscape photo card
       ========================================================================= */}
       <section className="px-3 sm:px-5 lg:px-6 py-12 sm:py-16">
         <div className="relative w-full rounded-3xl sm:rounded-[2.5rem] overflow-hidden p-8 sm:p-14 lg:p-20 text-center flex flex-col items-center justify-center space-y-6 shadow-sm bg-forest-950">
@@ -473,10 +478,10 @@ export default function HomePage() {
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-4">
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-              Siap Menumbuhkan Harapan Bersama Kami?
+              Siap Menyalurkan Sedekah & Kebaikan Bersama Kami?
             </h2>
             <p className="text-sm sm:text-base text-white/90 leading-relaxed font-normal">
-              Bergabunglah sebagai relawan lapangan atau salurkan bantuan melalui kanal resmi terverifikasi untuk menguatkan masa depan anak-anak di tanah Papua.
+              Bergabunglah sebagai relawan pendamping atau salurkan sedekah terbaik Anda untuk memuliakan dan menguatkan masa depan anak-anak yatim di tanah Papua.
             </p>
           </div>
 
@@ -485,7 +490,7 @@ export default function HomePage() {
               Daftar Jadi Relawan
             </Button>
             <Button href="/donasi" variant="frosted" size="md">
-              Salurkan Donasi Resmi
+              Salurkan Sedekah Yatim
             </Button>
           </div>
         </div>

@@ -15,14 +15,14 @@ export function Footer() {
           <div className="lg:col-span-5 space-y-5">
             <BrandLogo withTagline />
             <p className="text-sm text-stone-600 leading-relaxed max-w-md">
-              Gerakan kerelawanan independen yang berfokus mendampingi anak-anak yatim, piatu, dan dhuafa di tanah Papua melalui pemenuhan kebutuhan pendidikan, nutrisi bergizi, serta pendampingan karakter berkelanjutan.
+              Gerakan kerelawanan independen yang berfokus mendampingi anak-anak yatim di tanah Papua—terutama anak-anak yatim muslim—melalui pemenuhan kebutuhan pendidikan, pangan halal bergizi, serta pembinaan akhlak mulia yang berkelanjutan.
             </p>
             <div className="pt-1 flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#EBF4E5] text-[#163821] text-xs font-semibold">
-                Transparan & Terverifikasi
+                Memuliakan Anak Yatim
               </span>
               <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-stone-100 text-stone-700 text-xs font-medium">
-                100% Relawan Mandiri
+                100% Amanah Umat
               </span>
             </div>
           </div>

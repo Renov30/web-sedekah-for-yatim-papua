@@ -14,9 +14,9 @@ export const metadata: Metadata = {
 export default function KegiatanPage() {
   return (
     <div className="flex flex-col gap-14 sm:gap-20">
-      {/* Inset Header Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 w-full">
-        <div className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F4F6F2] border border-[#DFE7DB] p-8 sm:p-14 lg:p-16 overflow-hidden">
+      {/* Header Banner */}
+      <section className="w-full bg-[#F4F6F2] border-b border-[#DFE7DB] pt-28 sm:pt-36 pb-14 sm:pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E4EFE0] text-[#122A1C] text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-[#C6F24D]" />
@@ -26,7 +26,7 @@ export default function KegiatanPage() {
               Rekam Jejak Kebaikan & Aksi Nyata Relawan di Papua.
             </h1>
             <p className="text-base sm:text-lg text-stone-600 leading-relaxed">
-              Setiap bantuan yang tersalurkan didokumentasikan dengan penuh tanggung jawab. Kami menyajikan catatan riil penyaluran paket belajar, santunan nutrisi, dan bimbingan karakter di distrik-distrik Papua.
+              Setiap amanah sedekah yang tersalurkan didokumentasikan dengan penuh tanggung jawab. Kami menyajikan catatan riil penyaluran paket belajar santri yatim, sembako halal, serta pembinaan akhlak di asrama dan distrik-distrik Papua.
             </p>
           </div>
         </div>

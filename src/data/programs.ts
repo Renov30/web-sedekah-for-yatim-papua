@@ -22,126 +22,125 @@ export const programs: ProgramPillar[] = [
   {
     id: "pendidikan",
     slug: "dukungan-pendidikan",
-    title: "Dukungan Pendidikan & Perlengkapan Belajar",
+    title: "Dukungan Pendidikan & Perlengkapan Belajar Yatim",
     category: "Pendidikan & Literasi",
     shortSummary:
-      "Memastikan anak-anak yatim dan dhuafa di Papua memiliki perlengkapan sekolah lengkap dan akses ke bahan ajar yang layak.",
+      "Memastikan anak-anak yatim dan dhuafa di Papua memiliki perlengkapan sekolah lengkap, seragam, serta sarana belajar agama dan umum yang memadai.",
     description:
-      "Banyak anak yatim dan dhuafa di pelosok Papua menghadapi keterbatasan sarana dasar sekolah: buku tulis, tas, seragam, hingga sepatu layak pakai. Melalui pilar ini, relawan mengidentifikasi kebutuhan spesifik setiap anak dan menyalurkan paket perlengkapan belajar secara langsung, bekerja sama dengan guru dan pengurus sekolah setempat.",
+      "Banyak anak yatim dan santri dhuafa di Papua yang menuntut ilmu dengan fasilitas sangat terbatas: seragam yang telah usang, buku tulis minim, dan keterbatasan mushaf Al-Qur'an. Melalui pilar ini, relawan mengidentifikasi kebutuhan langsung anak asuh di asrama yatim, pesantren, dan keluarga binaan untuk diserahkan paket tas, buku teks, alat tulis, dan perlengkapan sekolah yang layak.",
     focusAreas: [
-      "Paket perlengkapan sekolah (buku, alat tulis, tas, seragam)",
-      "Bantuan iuran atau perlengkapan pendukung jenjang SD–SMA",
-      "Penyediaan modul literasi baca-tulis kontekstual Papua",
+      "Paket tas, buku tulis, seragam, dan sepatu baru untuk anak yatim",
+      "Penyediaan mushaf Al-Qur'an, juz amma, dan buku bacaan Islami",
+      "Bantuan penunjang kelancaran sekolah formal jenjang SD–SMA",
     ],
     operationalScope:
-      "Fokus rintisan di wilayah Jayapura, Sentani, dan distrik terdekat dengan target perluasan bertahap.",
+      "Fokus aksi di asrama yatim dan keluarga binaan wilayah Jayapura, Sentani, dan Keerom.",
     status: "active",
-    statusLabel: "Program Berjalan (Tahap Rintisan)",
+    statusLabel: "Program Berjalan",
     image: "/images/program-education.jpg",
     imageAlt:
-      "Buku-buku pelajaran dan perlengkapan sekolah yang rapi disiapkan untuk anak-anak",
+      "Buku-buku pelajaran dan perlengkapan sekolah yang disiapkan untuk anak-anak yatim",
     keyActivities: [
-      "Pendataan kebutuhan anak di asrama dan lingkungan keluarga asuh",
-      "Pengepakan dan penyortiran paket perlengkapan oleh relawan",
-      "Penyerahan langsung serta motivasi belajar bersama pengajar",
+      "Asesmen langsung kebutuhan anak yatim di asrama dan keluarga asuh",
+      "Pengadaan dan pengepakan seragam serta alat tulis oleh relawan",
+      "Penyerahan amanah diiringi sesi doa dan motivasi belajar",
     ],
     callToAction: {
-      label: "Dukung Program Pendidikan",
+      label: "Dukung Program Pendidikan Yatim",
       href: "/donasi",
     },
   },
   {
     id: "kebutuhan-dasar",
     slug: "bantuan-kebutuhan-dasar",
-    title: "Bantuan Kebutuhan Dasar & Pangan Bergizi",
+    title: "Paket Nutrisi Halal & Kebutuhan Pangan Yatim",
     category: "Nutrisi & Kesejahteraan",
     shortSummary:
-      "Penyediaan bahan pangan pokok bergizi serta dukungan sandang dan sanitasi harian anak-anak yatim binaan.",
+      "Penyaluran berkala sembako berkualitas, pangan bergizi halal, dan pemenuhan kebutuhan dasar bagi anak-anak yatim dan keluarga asuh.",
     description:
-      "Kebutuhan nutrisi yang tercukupi adalah fondasi utama agar anak dapat belajar dengan sehat dan berkonsentrasi. Pilar ini berfokus pada penyaluran paket bahan pokok berkualitas (beras, telur, kacang-kacangan, susu, minyak goreng) serta perlengkapan kebersihan diri untuk keluarga asuh dan panti asuhan yatim.",
+      "Gizi yang baik dan halal adalah pondasi utama agar anak-anak yatim tumbuh sehat, berenergi, dan optimal dalam menuntut ilmu. Pilar ini menyalurkan paket sembako lengkap (beras, telur, minyak goreng, susu, protein hewani, dan kacang-kacangan) ke panti asuhan yatim, pondok pesantren dhuafa, dan keluarga ibu tunggal yang merawat anak yatim.",
     focusAreas: [
-      "Paket sembako berkala untuk keluarga asuh yatim dhuafa",
-      "Suplementasi gizi dan pemenuhan protein anak",
-      "Penyediaan paket sanitasi higienis dan sandang layak",
+      "Paket sembako bulanan untuk keluarga asuh dan panti asuhan yatim",
+      "Suplemen gizi, susu, dan bahan pangan berprotein tinggi",
+      "Bantuan sandang layak pakai dan paket perlengkapan sanitasi diri",
     ],
     operationalScope:
-      "Penyaluran bertahap tiap bulan berbasis data keluarga asuh yang telah diverifikasi.",
+      "Penyaluran rutin bulanan berbasis data keluarga binaan yatim muslim terverifikasi.",
     status: "active",
     statusLabel: "Program Berjalan",
     image: "/images/program-basic-needs.jpg",
     imageAlt:
-      "Paket bahan pangan pokok dan nutrisi yang disiapkan untuk keluarga asuh penerima manfaat",
+      "Paket bahan pangan pokok dan nutrisi halal yang disiapkan untuk keluarga asuh anak yatim",
     keyActivities: [
-      "Verifikasi berkala status ekonomi keluarga asuh yatim",
-      "Belanja langsung ke pasar lokal untuk menggerakkan pedagang sekitar",
-      "Distribusi teratur dengan tanda terima terdokumentasi",
+      "Pendataan faktual kondisi persediaan pangan di asrama/keluarga binaan",
+      "Belanja langsung ke pedagang pasar lokal Papua guna menggerakkan ekonomi sekitar",
+      "Penyaluran santun dengan bukti berita acara penyerahan",
     ],
     callToAction: {
-      label: "Salurkan Bantuan Nutrisi",
+      label: "Salurkan Sedekah Pangan Yatim",
       href: "/donasi",
     },
   },
   {
     id: "pendampingan",
     slug: "pendampingan-dan-pemberdayaan",
-    title: "Pendampingan Belajar, Karakter, & Keterampilan",
+    title: "Bimbingan Karakter, Literasi Quran, & Keterampilan",
     category: "Pengembangan Karakter",
     shortSummary:
-      "Sesi belajar gembira, bimbingan moral, serta pelatihan keterampilan hidup ringan bersama kakak asuh relawan.",
+      "Kelas belajar gembira, bimbingan mengaji Al-Qur'an, pembinaan akhlak mulia, serta pengenalan keterampilan hidup bersama kakak relawan.",
     description:
-      "Anak-anak yatim tidak hanya membutuhkan materi, namun juga kehadiran figur pendamping yang tulus mendengarkan, memberi semangat, dan menanamkan nilai-nilai luhur. Relawan hadir menyelenggarakan kelas baca ceria, pengenalan teknologi dasar, serta ruang diskusi yang aman dan menggembirakan.",
+      "Anak-anak yatim membutuhkan figur kakak dan sahabat yang tulus membimbing serta menghidupkan rasa percaya diri mereka. Program ini menghadirkan ruang belajar akhir pekan yang memadukan bimbingan calistung, penguatan akidah dan akhlak, kisah teladan para Nabi, serta kreasi seni yang menggembirakan.",
     focusAreas: [
-      "Bimbingan membaca, menulis, dan berhitung (calistung) santai",
-      "Ruang kreasi seni, cerita inspiratif, dan penanaman budi pekerti",
-      "Pengenalan dasar literasi digital dan keterampilan praktis",
+      "Bimbingan membaca dan tahsin Al-Qur'an serta doa-doa harian",
+      "Bimbingan belajar calistung dan pelajaran sekolah umum",
+      "Pendidikan akhlak terpuji, adab, dan penanaman rasa percaya diri",
     ],
     operationalScope:
-      "Pertemuan akhir pekan rutin di titik-titik posko belajar komunitas.",
+      "Dilaksanakan secara terjadwal di posko asrama dan TPQ mitra di Jayapura.",
     status: "active",
     statusLabel: "Program Berjalan",
     image: "/images/program-empowerment.jpg",
     imageAlt:
-      "Suasana diskusi dan bimbingan belajar santai penuh semangat bersama anak-anak",
+      "Suasana bimbingan belajar dan mengaji santai bersama kakak relawan",
     keyActivities: [
-      "Penyusunan kurikulum non-formal yang ramah anak",
-      "Pertemuan mingguan kakak asuh bersama kelompok kecil anak",
-      "Pameran karya kreasi anak sebagai sarana menumbuhkan rasa percaya diri",
+      "Pendampingan rutin akhir pekan bersama kakak relawan pengajar",
+      "Pemberian apresiasi kreasi dan hafalan surat pendek anak asuh",
+      "Sesi konsultasi hangat mendengarkan cita-cita dan keluh kesah anak",
     ],
     callToAction: {
-      label: "Bergabung Menjadi Pendamping",
+      label: "Bergabung Jadi Relawan Pengajar",
       href: "/jadi-relawan",
     },
   },
   {
     id: "relawan",
     slug: "gerakan-relawan",
-    title: "Gerakan Relawan & Penguatan Komunitas",
+    title: "Gerakan Relawan & Penguatan Ukhuwah Komunitas",
     category: "Kerelawanan Sosial",
     shortSummary:
-      "Wadah kolaborasi generasi muda Papua untuk mengambil peran aktif dalam kerja-kerja sosial kemanusiaan.",
+      "Wadah kolaborasi pemuda dan masyarakat Papua untuk mengabdi memuliakan anak-anak yatim secara berkesinambungan.",
     description:
-      "Keberhasilan gerakan ini bertumpu pada integritas dan ketulusan para relawan di lapangan. Program ini membekali relawan dengan etika perlindungan anak (child safeguarding), teknik pendataan objektif, koordinasi tanggap sosial, serta kepemimpinan komunitas yang berpihak pada martabat sesama.",
+      "Kekuatan gerakan Sedekah for Yatim Papua bertumpu pada niat tulus dan etika gotong royong para relawan. Program ini membina pemuda lokal agar memiliki kepedulian sosial tinggi, memahami pedoman perlindungan anak (child safeguarding), serta mampu mengelola aksi kemanusiaan secara mandiri dan profesional.",
     focusAreas: [
-      "Pelatihan dasar relawan kemanusiaan dan etika keselamatan anak",
-      "Pengembangan jaringan posko relawan berbasis distrik",
-      "Kolaborasi terbuka dengan universitas lokal dan komunitas pemuda",
+      "Pelatihan relawan peduli yatim dan etika keselamatan anak",
+      "Penguatan posko koordinasi lapangan di distrik-distrik Papua",
+      "Sinergi bersama komunitas dakwah, kampus, dan majelis taklim setempat",
     ],
     operationalScope:
-      "Terbuka untuk pemuda, mahasiswa, dan masyarakat umum di wilayah Papua.",
+      "Terbuka untuk generasi muda, mahasiswa, dan masyarakat umum di tanah Papua.",
     status: "active",
     statusLabel: "Program Terbuka",
     image: "/images/program-volunteer.jpg",
     imageAlt:
-      "Relawan saling bergotong royong mempersiapkan rencana kegiatan kemanusiaan",
+      "Relawan saling bergotong royong mempersiapkan rencana kegiatan penyaluran amanah",
     keyActivities: [
-      "Orientasi nilai dan SOP penanganan anak bagi relawan baru",
-      "Pemberian mandat tugas berbasis keahlian (logistik, ajar, media)",
-      "Refleksi rutin dan evaluasi berkala demi menjaga kemurnian gerakan",
+      "Orientasi niat kerelawanan dan pemahaman SOP pendampingan anak",
+      "Distribusi tugas berbasis minat (pengajar, logistik lapangan, dokumentasi)",
+      "Silaturahmi dan evaluasi rutin untuk menjaga integritas gerakan",
     ],
     callToAction: {
-      label: "Daftar Jadi Relawan",
+      label: "Daftar Jadi Relawan SFY",
       href: "/jadi-relawan",
     },
   },
 ];
-

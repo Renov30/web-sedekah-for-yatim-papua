@@ -16,37 +16,37 @@ export interface TransparencyRoadmap {
 
 export const transparencyPrinciples: TransparencyPrinciple[] = [
   {
-    title: "Pemisahan Rekening Khusus Donasi",
+    title: "Pemisahan Rekening Khusus Sedekah Yatim",
     description:
-      "Dana amanah publik dikelola secara terpisah sepenuhnya dari keperluan pribadi perorangan relawan. Setiap aliran kas masuk dan keluar dicatat dengan teliti.",
+      "Dana amanah sedekah dari para dermawan dikelola secara terpisah sepenuhnya dari rekening pribadi relawan. Setiap rupiah aliran kas masuk dan keluar dicatat secara seksama dan diawasi bersama.",
     practice:
       "Menggunakan rekening bank kelembagaan resmi dengan rekonsiliasi berkala oleh bendahara amanah.",
   },
   {
     title: "Verifikasi Berbasis Bukti Lapangan",
     description:
-      "Setiap pengeluaran belanja bantuan wajib disertai nota pembelian riil, dokumentasi penyerahan barang yang santun, serta tanda terima tertulis dari wali anak.",
+      "Setiap pengeluaran belanja paket pangan halal dan perlengkapan sekolah anak yatim wajib disertai nota pembelian riil, dokumentasi santun, serta tanda terima tertulis dari pengasuh/wali asuh.",
     practice:
       "Arsip digital faktur dan foto dokumentasi disimpan tersentralisasi untuk verifikasi silang internal.",
   },
   {
     title: "Publikasi Rekapitulasi Terbuka",
     description:
-      "Laporan ringkas penyaluran dan pemanfaatan donasi dipublikasikan secara berkala agar para donatur dan masyarakat luas dapat meninjau realisasi program.",
+      "Laporan ringkas penyaluran dan pemanfaatan donasi dipublikasikan secara berkala agar para donatur dan masyarakat luas dapat meninjau realisasi manfaat bagi anak-anak yatim.",
     practice:
-      "Rekapitulasi berkala diterbitkan melalui halaman resmi ini dan kanal media sosial resmi lembaga.",
+      "Rekapitulasi berkala diterbitkan melalui halaman resmi ini dan kanal komunikasi resmi lembaga.",
   },
   {
-    title: "Perlindungan Martabat Penerima Manfaat",
+    title: "Perlindungan Martabat Anak Asuh",
     description:
-      "Prinsip transparansi tidak boleh mengorbankan privasi dan kehormatan anak. Kami tidak mempublikasikan identitas sensitif seperti alamat rinci atau wajah anak dalam kondisi tertekan.",
+      "Prinsip transparansi tidak boleh mengorbankan privasi dan kehormatan anak yatim. Kami tidak mempublikasikan identitas sensitif seperti alamat rinci atau visual anak dalam kondisi tertekan.",
     practice:
-      "Penyampaian laporan publik tetap memenuhi standar Child Safeguarding Policy dan etika kemanusiaan.",
+      "Penyampaian laporan publik mematuhi etika Islam dalam memuliakan anak yatim serta standar Child Safeguarding Policy.",
   },
   {
     title: "Saluran Konfirmasi & Pengaduan Terbuka",
     description:
-      "Donatur dan publik berhak mengajukan pertanyaan, klarifikasi rincian penyaluran, maupun masukan konstruktif atas program yang dijalankan.",
+      "Donatur dan publik berhak mengajukan pertanyaan, klarifikasi rincian penyaluran, maupun masukan konstruktif atas program pembinaan anak yatim yang dijalankan.",
     practice:
       "Sekretariat melayani korespondensi konfirmasi via WhatsApp resmi dan surat elektronik.",
   },
@@ -60,11 +60,11 @@ export const transparencyRoadmap: TransparencyRoadmap[] = [
     statusLabel: "Sedang Dijalankan",
     title: "Pencatatan Berbasis Kegiatan & Verifikasi Lapangan",
     description:
-      "Fokus pada dokumentasi faktual per aksi penyaluran: bukti transaksi belanja lokal, berita acara serah terima, dan laporan visual kegiatan yang transparan kepada para donatur per kegiatan.",
+      "Fokus pada dokumentasi faktual per aksi penyaluran: bukti transaksi belanja lokal, berita acara serah terima bersama asrama/keluarga binaan yatim, dan laporan visual kegiatan yang transparan kepada para donatur.",
     deliverables: [
-      "Pencatatan nota riil setiap pengeluaran logistik",
-      "Berita acara serah terima bersama wali asuh penerima",
-      "Publikasi rekapitulasi penyaluran per sesi kegiatan di web resmi",
+      "Pencatatan nota riil setiap pengeluaran logistik dan bantuan",
+      "Berita acara serah terima bersama wali asuh / panti yatim penerima",
+      "Publikasi rekapitulasi penyaluran per sesi aksi di web resmi",
     ],
   },
   {
@@ -74,10 +74,10 @@ export const transparencyRoadmap: TransparencyRoadmap[] = [
     statusLabel: "Agenda Mendatang",
     title: "Publikasi Laporan Keuangan Berkala Terbuka (PDF)",
     description:
-      "Penyusunan format laporan berkala yang dapat diunduh bebas oleh publik, memuat ringkasan penerimaan donasi, alokasi per pilar program, dan efisiensi biaya operasional penyaluran.",
+      "Penyusunan format laporan berkala yang dapat diunduh bebas oleh donatur dan publik, memuat ringkasan penerimaan sedekah, alokasi per pilar program anak yatim, dan efisiensi penyaluran.",
     deliverables: [
       "Penerbitan rekapitulasi kas masuk & keluar kuartalan",
-      "Dokumen PDF publik yang memuat rincian alokasi program",
+      "Dokumen PDF publik yang memuat rincian alokasi program yatim",
       "Sistem verifikasi kode donasi unik untuk kemudahan konfirmasi donatur",
     ],
   },
@@ -88,7 +88,7 @@ export const transparencyRoadmap: TransparencyRoadmap[] = [
     statusLabel: "Rencana Jangka Panjang",
     title: "Audit Keuangan & Tata Kelola Independen",
     description:
-      "Sebagai komitmen puncak akuntabilitas, pembukuan lembaga akan diajukan untuk ditinjau oleh pihak akuntan publik / auditor independen guna memastikan kepatuhan standar akuntansi nirlaba.",
+      "Sebagai komitmen puncak akuntabilitas amanah umat, pembukuan lembaga akan diajukan untuk ditinjau oleh pihak akuntan publik / auditor independen guna memastikan kepatuhan standar akuntansi nirlaba.",
     deliverables: [
       "Penelaahan pembukuan tahunan",
       "Penerbitan opini laporan keuangan nirlaba resmi",
@@ -101,7 +101,7 @@ export const antiFraudGuidelines = [
   {
     step: "1",
     title: "Cek Keaslian Nama Rekening",
-    desc: "Pastikan rekening tujuan transfer hanya atas nama resmi kelembagaan Sedekah for Yatim Papua, bukan atas nama rekening pribadi pengurus.",
+    desc: "Pastikan rekening tujuan transfer hanya atas nama resmi kelembagaan Sedekah for Yatim Papua, bukan atas nama rekening pribadi perorangan.",
   },
   {
     step: "2",
@@ -110,7 +110,7 @@ export const antiFraudGuidelines = [
   },
   {
     step: "3",
-    title: "Waspada Penipuan Mengatasnamakan Bantuan",
-    desc: "Kami tidak pernah memungut biaya pendaftaran bantuan kepada penerima manfaat dan tidak pernah meminta imbalan apa pun.",
+    title: "Waspada Pungutan Mengatasnamakan Bantuan",
+    desc: "Kami tidak pernah memungut biaya pendaftaran bantuan kepada anak-anak yatim maupun keluarga asuh penerima manfaat.",
   },
 ];

@@ -86,10 +86,10 @@ export function DonationVerificationCard() {
               onChange={(e) => setSelectedProgram(e.target.value)}
               className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0C1D13] cursor-pointer"
             >
-              <option value="Paket Perlengkapan Sekolah (SD/SMP)">Paket Perlengkapan Sekolah (SD/SMP)</option>
-              <option value="Paket Sembako & Nutrisi Gizi Keluarga Asuh">Paket Sembako & Nutrisi Gizi Keluarga Asuh</option>
-              <option value="Bantuan Biaya Operasional Kelas Belajar Komunitas">Bantuan Biaya Operasional Kelas Belajar Komunitas</option>
-              <option value="Sedekah Bebas / Sesuai Kebutuhan Mendesak Terkini">Sedekah Bebas / Sesuai Kebutuhan Mendesak Terkini</option>
+              <option value="Paket Perlengkapan Sekolah & Madrasah Santri Yatim">Paket Perlengkapan Sekolah & Madrasah Santri Yatim</option>
+              <option value="Paket Sembako Halal & Nutrisi Keluarga Yatim">Paket Sembako Halal & Nutrisi Keluarga Yatim</option>
+              <option value="Bantuan Operasional Asrama & TPQ Belajar Yatim">Bantuan Operasional Asrama & TPQ Belajar Yatim</option>
+              <option value="Sedekah Bebas / Sesuai Kebutuhan Mendesak Yatim">Sedekah Bebas / Sesuai Kebutuhan Mendesak Yatim</option>
             </select>
           </div>
 

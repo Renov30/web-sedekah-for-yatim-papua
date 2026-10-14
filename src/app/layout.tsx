@@ -14,25 +14,26 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL("https://sfypapua.org"),
   title: {
-    default: "Sedekah for Yatim Papua — Menumbuhkan Harapan Anak Papua",
+    default: "Sedekah for Yatim Papua — Memuliakan Anak Yatim di Bumi Cenderawasih",
     template: "%s | Sedekah for Yatim Papua",
   },
   description:
-    "Gerakan kerelawanan mandiri mendukung anak-anak yatim, piatu, dan dhuafa di Papua melalui penyediaan perlengkapan sekolah, kebutuhan gizi dasar, pendampingan belajar, dan aksi sosial bermartabat.",
+    "Gerakan kerelawanan mandiri mendukung anak-anak yatim di tanah Papua—terutama anak-anak yatim muslim—melalui penyediaan perlengkapan sekolah, gizi halal, pendampingan belajar, dan pembinaan akhlak mulia.",
   keywords: [
     "Sedekah for Yatim Papua",
-    "Yatim Papua",
-    "Donasi Papua",
+    "Yatim Muslim Papua",
+    "Sedekah Yatim Papua",
+    "Donasi Yatim Papua",
+    "Santri Yatim Papua",
     "Relawan Papua",
-    "Pendidikan Anak Papua",
-    "Kemanusiaan Jayapura",
-    "Gerakan Sosial Papua",
+    "Pendidikan Yatim Papua",
+    "Panti Asuhan Yatim Jayapura",
   ],
   authors: [{ name: "Sedekah for Yatim Papua" }],
   openGraph: {
-    title: "Sedekah for Yatim Papua — Menumbuhkan Harapan Anak Papua",
+    title: "Sedekah for Yatim Papua — Memuliakan Anak Yatim di Bumi Cenderawasih",
     description:
-      "Gerakan kerelawanan mandiri mendukung anak-anak yatim dan dhuafa di Papua dengan prinsip keterbukaan, amanah, dan martabat anak.",
+      "Gerakan kerelawanan mandiri mendukung anak-anak yatim di Papua—terutama anak-anak yatim muslim—dengan prinsip amanah, keterbukaan, dan memuliakan anak yatim.",
     url: "https://sfypapua.org",
     siteName: "Sedekah for Yatim Papua",
     locale: "id_ID",
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Sedekah for Yatim Papua",
     description:
-      "Gerakan kerelawanan mendukung anak yatim dan dhuafa di Papua melalui pendidikan, pangan bergizi, dan pendampingan karakter.",
+      "Gerakan kerelawanan mendukung anak-anak yatim di Papua—terutama anak-anak yatim muslim—melalui pendidikan, pangan halal bergizi, dan pembinaan akhlak.",
   },
   icons: {
     icon: "/favicon.ico",

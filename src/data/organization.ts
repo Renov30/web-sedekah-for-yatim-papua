@@ -40,69 +40,69 @@ export interface OrganizationInfo {
 export const organization: OrganizationInfo = {
   name: "Sedekah for Yatim Papua",
   shortName: "SFY Papua",
-  tagline: "Menumbuhkan Harapan, Menguatkan Masa Depan Anak Papua",
-  eyebrow: "GERAKAN KEBAIKAN UNTUK PAPUA",
-  headline: "Menumbuhkan Harapan, Menguatkan Masa Depan Anak Papua.",
+  tagline: "Menumbuhkan Harapan, Menguatkan Masa Depan Anak Yatim Papua",
+  eyebrow: "GERAKAN SEDEKAH & KEPEDULIAN ANAK YATIM PAPUA",
+  headline: "Menumbuhkan Harapan, Menguatkan Masa Depan Anak Yatim Papua.",
   heroSupportingCopy:
-    "Bersama relawan dan para dermawan, kami berupaya menghadirkan dukungan pendidikan, kebutuhan dasar, dan kesempatan yang lebih baik bagi anak-anak di Papua.",
+    "Bersama relawan dan para dermawan, kami berikhtiar menghadirkan dukungan pendidikan, pemenuhan gizi halal, dan pembinaan bagi anak-anak yatim di tanah Papua—terutama anak-anak yatim muslim—agar tumbuh cerdas, bermartabat, dan berakhlak mulia.",
   aboutIntro:
-    "Sedekah for Yatim Papua adalah inisiatif sosial berbasis kerelawanan yang lahir dari kepedulian mendalam terhadap masa depan anak-anak yatim, piatu, dan dhuafa di tanah Papua. Melalui pendekatan gotong royong dan kemitraan komunitas lokal, kami memastikan setiap bantuan tersalurkan secara langsung, bermartabat, dan dapat dipertanggungjawabkan.",
+    "Sedekah for Yatim Papua (SFY Papua) adalah gerakan kerelawanan independen yang lahir dari kepedulian mendalam terhadap masa depan anak-anak yatim, piatu, dan dhuafa di tanah Papua, dengan fokus utama mendampingi anak-anak yatim muslim di perkotaan hingga distrik pedalaman. Melalui amanah sedekah, infak, dan kepedulian umat, kami menyalurkan bantuan secara langsung, amanah, dan bermartabat guna memastikan mereka memperoleh hak pendidikan, pembinaan akhlak, serta kebutuhan hidup yang layak.",
   vision:
-    "Terwujudnya masa depan anak-anak yatim dan dhuafa di Papua yang bermartabat, berpendidikan layak, sehat jasmani rohani, serta berdaya saing dalam meraih cita-cita.",
+    "Terwujudnya masa depan anak-anak yatim di Papua—khususnya anak-anak yatim muslim—yang berakhlak mulia, berpendidikan layak, mandiri, sehat jasmani rohani, serta berdaya saing dalam meraih cita-cita.",
   mission: [
-    "Menyediakan akses perlengkapan belajar dan bantuan biaya pendidikan berkelanjutan bagi anak yatim dan dhuafa di Papua.",
-    "Menyalurkan paket pemenuhan kebutuhan gizi dasar dan perawatan kesehatan preventif secara berkala.",
-    "Mengembangkan program pendampingan literasi, karakter, dan keterampilan hidup bersama relawan dan tokoh masyarakat.",
-    "Menjaga amanah donatur melalui pengelolaan dana yang transparan, terdokumentasi rapi, dan bebas dari konflik kepentingan.",
-    "Menumbuhkan ekosistem kerelawanan pemuda lokal yang aktif berkontribusi bagi kemajuan kampung dan kotanya.",
+    "Menyediakan perlengkapan belajar, buku bacaan Islami dan umum, serta beasiswa pendidikan berkelanjutan bagi anak-anak yatim muslim dan dhuafa di Papua.",
+    "Menyalurkan paket sembako bergizi dan pangan halal secara rutin ke panti asuhan yatim, pondok pesantren, dan keluarga asuh dhuafa.",
+    "Menyelenggarakan program bimbingan belajar, literasi Al-Qur'an, pembinaan karakter akhlakul karimah, dan keterampilan hidup bersama relawan pemuda.",
+    "Mengelola amanah dana sedekah dan donasi masyarakat dengan standar transparansi mutlak, pencatatan riil tanpa rekayasa, dan bebas konflik kepentingan.",
+    "Membangun jejaring kepedulian dan ukhuwah bersama masyarakat lokal Papua untuk menjaga martabat serta memuliakan anak-anak yatim.",
   ],
   values: [
     {
-      title: "Kasih Sayang (Compassion)",
+      title: "Memuliakan Anak Yatim (Ikramul Aitam)",
       description:
-        "Bergerak dengan ketulusan hati untuk merangkul dan melindungi anak-anak yang kehilangan orang tua, tanpa membeda-bedakan latar belakang.",
+        "Menjadikan kepedulian kepada anak yatim sebagai ibadah utama, merangkul mereka dengan penuh kasih sayang tanpa merendahkan martabat.",
     },
     {
-      title: "Amanah & Kepercayaan (Trust)",
+      title: "Amanah & Ketulusan (Trust & Integrity)",
       description:
-        "Menjunjung tinggi kejujuran dalam memegang titipan donatur dan memperlakukan setiap rupiah sebagai tanggung jawab moral yang suci.",
+        "Memperlakukan setiap rupiah titipan sedekah sebagai amanah suci yang wajib dipertanggungjawabkan kepada para donatur dan di hadapan Allah SWT.",
     },
     {
-      title: "Keterbukaan (Transparency)",
+      title: "Keterbukaan Mutlak (Transparency)",
       description:
-        "Membuka informasi alokasi penyaluran secara jujur dan berkala, tanpa melebih-lebihkan angka atau memanipulasi kenyataan lapangan.",
+        "Menyajikan data penyaluran dan dokumentasi lapangan secara jujur, objektif, dan faktual tanpa rekayasa angka maupun statistik fiktif.",
     },
     {
-      title: "Martabat Anak (Dignity)",
+      title: "Menjaga Kehormatan (Dignity & Safeguarding)",
       description:
-        "Melindungi kehormatan anak-anak dan keluarga penerima manfaat. Kami pantang memanfaatkan rasa iba berlebihan atau eksploitasi visual demi simpati publik.",
+        "Melindungi privasi dan kehormatan anak asuh. Kami menolak eksploitasi visual kemiskinan atau tangisan anak demi memancing belas kasihan.",
     },
     {
-      title: "Partisipasi Komunitas (Community Participation)",
+      title: "Kemitraan Komunitas Lokal",
       description:
-        "Melibatkan keluarga asuh, pemuka adat/kampung, serta relawan setempat agar solusi tumbuh dari pemahaman mendalam atas kebutuhan riil.",
+        "Bekerja sama erat dengan pengurus asrama yatim, ustadz/ustadzah, keluarga asuh, dan tokoh masyarakat Papua dalam verifikasi kebutuhan riil.",
     },
     {
       title: "Dampak Berkelanjutan (Sustainable Impact)",
       description:
-        "Tidak berhenti pada bantuan darurat sesaat, namun berorientasi pada kemandirian jangka panjang anak hingga menyelesaikan pendidikannya.",
+        "Tidak hanya memberikan bantuan konsumtif sesaat, melainkan mendampingi proses tumbuh kembang anak hingga tuntas pendidikan dan mandiri.",
     },
   ],
   approach: [
     {
       title: "Verifikasi Lapangan Langsung",
       description:
-        "Relawan kami mengunjungi langsung keluarga asuh dan asrama untuk memverifikasi kondisi aktual sebelum bantuan disalurkan.",
+        "Relawan meninjau langsung kondisi asrama yatim, pondok pesantren, dan rumah keluarga asuh di Jayapura dan sekitarnya sebelum menyalurkan bantuan.",
     },
     {
-      title: "Pendampingan, Bukan Sekadar Serah Terima",
+      title: "Pendidikan & Pembinaan Karakter",
       description:
-        "Bantuan materi diimbangi dengan kunjungan berkala, ruang belajar gembira, serta bimbingan belajar bersama kakak relawan.",
+        "Bantuan materi dilengkapi dengan kelas mengaji, bimbingan akhlak, pendampingan sekolah, serta ruang motivasi bersama kakak relawan.",
     },
     {
-      title: "Kerjasama Tokoh & Ekosistem Lokal",
+      title: "Pengadaan Logistik Halal & Lokal",
       description:
-        "Bekerja sama erat dengan para pengajar, komunitas pemuda, serta tetua lingkungan untuk memastikan keberlanjutan program.",
+        "Belanja bahan pokok diprioritaskan di pedagang pasar tradisional Papua guna memberdayakan perekonomian warga lokal secara berkesinambungan.",
     },
   ],
   contacts: [
@@ -114,7 +114,7 @@ export const organization: OrganizationInfo = {
     },
     {
       label: "Pusat Koordinasi WhatsApp",
-      value: "+62 821-9800-4411 (Konfirmasi & Layanan Relawan)",
+      value: "+62 821-9800-4411 (Sekretariat & Layanan Donasi)",
       href: "https://wa.me/6282198004411",
       description: "Layanan pesan resmi untuk verifikasi nomor rekening & pendaftaran relawan",
     },
@@ -126,10 +126,9 @@ export const organization: OrganizationInfo = {
     note: "Posko Relawan dan Aksi Lapangan berpusat di wilayah Jayapura, Sentani, Keerom, dan distrik sekitarnya.",
   },
   governanceNote:
-    "Susunan dewan pengurus, pembina, serta struktur manajerial resmi Sedekah for Yatim Papua akan dipublikasikan secara lengkap bersamaan dengan penerbitan salinan akta legalitas kelembagaan.",
+    "Susunan dewan inisiator, koordinator relawan, serta badan hukum resmi Sedekah for Yatim Papua akan dipublikasikan secara lengkap bersamaan dengan proses finalisasi administrasi kelembagaan.",
   donationPolicyNotice:
-    "Demi keamanan bersama, seluruh donasi hanya disalurkan melalui rekening resmi atas nama lembaga yang telah terverifikasi. Kami tidak pernah meminta transfer ke rekening pribadi perorangan yang tidak terdaftar.",
+    "Demi menjaga kesucian amanah dan menghindari penipuan oleh oknum tidak bertanggung jawab, nomor rekening resmi yayasan hanya dibagikan melalui konfirmasi langsung sekretariat. Kami tidak menggunakan rekening pribadi yang tidak terverifikasi.",
   volunteerPolicyNotice:
-    "Perekrutan relawan dilakukan secara terbuka dan tanpa dipungut biaya apa pun. Seluruh calon relawan akan melewati sesi penyelarasan nilai dan pelatihan keselamatan anak (child safeguarding).",
+    "Pendaftaran relawan terbuka bagi siapa saja yang memiliki ketulusan hati untuk mengabdi bagi anak-anak yatim di Papua, tanpa pungutan biaya apa pun.",
 };
-

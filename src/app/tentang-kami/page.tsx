@@ -15,19 +15,19 @@ export const metadata: Metadata = {
 export default function TentangKamiPage() {
   return (
     <div className="flex flex-col gap-14 sm:gap-20">
-      {/* Editorial Inset Header Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 w-full">
-        <div className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F4F6F2] border border-[#DFE7DB] p-8 sm:p-14 lg:p-16 overflow-hidden">
+      {/* Editorial Header Banner */}
+      <section className="w-full bg-[#F4F6F2] border-b border-[#DFE7DB] pt-28 sm:pt-36 pb-14 sm:pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E4EFE0] text-[#122A1C] text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-[#C6F24D]" />
               <span>TENTANG SEDEKAH FOR YATIM PAPUA</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">
-              Menjaga Amanah, Menghidupkan Harapan di Bumi Cenderawasih.
+              Memuliakan Amanah, Mendampingi Anak Yatim di Bumi Cenderawasih.
             </h1>
             <p className="text-base sm:text-lg text-stone-600 leading-relaxed">
-              Inisiatif kerelawanan independen yang berpihak pada martabat anak-anak yatim, piatu, dan dhuafa di Papua melalui aksi langsung yang transparan dan berakar pada komunitas lokal.
+              Inisiatif kerelawanan independen yang berfokus mendampingi anak-anak yatim di tanah Papua—terutama anak-anak yatim muslim—melalui aksi langsung yang amanah, transparan, dan berakar pada ukhuwah komunitas lokal.
             </p>
           </div>
         </div>
@@ -40,18 +40,18 @@ export default function TentangKamiPage() {
           <div className="lg:col-span-7 space-y-6">
             <SectionHeading
               eyebrow="LATAR BELAKANG GERAKAN"
-              title="Lahir dari Kepedulian yang Nyata & Bersahaja"
+              title="Lahir dari Kepedulian Memuliakan Anak Yatim"
             />
 
             <div className="text-stone-600 space-y-4 text-sm sm:text-base leading-relaxed">
               <p>
-                Tanah Papua dianugerahi keindahan alam yang melimpah dan kearifan budaya yang luhur. Namun, di balik itu, banyak anak-anak yatim dan keluarga dhuafa di berbagai distrik menghadapi tantangan nyata untuk mendapatkan perlengkapan sekolah yang layak, makanan bergizi teratur, serta pendampingan belajar yang konsisten.
+                Tanah Papua dianugerahi keindahan alam yang megah dan kearifan masyarakat yang luhur. Namun, di berbagai distrik perkotaan hingga pelosok, banyak anak-anak yatim dan keluarga dhuafa menghadapi keterbatasan nyata untuk mendapatkan perlengkapan sekolah yang layak, pangan halal bergizi, serta pembinaan akhlak dan Al-Qur&apos;an secara teratur.
               </p>
               <p>
-                <strong className="text-stone-900">Sedekah for Yatim Papua</strong> bermula dari lingkaran kecil relawan pemuda dan masyarakat lokal yang tergerak menyisihkan tenaga, waktu, dan sebagian rezeki untuk mengantarkan bantuan langsung ke pintu-pintu rumah anak asuh di Jayapura dan sekitarnya.
+                <strong className="text-stone-900">Sedekah for Yatim Papua</strong> bermula dari ikhtiar tulus lingkaran relawan pemuda muslim dan tokoh masyarakat lokal di Jayapura yang tergerak menyisihkan waktu, tenaga, dan sebagian rezeki untuk mengantarkan bantuan langsung ke asrama santri yatim, pondok pesantren dhuafa, serta pintu-pintu rumah keluarga asuh.
               </p>
               <p>
-                Kami meyakini bahwa bantuan yang paling bermakna adalah bantuan yang tidak merendahkan, tidak dijadikan komoditas visual, melainkan diperlakukan sebagai hak saudara kita yang dititipkan melalui tangan-tangan dermawan.
+                Kami meyakini bahwa menyantuni anak yatim adalah amanah ibadah yang sangat mulia. Bantuan yang diserahkan harus menjunjung tinggi adab dan kehormatan anak—tidak dijadikan komoditas visual kemiskinan, melainkan diperlakukan sebagai hak suci saudara kita yang dititipkan melalui tangan-tangan para dermawan.
               </p>
             </div>
 

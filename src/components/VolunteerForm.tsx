@@ -125,11 +125,11 @@ export function VolunteerForm() {
               onChange={(e) => setRole(e.target.value)}
               className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0C1D13] cursor-pointer"
             >
-              <option value="Pengajar Literasi & Karakter">Pengajar Literasi & Bimbingan Karakter</option>
-              <option value="Distribusi & Logistik Lapangan">Distribusi Sembako & Perlengkapan Sekolah</option>
-              <option value="Dokumentasi & Publikasi Humanis">Fotografi, Video, & Narasi Kegiatan</option>
-              <option value="Pendataan & Asesmen Keluarga Asuh">Asesmen Kondisi & Pendataan Keluarga Asuh</option>
-              <option value="Dukungan Medis & Kesehatan Preventif">Relawan Medis / Penyuluhan Kesehatan</option>
+              <option value="Pengajar Literasi Al-Qur'an & Karakter">Pengajar Literasi Al-Qur&apos;an & Pelajaran Sekolah</option>
+              <option value="Distribusi Sembako Halal & Logistik">Distribusi Sembako Halal & Perlengkapan Belajar</option>
+              <option value="Dokumentasi & Publikasi Santun">Fotografi, Video, & Narasi Humanis</option>
+              <option value="Pendataan & Asesmen Asrama Yatim">Asesmen Kondisi Asrama Yatim & Keluarga Binaan</option>
+              <option value="Dukungan Medis & Kesehatan Santri Yatim">Relawan Medis / Penyuluhan Kesehatan Anak</option>
             </select>
           </div>
 
