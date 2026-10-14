@@ -100,11 +100,6 @@ export default function HomePage() {
         {/* Top-Left Hero Content (Padded to clear transparent fixed header) */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 sm:pt-40 lg:pt-44">
           <div className="max-w-3xl space-y-5">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/40 backdrop-blur-md text-[#C6F24D] text-xs font-semibold border border-white/15">
-              <span className="w-2 h-2 rounded-full bg-[#C6F24D]" />
-              <span>{organization.eyebrow}</span>
-            </div>
-
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
               Menumbuhkan Harapan, Menguatkan Masa Depan Anak Yatim Papua.
             </h1>

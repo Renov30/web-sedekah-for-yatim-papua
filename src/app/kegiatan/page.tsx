@@ -18,10 +18,6 @@ export default function KegiatanPage() {
       <section className="w-full bg-[#F4F6F2] border-b border-[#DFE7DB] pt-28 sm:pt-36 pb-14 sm:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E4EFE0] text-[#122A1C] text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-[#C6F24D]" />
-              <span>DOKUMENTASI AKSI LAPANGAN</span>
-            </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">
               Rekam Jejak Kebaikan & Aksi Nyata Relawan di Papua.
             </h1>
