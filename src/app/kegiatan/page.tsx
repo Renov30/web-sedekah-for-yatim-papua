@@ -15,7 +15,7 @@ export default function KegiatanPage() {
   return (
     <div className="flex flex-col gap-14 sm:gap-20">
       {/* Header Banner */}
-      <section className="w-full bg-[#F4F6F2] border-b border-[#DFE7DB] pt-28 sm:pt-36 pb-14 sm:pb-20">
+      <section className="w-full bg-[#FAF6FC] border-b border-[#EBDFF2] pt-28 sm:pt-36 pb-14 sm:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">

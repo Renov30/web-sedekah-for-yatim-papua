@@ -16,7 +16,7 @@ export default function TentangKamiPage() {
   return (
     <div className="flex flex-col gap-14 sm:gap-20">
       {/* Editorial Header Banner */}
-      <section className="w-full bg-[#F4F6F2] border-b border-[#DFE7DB] pt-28 sm:pt-36 pb-14 sm:pb-20">
+      <section className="w-full bg-[#FAF6FC] border-b border-[#EBDFF2] pt-28 sm:pt-36 pb-14 sm:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">
@@ -146,7 +146,7 @@ export default function TentangKamiPage() {
               key={idx}
               className="bg-white p-7 rounded-3xl border border-stone-200/80 shadow-xs space-y-3 hover:border-stone-400 transition-colors"
             >
-              <div className="font-mono text-xs font-bold text-[#163821] bg-[#EBF4E5] px-3 py-1 rounded-full inline-block">
+              <div className="font-mono text-xs font-bold text-[#581C87] bg-[#F3E8FF] px-3 py-1 rounded-full inline-block">
                 Nilai 0{idx + 1}
               </div>
               <h3 className="text-lg font-bold text-stone-900 tracking-tight">
@@ -176,19 +176,19 @@ export default function TentangKamiPage() {
               </p>
               <ul className="space-y-3 pt-2">
                 <li className="flex items-start gap-3.5 bg-white p-5 rounded-2xl border border-stone-200/80">
-                  <span className="font-mono text-xs font-bold text-[#163821] bg-[#EBF4E5] px-2.5 py-0.5 rounded-full mt-0.5 shrink-0">
+                  <span className="font-mono text-xs font-bold text-[#581C87] bg-[#F3E8FF] px-2.5 py-0.5 rounded-full mt-0.5 shrink-0">
                     01
                   </span>
                   <span><strong className="text-stone-900">Larangan Eksploitasi Visual:</strong> Kami tidak mengambil foto dramatisasi kemiskinan atau tangisan anak demi memancing belas kasihan publik.</span>
                 </li>
                 <li className="flex items-start gap-3.5 bg-white p-5 rounded-2xl border border-stone-200/80">
-                  <span className="font-mono text-xs font-bold text-[#163821] bg-[#EBF4E5] px-2.5 py-0.5 rounded-full mt-0.5 shrink-0">
+                  <span className="font-mono text-xs font-bold text-[#581C87] bg-[#F3E8FF] px-2.5 py-0.5 rounded-full mt-0.5 shrink-0">
                     02
                   </span>
                   <span><strong className="text-stone-900">Perlindungan Privasi:</strong> Alamat spesifik kediaman keluarga asuh dan data pribadi rahasia anak tidak dipublikasikan ke ranah publik terbuka.</span>
                 </li>
                 <li className="flex items-start gap-3.5 bg-white p-5 rounded-2xl border border-stone-200/80">
-                  <span className="font-mono text-xs font-bold text-[#163821] bg-[#EBF4E5] px-2.5 py-0.5 rounded-full mt-0.5 shrink-0">
+                  <span className="font-mono text-xs font-bold text-[#581C87] bg-[#F3E8FF] px-2.5 py-0.5 rounded-full mt-0.5 shrink-0">
                     03
                   </span>
                   <span><strong className="text-stone-900">Persetujuan Wali:</strong> Setiap keterlibatan anak dalam program belajar bersama didasarkan atas izin sukarela dari wali/keluarga asuh.</span>

@@ -41,10 +41,6 @@ export default function JadiRelawanPage() {
       <section className="w-full bg-[#FAF6FC] border-b border-[#EBDFF2] pt-28 sm:pt-36 pb-14 sm:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F3E8FF] text-[#581C87] text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-[#823296]" />
-              <span>GABUNG GERAKAN KERELAWANAN</span>
-            </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">
               Langkah Kecil Anda, Cahaya Masa Depan Anak Yatim Papua.
             </h1>
@@ -124,22 +120,22 @@ export default function JadiRelawanPage() {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
                 <div className="bg-white p-4 rounded-2xl border border-stone-200/80">
-                  <span className="font-mono font-bold text-[#163821] block mb-1">01</span>
+                  <span className="font-mono font-bold text-[#823296] block mb-1">01</span>
                   <strong className="block text-stone-900">Kirim Minat</strong>
                   <span className="text-stone-500">Isi formulir via WhatsApp resmi.</span>
                 </div>
                 <div className="bg-white p-4 rounded-2xl border border-stone-200/80">
-                  <span className="font-mono font-bold text-[#163821] block mb-1">02</span>
+                  <span className="font-mono font-bold text-[#823296] block mb-1">02</span>
                   <strong className="block text-stone-900">Penyelarasan</strong>
                   <span className="text-stone-500">Sesi sapa & diskusi bersama koordinator.</span>
                 </div>
                 <div className="bg-white p-4 rounded-2xl border border-stone-200/80">
-                  <span className="font-mono font-bold text-[#163821] block mb-1">03</span>
+                  <span className="font-mono font-bold text-[#823296] block mb-1">03</span>
                   <strong className="block text-stone-900">Pembekalan</strong>
                   <span className="text-stone-500">Materi Child Safeguarding & etika aksi.</span>
                 </div>
                 <div className="bg-white p-4 rounded-2xl border border-stone-200/80">
-                  <span className="font-mono font-bold text-[#163821] block mb-1">04</span>
+                  <span className="font-mono font-bold text-[#823296] block mb-1">04</span>
                   <strong className="block text-stone-900">Turun Aksi</strong>
                   <span className="text-stone-500">Terlibat langsung di jadwal lapangan.</span>
                 </div>

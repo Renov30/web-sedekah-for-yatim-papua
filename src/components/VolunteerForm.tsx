@@ -37,8 +37,8 @@ export function VolunteerForm() {
       </div>
 
       {submitted ? (
-        <div className="p-6 bg-[#F4FBE4] border border-[#D7F397] rounded-2xl text-stone-900 space-y-3">
-          <div className="text-[#28570A] font-bold text-sm sm:text-base">
+        <div className="p-6 bg-[#FAF5FD] border border-[#E4D1F0] rounded-2xl text-stone-900 space-y-3">
+          <div className="text-[#823296] font-bold text-sm sm:text-base">
             Pesan Pendaftaran Berhasil Disiapkan
           </div>
           <p className="text-xs sm:text-sm text-stone-700 leading-relaxed">
@@ -48,7 +48,7 @@ export function VolunteerForm() {
             <button
               type="button"
               onClick={() => setSubmitted(false)}
-              className="text-xs font-semibold text-[#163821] underline cursor-pointer"
+              className="text-xs font-semibold text-[#823296] underline cursor-pointer hover:text-[#702882]"
             >
               Ubah data atau kirim ulang
             </button>

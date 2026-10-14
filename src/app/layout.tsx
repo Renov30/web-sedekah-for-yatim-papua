@@ -64,7 +64,7 @@ export default function RootLayout({
       lang="id"
       className={`${plusJakartaSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-ivory-50 text-charcoal-900 font-sans">
+      <body className="min-h-full flex flex-col bg-ivory-50 text-charcoal-900 font-sans selection:bg-[#823296] selection:text-white">
         {/* Accessible Skip Link */}
         <a
           href="#main-content"

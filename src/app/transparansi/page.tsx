@@ -19,7 +19,7 @@ export default function TransparansiPage() {
   return (
     <div className="flex flex-col gap-14 sm:gap-20">
       {/* Header Banner */}
-      <section className="w-full bg-[#F4F6F2] border-b border-[#DFE7DB] pt-28 sm:pt-36 pb-14 sm:pb-20">
+      <section className="w-full bg-[#FAF6FC] border-b border-[#EBDFF2] pt-28 sm:pt-36 pb-14 sm:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">
@@ -61,7 +61,7 @@ export default function TransparansiPage() {
               className="bg-white p-7 rounded-3xl border border-stone-200/80 shadow-xs space-y-4 flex flex-col justify-between hover:border-stone-400 transition-colors"
             >
               <div className="space-y-3">
-                <span className="font-mono text-xs font-bold text-[#163821] bg-[#EBF4E5] px-3 py-1 rounded-full inline-block">
+                <span className="font-mono text-xs font-bold text-[#581C87] bg-[#F3E8FF] px-3 py-1 rounded-full inline-block">
                   Prinsip 0{idx + 1}
                 </span>
                 <h3 className="text-lg font-bold text-stone-900 tracking-tight leading-snug">
@@ -125,7 +125,7 @@ export default function TransparansiPage() {
                 <ul className="space-y-1.5 text-xs text-stone-600">
                   {roadmap.deliverables.map((item, dIdx) => (
                     <li key={dIdx} className="flex items-start gap-2">
-                      <span className="text-[#163821] font-bold shrink-0">—</span>
+                      <span className="text-[#823296] font-bold shrink-0">—</span>
                       <span>{item}</span>
                     </li>
                   ))}

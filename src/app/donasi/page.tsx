@@ -35,10 +35,6 @@ export default function DonasiPage() {
       <section className="w-full bg-[#FAF6FC] border-b border-[#EBDFF2] pt-28 sm:pt-36 pb-14 sm:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F3E8FF] text-[#581C87] text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-[#823296]" />
-              <span>SALURKAN AMANAH SEDEKAH YATIM</span>
-            </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">
               Setiap Sedekah Mengalir Jadi Senyum & Harapan Anak Yatim Papua.
             </h1>

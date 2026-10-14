@@ -74,10 +74,17 @@ body {
   border-radius: 9999px;
 }
 
-/* Editorial selection highlight */
-::selection {
-  background-color: #f3e8f8;
-  color: #1a0b23;
+/* Signature Royal Purple Selection Highlight */
+::selection,
+*::selection {
+  background-color: #823296 !important;
+  color: #ffffff !important;
+}
+
+::-moz-selection,
+*::-moz-selection {
+  background-color: #823296 !important;
+  color: #ffffff !important;
 }
 
 /* Editorial hairline dividers */

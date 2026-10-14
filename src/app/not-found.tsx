@@ -5,12 +5,12 @@ export default function NotFound() {
   return (
     <div className="min-h-[70vh] flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full text-center space-y-6 p-8 sm:p-12 bg-white rounded-3xl border border-stone-200/80 shadow-xs">
-        <div className="inline-block px-5 py-2 rounded-full bg-[#EBF4E5] text-[#163821] font-mono text-lg font-bold">
+        <div className="inline-block px-5 py-2 rounded-full bg-[#F3E8FF] text-[#581C87] font-mono text-lg font-bold">
           404
         </div>
 
         <div className="space-y-2">
-          <span className="font-mono text-xs uppercase tracking-widest text-[#163821] font-bold block">
+          <span className="font-mono text-xs uppercase tracking-widest text-[#823296] font-bold block">
             Halaman Tidak Ditemukan
           </span>
           <h1 className="text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">

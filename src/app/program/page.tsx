@@ -15,7 +15,7 @@ export default function ProgramPage() {
   return (
     <div className="flex flex-col gap-14 sm:gap-20">
       {/* Header Banner */}
-      <section className="w-full bg-[#F4F6F2] border-b border-[#DFE7DB] pt-28 sm:pt-36 pb-14 sm:pb-20">
+      <section className="w-full bg-[#FAF6FC] border-b border-[#EBDFF2] pt-28 sm:pt-36 pb-14 sm:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">
@@ -32,7 +32,7 @@ export default function ProgramPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-7 bg-white rounded-3xl border border-stone-200/80 shadow-xs space-y-3">
-            <span className="font-mono text-xs font-bold text-[#163821] bg-[#EBF4E5] px-3 py-1 rounded-full inline-block">
+            <span className="font-mono text-xs font-bold text-[#581C87] bg-[#F3E8FF] px-3 py-1 rounded-full inline-block">
               Tahap 01
             </span>
             <h3 className="font-bold text-stone-900 text-lg">Pendataan & Verifikasi</h3>
@@ -42,7 +42,7 @@ export default function ProgramPage() {
           </div>
 
           <div className="p-7 bg-white rounded-3xl border border-stone-200/80 shadow-xs space-y-3">
-            <span className="font-mono text-xs font-bold text-[#163821] bg-[#EBF4E5] px-3 py-1 rounded-full inline-block">
+            <span className="font-mono text-xs font-bold text-[#581C87] bg-[#F3E8FF] px-3 py-1 rounded-full inline-block">
               Tahap 02
             </span>
             <h3 className="font-bold text-stone-900 text-lg">Pengadaan Lokal Berkualitas</h3>
@@ -52,7 +52,7 @@ export default function ProgramPage() {
           </div>
 
           <div className="p-7 bg-white rounded-3xl border border-stone-200/80 shadow-xs space-y-3">
-            <span className="font-mono text-xs font-bold text-[#163821] bg-[#EBF4E5] px-3 py-1 rounded-full inline-block">
+            <span className="font-mono text-xs font-bold text-[#581C87] bg-[#F3E8FF] px-3 py-1 rounded-full inline-block">
               Tahap 03
             </span>
             <h3 className="font-bold text-stone-900 text-lg">Pendampingan Humanis</h3>
@@ -103,7 +103,7 @@ export default function ProgramPage() {
                 }`}
               >
                 <div className="flex items-center gap-2 text-xs font-semibold text-stone-600">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#EBF4E5] text-[#163821] font-bold">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#F3E8FF] text-[#581C87] font-bold">
                     {program.statusLabel}
                   </span>
                   <span className="text-stone-400">•</span>
@@ -125,7 +125,7 @@ export default function ProgramPage() {
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm text-stone-700">
                     {program.focusAreas.map((area, fIdx) => (
                       <li key={fIdx} className="flex items-start gap-2.5 bg-white p-3 rounded-2xl border border-stone-200/80">
-                        <span className="text-[#163821] font-bold shrink-0">—</span>
+                        <span className="text-[#823296] font-bold shrink-0">—</span>
                         <span>{area}</span>
                       </li>
                     ))}
