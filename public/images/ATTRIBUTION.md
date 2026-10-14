@@ -8,6 +8,8 @@ The photography currently located in `public/images/` serves as editorial placeh
 
 | Asset Path | Current Theme | Intended Launch Replacement |
 |---|---|---|
+| `public/images/logo.png` | Official emblem (Rub el Hizb 8-pointed star with Papua map & Arabic calligraphy) | Official vector/raster brand mark provided by SFY Papua organization |
+| `public/images/hero-children-papua.jpg` | Authentic Papuan school children smiling with study books & uniform | Real documentary photograph from field activities in Papua (USAID Indonesia public outreach, Public Domain) |
 | `public/images/hero-community.jpg` | Community learning circle & joyful gathering | Official high-resolution field photography from SFY Papua activities in Jayapura/Sentani |
 | `public/images/hero-landscape.jpg` | Lush tropical mountains & rainforest | Landscape photography of Papua (Sentani hills / Cycloop mountains / Jayapura bay) |
 | `public/images/program-education.jpg` | School books & study stationery | Real photo of SFY school kit packages (uniforms, bags, textbooks) |

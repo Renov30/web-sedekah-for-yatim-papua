@@ -46,7 +46,11 @@ export const metadata: Metadata = {
       "Gerakan kerelawanan mendukung anak-anak yatim di Papua—terutama anak-anak yatim muslim—melalui pendidikan, pangan halal bergizi, dan pembinaan akhlak.",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/images/logo.png" },
+      { url: "/favicon.ico" },
+    ],
+    apple: "/images/logo.png",
   },
 };
 

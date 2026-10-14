@@ -81,21 +81,22 @@ export default function HomePage() {
   return (
     <div className="flex flex-col bg-[#F8F9FA] min-h-screen">
       {/* =========================================================================
-          1. HERO SECTION: Full-width scenic landscape backdrop behind transparent navbar
+          1. HERO SECTION: Full-width documentary photo backdrop behind transparent navbar
       ========================================================================= */}
       <section className="relative w-full min-h-[700px] sm:min-h-[780px] lg:min-h-[860px] overflow-hidden flex flex-col justify-between bg-forest-950">
-        {/* Background Landscape Photo */}
+        {/* Background Authentic Field Photo */}
         <Image
-          src="/images/hero-landscape.jpg"
-          alt="Lansekap alam hijau pegunungan Papua yang asri dan cerah"
+          src="/images/hero-children-papua.jpg"
+          alt="Anak-anak di Papua tersenyum ceria dengan buku pelajaran, penuh harapan dan semangat belajar"
           fill
           priority
           sizes="100vw"
           className="object-cover object-center"
         />
 
-        {/* Atmospheric vignette overlays to ensure readable text */}
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-950/90 via-forest-950/40 to-forest-950/60" />
+        {/* Atmospheric vignette overlays to ensure readable text while preserving warmth of faces */}
+        <div className="absolute inset-0 bg-gradient-to-r from-forest-950/90 via-forest-950/55 to-forest-950/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-forest-950/95 via-forest-950/30 to-forest-950/60" />
 
         {/* Top-Left Hero Content (Padded to clear transparent fixed header) */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 sm:pt-40 lg:pt-44">
