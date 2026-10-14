@@ -26,7 +26,7 @@ export function SectionHeading({
       {eyebrow && (
         <div
           className={`inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase mb-3 ${
-            dark ? "text-botanical-300" : "text-botanical-600"
+            dark ? "text-[#FACC15]" : "text-[#823296]"
           }`}
         >
           <span className="w-2 h-0.5 bg-current" aria-hidden="true" />

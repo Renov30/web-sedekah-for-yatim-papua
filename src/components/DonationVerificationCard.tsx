@@ -27,8 +27,8 @@ export function DonationVerificationCard() {
   return (
     <div className="bg-white rounded-3xl border border-stone-200/80 shadow-xs overflow-hidden">
       {/* Banner */}
-      <div className="bg-[#0C1D13] text-stone-100 p-6 sm:p-7 space-y-3">
-        <span className="font-mono text-xs uppercase tracking-wider text-[#C6F24D] font-bold block">
+      <div className="bg-[#1A0B23] text-stone-100 p-6 sm:p-7 space-y-3">
+        <span className="font-mono text-xs uppercase tracking-wider text-[#FACC15] font-bold block">
           PROTOKOL KEAMANAN TRANSAKSI
         </span>
         <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
@@ -69,7 +69,7 @@ export function DonationVerificationCard() {
               value={donorName}
               onChange={(e) => setDonorName(e.target.value)}
               placeholder="Masukkan nama atau inisial Anda..."
-              className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0C1D13]"
+              className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F9F8FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#823296]"
             />
           </div>
 
@@ -84,7 +84,7 @@ export function DonationVerificationCard() {
               id="program"
               value={selectedProgram}
               onChange={(e) => setSelectedProgram(e.target.value)}
-              className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0C1D13] cursor-pointer"
+              className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F9F8FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#823296] cursor-pointer"
             >
               <option value="Paket Perlengkapan Sekolah & Madrasah Santri Yatim">Paket Perlengkapan Sekolah & Madrasah Santri Yatim</option>
               <option value="Paket Sembako Halal & Nutrisi Keluarga Yatim">Paket Sembako Halal & Nutrisi Keluarga Yatim</option>

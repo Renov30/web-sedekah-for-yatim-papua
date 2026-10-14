@@ -77,7 +77,7 @@ export function Footer() {
                   href="https://wa.me/6282198004411"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-stone-900 hover:text-emerald-800 transition-colors underline underline-offset-2"
+                  className="font-semibold text-stone-900 hover:text-[#823296] transition-colors underline underline-offset-2"
                 >
                   +62 821-9800-4411
                 </a>
@@ -88,7 +88,7 @@ export function Footer() {
                 </span>
                 <a
                   href="mailto:sekretariat@sfypapua.org"
-                  className="text-stone-800 hover:text-emerald-800 transition-colors"
+                  className="text-stone-800 hover:text-[#823296] transition-colors"
                 >
                   sekretariat@sfypapua.org
                 </a>
@@ -98,7 +98,7 @@ export function Footer() {
         </div>
 
         {/* Accountability & Security Notice */}
-        <div className="mt-12 p-5 rounded-2xl bg-[#F6F8F5] border border-[#E3ECE0] text-xs text-stone-600 space-y-1.5">
+        <div className="mt-12 p-5 rounded-2xl bg-[#FAF7FC] border border-[#E8DEF0] text-xs text-stone-600 space-y-1.5">
           <p className="font-bold text-stone-900">
             Pemberitahuan Keamanan & Keaslian Donasi:
           </p>

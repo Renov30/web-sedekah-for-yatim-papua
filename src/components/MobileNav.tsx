@@ -102,8 +102,8 @@ export function MobileNav({ dark = false }: MobileNavProps) {
                   onClick={handleLinkClick}
                   className={`flex items-center justify-between py-3 px-3 text-base font-semibold rounded-xs transition-colors ${
                     isActive
-                      ? "bg-botanical-500/10 text-botanical-700"
-                      : "text-charcoal-800 hover:bg-forest-900/5 hover:text-botanical-600"
+                      ? "bg-[#823296]/10 text-[#823296]"
+                      : "text-charcoal-800 hover:bg-[#823296]/5 hover:text-[#823296]"
                   }`}
                 >
                   <span>{item.title}</span>
@@ -118,7 +118,7 @@ export function MobileNav({ dark = false }: MobileNavProps) {
             <Link
               href={actionNavigation.volunteer.href}
               onClick={handleLinkClick}
-              className="w-full flex items-center justify-center py-3 px-4 rounded-xs bg-forest-900 text-ivory-50 text-sm font-semibold hover:bg-forest-850 shadow-sm"
+              className="w-full flex items-center justify-center py-3 px-4 rounded-full bg-[#823296] text-white text-sm font-semibold hover:bg-[#702882] shadow-sm"
             >
               <span>{actionNavigation.volunteer.title}</span>
             </Link>
@@ -126,14 +126,14 @@ export function MobileNav({ dark = false }: MobileNavProps) {
             <Link
               href={actionNavigation.donate.href}
               onClick={handleLinkClick}
-              className="w-full flex items-center justify-center py-3 px-4 rounded-xs bg-botanical-600 text-white text-sm font-semibold hover:bg-botanical-700 shadow-sm"
+              className="w-full flex items-center justify-center py-3 px-4 rounded-full bg-[#1C0B27] text-white text-sm font-semibold hover:bg-[#261034] shadow-sm"
             >
               <span>{actionNavigation.donate.title}</span>
             </Link>
           </div>
 
           {/* Official contact snippet */}
-          <div className="p-4 bg-forest-900/5 rounded-xs border border-editorial text-xs space-y-2">
+          <div className="p-4 bg-[#FAF7FC] rounded-2xl border border-[#E8DEF0] text-xs space-y-2">
             <div className="font-semibold text-charcoal-900">
               Verifikasi Saluran Resmi
             </div>

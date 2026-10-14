@@ -32,11 +32,11 @@ export default function DonasiPage() {
   return (
     <div className="flex flex-col gap-14 sm:gap-20">
       {/* Header Banner */}
-      <section className="w-full bg-[#F4F6F2] border-b border-[#DFE7DB] pt-28 sm:pt-36 pb-14 sm:pb-20">
+      <section className="w-full bg-[#FAF6FC] border-b border-[#EBDFF2] pt-28 sm:pt-36 pb-14 sm:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E4EFE0] text-[#122A1C] text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-[#C6F24D]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F3E8FF] text-[#581C87] text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-[#823296]" />
               <span>SALURKAN AMANAH SEDEKAH YATIM</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">
@@ -70,7 +70,7 @@ export default function DonasiPage() {
                   className="p-6 bg-white rounded-3xl border border-stone-200/80 shadow-xs space-y-2"
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-xs font-bold text-[#163821] bg-[#EBF4E5] px-3 py-0.5 rounded-full">
+                    <span className="font-mono text-xs font-bold text-[#581C87] bg-[#F3E8FF] px-3 py-0.5 rounded-full">
                       Fokus 0{idx + 1}
                     </span>
                     <h3 className="font-bold text-stone-900 text-base sm:text-lg">
@@ -80,7 +80,7 @@ export default function DonasiPage() {
                   <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
                     {item.desc}
                   </p>
-                  <p className="text-xs text-[#163821] font-semibold pt-1">
+                  <p className="text-xs text-[#823296] font-semibold pt-1">
                     <span>— {item.impact}</span>
                   </p>
                 </div>
@@ -88,8 +88,8 @@ export default function DonasiPage() {
             </div>
 
             {/* Four Trust Guarantees */}
-            <div className="p-8 bg-[#0C1D13] text-stone-100 rounded-3xl space-y-4">
-              <h3 className="font-bold text-xs uppercase tracking-wider text-[#C6F24D]">
+            <div className="p-8 bg-[#1A0B23] text-stone-100 rounded-3xl space-y-4">
+              <h3 className="font-bold text-xs uppercase tracking-wider text-[#FACC15]">
                 Prinsip Pertanggungjawaban Donasi
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -137,7 +137,7 @@ export default function DonasiPage() {
             href="https://wa.me/6282198004411?text=Halo%20Sekretariat%20SFY%20Papua,%20saya%20ingin%20konsultasi%20bantuan%20barang/logistik"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-stone-900 font-semibold hover:text-emerald-800 underline underline-offset-2 shrink-0"
+            className="text-stone-900 font-semibold hover:text-[#823296] underline underline-offset-2 shrink-0"
           >
             Hubungi Posko Logistik →
           </a>

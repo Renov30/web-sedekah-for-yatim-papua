@@ -46,7 +46,7 @@ export function Header() {
             className={`hidden lg:flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-300 ${
               isDarkHeroHeader
                 ? "bg-black/30 backdrop-blur-md border border-white/20 text-white shadow-sm"
-                : "bg-[#F4F5F7] border border-black/5 text-stone-700 shadow-2xs"
+                : "bg-[#F6F0FA] border border-[#823296]/10 text-stone-700 shadow-2xs"
             }`}
           >
             {mainNavigation.map((item) => (
@@ -56,7 +56,7 @@ export function Header() {
                 className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all ${
                   isDarkHeroHeader
                     ? "text-white/85 hover:text-white hover:bg-white/15"
-                    : "text-stone-700 hover:text-stone-950 hover:bg-white"
+                    : "text-stone-700 hover:text-[#823296] hover:bg-white"
                 }`}
               >
                 {item.title}

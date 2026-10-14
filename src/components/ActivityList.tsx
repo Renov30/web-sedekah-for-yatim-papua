@@ -45,8 +45,8 @@ export function ActivityList({ initialActivities }: ActivityListProps) {
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors cursor-pointer ${
                 isActive
-                  ? "bg-[#0C1D13] text-white"
-                  : "bg-white text-stone-700 border border-stone-200/80 hover:bg-stone-50"
+                  ? "bg-[#823296] text-white"
+                  : "bg-white text-stone-700 border border-stone-200/80 hover:bg-[#FAF5FD] hover:text-[#823296]"
               }`}
             >
               {cat}
@@ -139,7 +139,7 @@ export function ActivityList({ initialActivities }: ActivityListProps) {
                 <button
                   type="button"
                   onClick={() => toggleExpand(act.id)}
-                  className="font-semibold text-stone-900 hover:text-emerald-800 cursor-pointer underline underline-offset-2"
+                  className="font-semibold text-stone-900 hover:text-[#823296] cursor-pointer underline underline-offset-2"
                 >
                   {isExpanded ? "Tutup Catatan —" : "Detail Lapangan +"}
                 </button>

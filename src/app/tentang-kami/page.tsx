@@ -73,7 +73,7 @@ export default function TentangKamiPage() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent" />
               <div className="absolute bottom-0 inset-x-0 p-6 text-white text-xs space-y-1">
-                <p className="font-semibold text-[#C6F24D] text-sm">Gotong Royong Komunitas</p>
+                <p className="font-semibold text-[#FACC15] text-sm">Gotong Royong Komunitas</p>
                 <p className="text-stone-200 leading-relaxed">
                   Membangun ruang aman dan penuh kasih bagi tumbuh kembang anak-anak Papua.
                 </p>
@@ -85,7 +85,7 @@ export default function TentangKamiPage() {
 
       {/* Vision & Mission Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="bg-[#0C1D13] text-stone-100 rounded-[2.5rem] p-8 sm:p-14 lg:p-16 space-y-12">
+        <div className="bg-[#1A0B23] text-stone-100 rounded-[2.5rem] p-8 sm:p-14 lg:p-16 space-y-12">
           <SectionHeading
             dark
             align="center"
@@ -98,7 +98,7 @@ export default function TentangKamiPage() {
             {/* Vision Card */}
             <div className="lg:col-span-5 bg-white/5 backdrop-blur-xs p-8 rounded-3xl border border-white/10 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <span className="text-xs uppercase tracking-widest font-bold text-[#C6F24D]">
+                <span className="text-xs uppercase tracking-widest font-bold text-[#FACC15]">
                   VISI UTAMA
                 </span>
                 <p className="text-xl sm:text-2xl font-bold tracking-tight text-white leading-snug">
@@ -112,13 +112,13 @@ export default function TentangKamiPage() {
 
             {/* Mission List */}
             <div className="lg:col-span-7 bg-white/5 backdrop-blur-xs p-8 rounded-3xl border border-white/10 space-y-5">
-              <span className="text-xs uppercase tracking-widest font-bold text-[#C6F24D]">
+              <span className="text-xs uppercase tracking-widest font-bold text-[#FACC15]">
                 MISI KERJA
               </span>
               <ul className="space-y-4">
                 {organization.mission.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-3.5">
-                    <span className="font-mono text-xs font-bold text-[#0C1D13] bg-[#C6F24D] px-2.5 py-0.5 rounded-full mt-0.5 shrink-0">
+                    <span className="font-mono text-xs font-bold text-[#1A0B23] bg-[#FACC15] px-2.5 py-0.5 rounded-full mt-0.5 shrink-0">
                       0{idx + 1}
                     </span>
                     <p className="text-sm sm:text-base text-stone-200 leading-relaxed">
@@ -239,7 +239,7 @@ export default function TentangKamiPage() {
 
       {/* Closing CTA Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="rounded-[2.5rem] bg-[#0C1D13] text-stone-100 p-10 sm:p-14 text-center space-y-6">
+        <div className="rounded-[2.5rem] bg-[#1A0B23] text-stone-100 p-10 sm:p-14 text-center space-y-6">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white">
             Ingin Berdiskusi Lebih Jauh Bersama Tim Kami?
           </h2>

@@ -34,13 +34,13 @@ export default function TransparansiPage() {
 
       {/* Honest Commitment Statement Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="p-6 sm:p-8 bg-[#0C1D13] text-stone-100 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs sm:text-sm">
+        <div className="p-6 sm:p-8 bg-[#1A0B23] text-stone-100 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs sm:text-sm">
           <div>
             <p className="leading-relaxed">
               <strong className="text-white">Prinsip Kejujuran Data:</strong> Kami tidak pernah mempublikasikan angka statistik rekayasa, jumlah anak asuhan fiktif, atau klaim audit yang belum terlaksana. Seluruh penyajian data berpatokan pada dokumen riil di lapangan.
             </p>
           </div>
-          <span className="text-[#0C1D13] bg-[#C6F24D] font-mono text-xs uppercase tracking-wider font-bold shrink-0 px-3.5 py-1.5 rounded-full">
+          <span className="text-[#1A0B23] bg-[#FACC15] font-mono text-xs uppercase tracking-wider font-bold shrink-0 px-3.5 py-1.5 rounded-full">
             Zero-Fabrication Policy
           </span>
         </div>
@@ -100,7 +100,7 @@ export default function TransparansiPage() {
                   <span className="font-mono font-bold text-stone-500">{roadmap.phase}</span>
                   <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                     roadmap.status === "active"
-                      ? "bg-[#C6F24D] text-[#0C1D13]"
+                      ? "bg-[#823296] text-white"
                       : "bg-stone-100 text-stone-700"
                   }`}>
                     {roadmap.statusLabel}
@@ -193,7 +193,7 @@ export default function TransparansiPage() {
 
       {/* Contact Channel for Transparency Inquiries */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="rounded-[2.5rem] bg-[#0C1D13] text-stone-100 p-10 sm:p-14 text-center space-y-6">
+        <div className="rounded-[2.5rem] bg-[#1A0B23] text-stone-100 p-10 sm:p-14 text-center space-y-6">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white">
             Saluran Terbuka Pertanyaan Transparansi
           </h2>

@@ -83,7 +83,7 @@ export default function HomePage() {
       {/* =========================================================================
           1. HERO SECTION: Full-width documentary photo backdrop behind transparent navbar
       ========================================================================= */}
-      <section className="relative w-full min-h-[700px] sm:min-h-[780px] lg:min-h-[860px] overflow-hidden flex flex-col justify-between bg-forest-950">
+      <section className="relative w-full min-h-[700px] sm:min-h-[780px] lg:min-h-[860px] overflow-hidden flex flex-col justify-between bg-[#14071C]">
         {/* Background Authentic Field Photo */}
         <Image
           src="/images/hero-children-papua.jpg"
@@ -95,8 +95,8 @@ export default function HomePage() {
         />
 
         {/* Atmospheric vignette overlays to ensure readable text while preserving warmth of faces */}
-        <div className="absolute inset-0 bg-gradient-to-r from-forest-950/90 via-forest-950/55 to-forest-950/30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-950/95 via-forest-950/30 to-forest-950/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#14071C]/90 via-[#14071C]/55 to-[#14071C]/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#14071C]/95 via-[#14071C]/30 to-[#14071C]/60" />
 
         {/* Top-Left Hero Content (Padded to clear transparent fixed header) */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 sm:pt-40 lg:pt-44">
@@ -133,7 +133,7 @@ export default function HomePage() {
         {/* Bottom Giant Typographic Wordmark */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-16 sm:pt-24 pb-8 sm:pb-12 select-none pointer-events-none">
           <div className="text-4xl sm:text-7xl md:text-8xl lg:text-[7.5rem] xl:text-[9.5rem] font-black text-white/95 tracking-tighter leading-none opacity-90">
-            SFY<span className="text-[#C6F24D]">.</span>Papua
+            SFY<span className="text-[#FACC15]">.</span>Papua
           </div>
         </div>
       </section>
@@ -193,7 +193,7 @@ export default function HomePage() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
               <div className="absolute bottom-5 inset-x-5 text-white">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#C6F24D] block mb-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#FACC15] block mb-1">
                   Ukhuwah & Gotong Royong
                 </span>
                 <h3 className="text-base sm:text-lg font-bold leading-snug">
@@ -204,22 +204,22 @@ export default function HomePage() {
 
             {/* Bottom Row: Two Subcards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 flex-1">
-              {/* Card 3: Fresh Lime Accent Card with Stat */}
-              <div className="bg-[#C6F24D] text-[#0C1D13] p-6 sm:p-7 rounded-3xl flex flex-col justify-between space-y-4 shadow-xs">
-                <span className="text-[11px] uppercase tracking-wider font-bold text-black/60">
+              {/* Card 3: Signature Royal Purple Card with Stat */}
+              <div className="bg-[#823296] text-white p-6 sm:p-7 rounded-3xl flex flex-col justify-between space-y-4 shadow-xs">
+                <span className="text-[11px] uppercase tracking-wider font-bold text-white/80">
                   Prinsip Amanah Umat
                 </span>
                 <div className="space-y-1">
-                  <div className="text-4xl sm:text-5xl font-black tracking-tight leading-none">
+                  <div className="text-4xl sm:text-5xl font-black tracking-tight leading-none text-white">
                     100%
                   </div>
-                  <p className="text-xs sm:text-sm font-semibold leading-snug pt-1">
+                  <p className="text-xs sm:text-sm font-semibold leading-snug pt-1 text-white/95">
                     Sedekah disalurkan langsung kepada anak yatim tanpa potongan fiktif.
                   </p>
                 </div>
                 <Link
                   href="/transparansi"
-                  className="text-xs font-bold underline underline-offset-2 hover:opacity-80"
+                  className="text-xs font-bold underline underline-offset-2 hover:opacity-90 text-white"
                 >
                   Pelajari Transparansi →
                 </Link>
@@ -236,7 +236,7 @@ export default function HomePage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                 <div className="absolute bottom-5 inset-x-5 text-white space-y-1">
-                  <span className="text-[11px] uppercase tracking-wider font-bold text-[#C6F24D] block">
+                  <span className="text-[11px] uppercase tracking-wider font-bold text-[#FACC15] block">
                     Wilayah Jangkauan
                   </span>
                   <p className="text-xs font-bold leading-tight">
@@ -345,7 +345,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="text-base font-bold text-charcoal-950 group-hover:text-botanical-700 transition-colors leading-snug">
+                  <h3 className="text-base font-bold text-charcoal-950 group-hover:text-[#823296] transition-colors leading-snug">
                     {program.title}
                   </h3>
                   <p className="text-xs text-charcoal-600 line-clamp-2 leading-relaxed">
@@ -463,7 +463,7 @@ export default function HomePage() {
           7. CLOSING CTA BANNER: Immersive landscape photo card
       ========================================================================= */}
       <section className="px-3 sm:px-5 lg:px-6 py-12 sm:py-16">
-        <div className="relative w-full rounded-3xl sm:rounded-[2.5rem] overflow-hidden p-8 sm:p-14 lg:p-20 text-center flex flex-col items-center justify-center space-y-6 shadow-sm bg-forest-950">
+        <div className="relative w-full rounded-3xl sm:rounded-[2.5rem] overflow-hidden p-8 sm:p-14 lg:p-20 text-center flex flex-col items-center justify-center space-y-6 shadow-sm bg-[#14071C]">
           <Image
             src="/images/hero-landscape.jpg"
             alt="Lansekap alam pegunungan Papua"

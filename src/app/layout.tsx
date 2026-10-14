@@ -68,7 +68,7 @@ export default function RootLayout({
         {/* Accessible Skip Link */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-botanical-600 focus:text-white focus:font-semibold focus:rounded-sm focus:shadow-lg"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-[#823296] focus:text-white focus:font-semibold focus:rounded-sm focus:shadow-lg"
         >
           Lewati ke konten utama
         </a>

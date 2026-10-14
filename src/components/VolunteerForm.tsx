@@ -70,7 +70,7 @@ export function VolunteerForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Contoh: Maria Kogoya / Yusuf Pratama"
-              className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0C1D13]"
+              className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#823296]"
             />
           </div>
 
@@ -89,7 +89,7 @@ export function VolunteerForm() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="08xxxxxxxxxx"
-                className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0C1D13]"
+                className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#823296]"
               />
             </div>
 
@@ -107,7 +107,7 @@ export function VolunteerForm() {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="Contoh: Jayapura / Sentani / Luar Papua"
-                className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0C1D13]"
+                className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#823296]"
               />
             </div>
           </div>
@@ -123,7 +123,7 @@ export function VolunteerForm() {
               id="role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0C1D13] cursor-pointer"
+              className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#823296] cursor-pointer"
             >
               <option value="Pengajar Literasi Al-Qur'an & Karakter">Pengajar Literasi Al-Qur&apos;an & Pelajaran Sekolah</option>
               <option value="Distribusi Sembako Halal & Logistik">Distribusi Sembako Halal & Perlengkapan Belajar</option>
@@ -146,7 +146,7 @@ export function VolunteerForm() {
               value={motivation}
               onChange={(e) => setMotivation(e.target.value)}
               placeholder="Ceritakan latar belakang, profesi, atau keterampilan yang ingin disumbangkan..."
-              className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0C1D13] resize-none"
+              className="w-full px-4 py-3 text-sm rounded-2xl border border-stone-200 bg-[#F8F9FA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#823296] resize-none"
             />
           </div>
 

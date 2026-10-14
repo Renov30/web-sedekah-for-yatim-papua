@@ -30,9 +30,9 @@ export function Button({
 
   const variantStyles = {
     primary:
-      "bg-[#C6F24D] hover:bg-[#B5E63A] text-[#0C1D13] shadow-xs hover:shadow active:scale-[0.98]",
+      "bg-[#823296] hover:bg-[#702882] text-white shadow-xs hover:shadow active:scale-[0.98]",
     secondary:
-      "bg-forest-900 hover:bg-forest-850 text-white shadow-xs hover:shadow active:scale-[0.98]",
+      "bg-[#1C0B27] hover:bg-[#261034] text-white shadow-xs hover:shadow active:scale-[0.98]",
     frosted:
       "bg-white/20 hover:bg-white/30 text-white backdrop-blur-md border border-white/25 active:scale-[0.98]",
     outline:
@@ -40,9 +40,9 @@ export function Button({
     ghost:
       "text-charcoal-800 hover:bg-charcoal-900/5 hover:text-charcoal-950",
     dark:
-      "bg-[#0C1D13] text-white hover:bg-[#163624] shadow-xs active:scale-[0.98]",
+      "bg-[#1A0B23] text-white hover:bg-[#2A1238] shadow-xs active:scale-[0.98]",
     ochre:
-      "bg-ochre-500 hover:bg-ochre-600 text-white shadow-xs active:scale-[0.98]",
+      "bg-[#FACC15] hover:bg-[#EAB308] text-[#1A0B23] shadow-xs active:scale-[0.98]",
   };
 
   const combinedClasses = `${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${className}`;

@@ -32,10 +32,10 @@ export function BrandLogo({
       <div className="flex flex-col">
         <span
           className={`font-black tracking-tight text-lg sm:text-xl leading-tight transition-colors ${
-            dark ? "text-white" : "text-[#0C1D13]"
+            dark ? "text-white" : "text-[#1A0B23]"
           }`}
         >
-          SFY<span className="text-[#84CC16]">.</span>Papua
+          SFY<span className={dark ? "text-[#FACC15]" : "text-[#823296]"}>.</span>Papua
         </span>
         {withTagline && (
           <span

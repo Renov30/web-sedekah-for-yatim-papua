@@ -15,10 +15,10 @@ export function HonestNotice({
 }: HonestNoticeProps) {
   const config = {
     info: {
-      bg: "bg-[#F4F7F2]",
-      border: "border border-[#DCE6D5]",
+      bg: "bg-[#FAF6FC]",
+      border: "border border-[#EBDFF2]",
       badge: "CATATAN",
-      badgeColor: "text-[#122A1C] bg-[#E2EDD9]",
+      badgeColor: "text-[#581C87] bg-[#F3E8FF]",
     },
     warning: {
       bg: "bg-[#FFF9EE]",
@@ -27,10 +27,10 @@ export function HonestNotice({
       badgeColor: "text-[#9E5A0A] bg-[#FDE7C4]",
     },
     verified: {
-      bg: "bg-[#F4FBE4]",
-      border: "border border-[#D7F397]",
+      bg: "bg-[#FAF5FD]",
+      border: "border border-[#E4D1F0]",
       badge: "TERVERIFIKASI",
-      badgeColor: "text-[#28570A] bg-[#C6F24D]",
+      badgeColor: "text-white bg-[#823296]",
     },
     roadmap: {
       bg: "bg-[#F5F6F8]",

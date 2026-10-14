@@ -38,11 +38,11 @@ export default function JadiRelawanPage() {
   return (
     <div className="flex flex-col gap-14 sm:gap-20">
       {/* Header Banner */}
-      <section className="w-full bg-[#F4F6F2] border-b border-[#DFE7DB] pt-28 sm:pt-36 pb-14 sm:pb-20">
+      <section className="w-full bg-[#FAF6FC] border-b border-[#EBDFF2] pt-28 sm:pt-36 pb-14 sm:pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E4EFE0] text-[#122A1C] text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-[#C6F24D]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F3E8FF] text-[#581C87] text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-[#823296]" />
               <span>GABUNG GERAKAN KERELAWANAN</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight">
@@ -75,7 +75,7 @@ export default function JadiRelawanPage() {
                   className="bg-white p-6 rounded-3xl border border-stone-200/80 shadow-xs space-y-3 flex flex-col justify-between"
                 >
                   <div className="space-y-2.5">
-                    <span className="font-mono text-xs font-bold text-[#163821] bg-[#EBF4E5] px-3 py-1 rounded-full inline-block">
+                    <span className="font-mono text-xs font-bold text-[#581C87] bg-[#F3E8FF] px-3 py-1 rounded-full inline-block">
                       Divisi 0{idx + 1}
                     </span>
                     <h3 className="text-base font-bold text-stone-900 tracking-tight">
@@ -94,8 +94,8 @@ export default function JadiRelawanPage() {
             </div>
 
             {/* Responsibilities & Safeguarding Pledge */}
-            <div className="bg-[#0C1D13] text-stone-100 p-8 rounded-3xl space-y-4">
-              <div className="text-[#C6F24D] font-bold text-xs uppercase tracking-wider">
+            <div className="bg-[#1A0B23] text-stone-100 p-8 rounded-3xl space-y-4">
+              <div className="text-[#FACC15] font-bold text-xs uppercase tracking-wider">
                 Komitmen & Tanggung Jawab Relawan
               </div>
               <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
@@ -103,15 +103,15 @@ export default function JadiRelawanPage() {
               </p>
               <ul className="space-y-2.5 text-xs sm:text-sm text-stone-200">
                 <li className="flex items-start gap-2.5">
-                  <span className="text-[#C6F24D] font-bold shrink-0">—</span>
+                  <span className="text-[#FACC15] font-bold shrink-0">—</span>
                   <span>Tidak mengeksploitasi anak untuk konten viral pribadi maupun komersial.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="text-[#C6F24D] font-bold shrink-0">—</span>
+                  <span className="text-[#FACC15] font-bold shrink-0">—</span>
                   <span>Menjaga sopan santun dan menghormati norma adat masyarakat setempat.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <span className="text-[#C6F24D] font-bold shrink-0">—</span>
+                  <span className="text-[#FACC15] font-bold shrink-0">—</span>
                   <span>Tidak memungut biaya apa pun dari keluarga penerima manfaat.</span>
                 </li>
               </ul>

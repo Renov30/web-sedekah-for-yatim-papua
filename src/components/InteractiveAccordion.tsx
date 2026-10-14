@@ -37,7 +37,7 @@ export function InteractiveAccordion({
               key={item.id}
               className={`rounded-2xl transition-all border ${
                 isOpen
-                  ? "bg-[#F4FBE4] border-[#C6F24D] shadow-xs"
+                  ? "bg-[#FAF5FD] border-[#823296]/30 shadow-xs"
                   : "bg-white border-black/5 hover:border-black/15"
               }`}
             >
@@ -88,7 +88,7 @@ export function InteractiveAccordion({
                     {item.number}
                   </span>
                 )}
-                <h4 className="font-bold text-sm sm:text-base text-charcoal-900 group-hover:text-botanical-700 transition-colors tracking-tight">
+                <h4 className="font-bold text-sm sm:text-base text-charcoal-900 group-hover:text-[#823296] transition-colors tracking-tight">
                   {item.title}
                 </h4>
               </div>
