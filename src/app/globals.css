@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-jakarta), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Fresh Eco Lime Accent (Inspired by clean environmental design) */
+  --color-lime-brand: #c6f24d;
+  --color-lime-brand-hover: #b5e63a;
+  --color-lime-brand-light: #f4fbe4;
+
+  /* Forest Green - Primary Brand & Grounding Tone */
+  --color-forest-950: #08160f;
+  --color-forest-900: #0d2218;
+  --color-forest-850: #122c20;
+  --color-forest-800: #173728;
+  --color-forest-700: #1f4a36;
+  --color-forest-600: #296449;
+
+  /* Botanical Green - Primary Action, Highlights & Energy */
+  --color-botanical-700: #164e2e;
+  --color-botanical-600: #1e663d;
+  --color-botanical-500: #267f4c;
+  --color-botanical-400: #329f60;
+  --color-botanical-100: #dcf2e4;
+  --color-botanical-50: #effaf3;
+
+  /* Light Editorial Canvas */
+  --color-ivory-50: #ffffff;
+  --color-ivory-100: #f8f9fa;
+  --color-ivory-200: #f1f3f5;
+  --color-ivory-300: #e5e7eb;
+  --color-ivory-400: #d1d5db;
+
+  /* Charcoal / Deep Green-Black - Typographic Hierarchy */
+  --color-charcoal-950: #08120b;
+  --color-charcoal-900: #0c1d13;
+  --color-charcoal-800: #192a20;
+  --color-charcoal-700: #374151;
+  --color-charcoal-600: #4b5563;
+  --color-charcoal-500: #6b7280;
+
+  /* Restrained Warm Ochre - Accent & Cultural Warmth */
+  --color-ochre-700: #935813;
+  --color-ochre-600: #b46f1a;
+  --color-ochre-500: #cf8424;
+  --color-ochre-400: #e29b3a;
+  --color-ochre-100: #fcf1df;
+  --color-ochre-50: #fef8f0;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0c1d13;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+body {
+  background-color: #f8f9fa;
+  color: #0c1d13;
+  font-family: var(--font-jakarta), system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Accessible focus visible ring */
+:focus-visible {
+  outline: 2px solid #c6f24d;
+  outline-offset: 3px;
+  border-radius: 9999px;
+}
+
+/* Editorial selection highlight */
+::selection {
+  background-color: #c6f24d;
+  color: #0c1d13;
+}
+
+/* Editorial hairline dividers */
+.border-editorial {
+  border-color: rgba(12, 29, 19, 0.08);
+}
+
+.border-editorial-subtle {
+  border-color: rgba(12, 29, 19, 0.05);
+}
+
+.border-editorial-dark {
+  border-color: rgba(255, 255, 255, 0.14);
+}
