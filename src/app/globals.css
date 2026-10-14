@@ -16,13 +16,13 @@
   --color-forest-700: #4a2164;
   --color-forest-600: #682e8c;
 
-  /* Botanical / Emerald Accent (From Arabic Calligraphy & SEDEKAH script) */
-  --color-botanical-700: #15803d;
-  --color-botanical-600: #16a34a;
-  --color-botanical-500: #22c55e;
-  --color-botanical-400: #4ade80;
-  --color-botanical-100: #dcfce7;
-  --color-botanical-50: #f0fdf4;
+  /* Signature Royal Purple Scale */
+  --color-botanical-700: #581c87;
+  --color-botanical-600: #702882;
+  --color-botanical-500: #823296;
+  --color-botanical-400: #a855f7;
+  --color-botanical-100: #f3e8ff;
+  --color-botanical-50: #faf5fd;
 
   /* Gold Star Accent (From Yellow Star on Papua Map in Logo) */
   --color-gold-star: #facc15;
