@@ -1,15 +1,58 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
+import { getStoredSession } from "@/lib/auth";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const router = useRouter();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // If on login page, don't show admin shell
+  const isLoginPage = pathname === "/admin/login";
+
+  useEffect(() => {
+    if (isLoginPage) {
+      setIsCheckingAuth(false);
+      return;
+    }
+
+    // Check if session exists
+    const session = getStoredSession();
+    if (!session) {
+      // If not logged in, redirect to login page
+      router.replace("/admin/login");
+    } else {
+      setIsCheckingAuth(false);
+    }
+  }, [isLoginPage, router]);
+
+  // If on login page, render children directly without sidebar
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
+
+  // Brief loading placeholder while checking auth session
+  if (isCheckingAuth) {
+    return (
+      <div className="h-screen w-full bg-[#FAF8FB] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-3 border-[#5E2276] border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xs text-stone-500 font-medium">
+            Memverifikasi sesi amanah SFY Papua...
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-full bg-[#FAF8FB] flex flex-row overflow-hidden antialiased">

@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   LayoutDashboard,
@@ -15,8 +15,14 @@ import {
   KeyRound,
   ExternalLink,
   ChevronRight,
-  Sparkles,
+  LogOut,
 } from "lucide-react";
+import {
+  getStoredSession,
+  clearSession,
+  AuthSession,
+  roleDisplayNames,
+} from "@/lib/auth";
 
 interface AdminSidebarProps {
   onCloseMobile?: () => void;
@@ -67,6 +73,29 @@ export const adminNavItems = [
 
 export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [session, setSession] = useState<AuthSession | null>(null);
+
+  useEffect(() => {
+    const activeSession = getStoredSession();
+    setSession(activeSession);
+  }, []);
+
+  const handleLogout = () => {
+    clearSession();
+    router.push("/admin/login");
+  };
+
+  const displayName = session?.user.nama || "Fajar Maulana, S.Kom";
+  const displayRole =
+    (session?.user.roleId && roleDisplayNames[session.user.roleId]) ||
+    "Super Admin Lembaga";
+  const initials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
     <aside className="w-full h-full flex flex-col justify-between bg-[#5E2276] text-white p-5 lg:p-6 select-none overflow-y-auto overscroll-contain">
@@ -172,21 +201,34 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
 
       {/* Bottom Section: Operator Card & Public Portal Link */}
       <div className="pt-6 space-y-3">
-        {/* Operator Profile Card (inspired by bottom card in reference image) */}
+        {/* Operator Profile Card */}
         <div className="bg-[#48165B] border border-white/10 rounded-2xl p-3.5">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-amber-400 text-[#1C0B27] font-bold flex items-center justify-center text-xs shrink-0 shadow-sm">
-              FM
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 rounded-full bg-amber-400 text-[#1C0B27] font-bold flex items-center justify-center text-xs shrink-0 shadow-sm">
+                {initials}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-white truncate">
+                  {displayName}
+                </p>
+                <p className="text-[11px] text-purple-200 truncate">
+                  {displayRole}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-white truncate">
-                Fajar Maulana, S.Kom
-              </p>
-              <p className="text-[11px] text-purple-200 truncate">
-                Super Admin Lembaga
-              </p>
-            </div>
+
+            {/* Logout Button */}
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="p-1.5 rounded-lg text-purple-300 hover:text-white hover:bg-white/10 transition-colors"
+              title="Keluar / Logout"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
+
           <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-purple-200/90">
             <span className="inline-flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -211,4 +253,3 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
     </aside>
   );
 }
-
