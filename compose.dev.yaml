@@ -1,4 +1,5 @@
 services:
+  # Next.js Development App with Turbopack Hot-Reload
   web:
     build:
       context: .
@@ -10,8 +11,34 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
+      - DATABASE_URL=postgresql://sfy_admin:sfy_papua_amanah_2026@postgres:5432/sfy_database?schema=public
     volumes:
       - .:/app
       - /app/node_modules
       - /app/.next
+    depends_on:
+      postgres:
+        condition: service_healthy
 
+  # Database Engine: PostgreSQL 16 (Accessible from Host & Containers at port 5432)
+  postgres:
+    image: postgres:16-alpine
+    container_name: web-sfy-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sfy_admin
+      POSTGRES_PASSWORD: sfy_papua_amanah_2026
+      POSTGRES_DB: sfy_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sfy_admin -d sfy_database"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_dev_data:
+    driver: local

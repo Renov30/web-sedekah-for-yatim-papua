@@ -1,18 +1,21 @@
-FROM node:20-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
-RUN apk add --no-cache libc6-compat
+# Install openssl yang dibutuhkan Prisma Client pada Linux
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
 
+# Generate Prisma Client
+RUN npx prisma generate
+
 EXPOSE 3000
 
 ENV PORT=3000
 ENV NODE_ENV=development
 
-CMD ["npm", "run", "dev"]
-
+CMD sh -c "npx prisma migrate deploy && npx prisma db seed && npm run dev"

@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// 1. MANAJEMEN ROLE & HAK AKSES (RBAC)
+// ==========================================
+model Role {
+  id          String   @id // e.g. "super_admin", "bendahara", "koordinator_relawan"
+  nama        String
+  badgeColor  String   @default("bg-purple-100 text-purple-900 border-purple-300")
+  deskripsi   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model RolePermission {
+  id        String   @id @default(cuid())
+  roleId    String
+  moduleId  String   // "anak-yatim", "relawan", "donatur", "keuangan", "users", "roles", "permissions"
+  create    Boolean  @default(false)
+  read      Boolean  @default(false)
+  update    Boolean  @default(false)
+  delete    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, moduleId])
+  @@map("role_permissions")
+}
+
+// ==========================================
+// 2. KELOLA PENGGUNA (USERS & STAFF)
+// ==========================================
+model User {
+  id            String   @id // e.g. "USR-001"
+  nama          String
+  email         String   @unique
+  passwordHash  String?
+  roleId        String
+  status        String   @default("Aktif") // "Aktif" | "Non-aktif"
+  wilayahTugas  String   @default("Sekretariat Pusat Jayapura")
+  terakhirLogin String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  role          Role     @relation(fields: [roleId], references: [id])
+
+  @@map("users")
+}
+
+// ==========================================
+// 3. PENDATAAN SANTRI & ANAK YATIM PAPUA
+// ==========================================
+model Orphan {
+  id                String   @id // e.g. "YTM-001"
+  namaLengkap       String
+  namaPanggilan     String
+  gender            String   // "L" | "P"
+  usia              Int
+  status            String   // "Yatim" | "Piatu" | "Yatim Piatu"
+  asalDaerah        String   // Distrik (e.g. "Distrik Sentani")
+  kabupaten         String   // Kabupaten (e.g. "Kab. Jayapura")
+  tempatTinggal     String   // e.g. "Asrama SFY Sentani"
+  wali              String   // e.g. "Ustadz Harun (Pengasuh)"
+  jenjangPendidikan String   // e.g. "SD Kelas 5 MI Nurul Huda"
+  kebutuhanMendesak String   // e.g. "Sepatu Sekolah & Kitab Iqro"
+  statusVerifikasi  String   @default("Menunggu Survei") // "Terverifikasi" | "Menunggu Survei" | "Perlu Pembaruan"
+  tanggalMasuk      String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("orphans")
+}
+
+// ==========================================
+// 4. PENDATAAN RELAWAN LAPANGAN
+// ==========================================
+model Volunteer {
+  id            String   @id // e.g. "RLW-001"
+  namaLengkap   String
+  email         String
+  noTelepon     String
+  domisili      String   // e.g. "Kotaraja, Abepura"
+  divisi        String   // "Pendidikan & Bimbel" | "Distribusi & Logistik" | "Kesehatan & Gizi" | "Media & Publikasi"
+  keahlian      String   // e.g. "Guru Matematika & Tahsin"
+  status        String   @default("Menunggu Verifikasi") // "Aktif" | "Menunggu Verifikasi" | "Cuti"
+  tanggalGabung String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("volunteers")
+}
+
+// ==========================================
+// 5. PENDATAAN DONATUR & MUZAKKI
+// ==========================================
+model Donor {
+  id              String   @id // e.g. "DNR-001"
+  nama            String
+  tipe            String   // "Individu" | "Lembaga/Komunitas" | "Hamba Allah"
+  email           String?
+  noTelepon       String
+  totalDonasi     BigInt   @default(0)
+  jumlahFrekuensi Int      @default(0)
+  programFavorit  String   @default("Pendidikan Santri Papua")
+  status          String   @default("Donatur Rutin") // "Donatur Rutin" | "Donatur Insidental"
+  tanggalTerakhir String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  transactions    FinanceTransaction[]
+
+  @@map("donors")
+}
+
+// ==========================================
+// 6. MANAJEMEN KEUANGAN & ARUS KAS SEDEKAH
+// ==========================================
+model FinanceTransaction {
+  id         String   @id // e.g. "TRX-001"
+  noRef      String   @unique // e.g. "SFY-IN-202502-001"
+  tanggal    String
+  jenis      String   // "Pemasukan" | "Pengeluaran"
+  kategori   String   // Pos alokasi (e.g. "Sedekah Rutin", "Pangan & Nutrisi")
+  jumlah     BigInt
+  keterangan String   @db.Text
+  metode     String   // "Bank BSI", "Bank Mandiri", "QRIS BSI", "Tunai / Kas Kecil"
+  status     String   @default("Terverifikasi") // "Terverifikasi" | "Review"
+  petugas    String
+  donorId    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  donor      Donor?   @relation(fields: [donorId], references: [id])
+
+  @@map("finance_transactions")
+}
