@@ -510,7 +510,7 @@ export default function UsersAdminPage() {
                 </label>
                 <input
                   type="text"
-                  placeholder="Contoh: Sekretariat Jayapura / Lapangan Keerom"
+                  placeholder="Contoh: Sekretariat Merauke / Lapangan Kurik"
                   value={formData.wilayahTugas}
                   onChange={(e) =>
                     setFormData({ ...formData, wilayahTugas: e.target.value })

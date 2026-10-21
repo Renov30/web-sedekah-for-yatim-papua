@@ -39,9 +39,9 @@ export default function AnakYatimAdminPage() {
     gender: "L" as "L" | "P",
     usia: 10,
     status: "Yatim" as "Yatim" | "Piatu" | "Yatim Piatu",
-    asalDaerah: "Distrik Sentani",
-    kabupaten: "Kab. Jayapura",
-    tempatTinggal: "Asrama SFY Sentani",
+    asalDaerah: "Distrik Merauke",
+    kabupaten: "Kab. Merauke",
+    tempatTinggal: "Asrama SFY Merauke",
     wali: "",
     jenjangPendidikan: "SD Kelas 4",
     kebutuhanMendesak: "Seragam & Buku Pelajaran",
@@ -100,9 +100,9 @@ export default function AnakYatimAdminPage() {
       gender: "L",
       usia: 10,
       status: "Yatim",
-      asalDaerah: "Distrik Sentani",
-      kabupaten: "Kab. Jayapura",
-      tempatTinggal: "Asrama SFY Sentani",
+      asalDaerah: "Distrik Merauke",
+      kabupaten: "Kab. Merauke",
+      tempatTinggal: "Asrama SFY Merauke",
       wali: "",
       jenjangPendidikan: "SD Kelas 4",
       kebutuhanMendesak: "Seragam & Buku Pelajaran",
@@ -273,13 +273,11 @@ export default function AnakYatimAdminPage() {
             onChange={(e) => setFilterKabupaten(e.target.value)}
             className="px-3 py-2 rounded-xl text-sm border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700"
           >
-            <option value="all">Semua Kabupaten/Kota</option>
-            <option value="Kota Jayapura">Kota Jayapura</option>
-            <option value="Kab. Jayapura">Kab. Jayapura</option>
-            <option value="Kab. Keerom">Kab. Keerom</option>
-            <option value="Kab. Biak Numfor">Kab. Biak Numfor</option>
-            <option value="Kab. Jayawijaya">Kab. Jayawijaya</option>
-            <option value="Kab. Merauke">Kab. Merauke</option>
+            <option value="all">Semua Kabupaten/Wilayah</option>
+            <option value="Kab. Merauke">Kab. Merauke (Basis Utama)</option>
+            <option value="Kab. Boven Digoel">Kab. Boven Digoel</option>
+            <option value="Kab. Mappi">Kab. Mappi</option>
+            <option value="Kab. Asmat">Kab. Asmat</option>
           </select>
 
           {/* Filter Status Yatim */}
@@ -666,7 +664,7 @@ export default function AnakYatimAdminPage() {
                   <input
                     type="text"
                     required
-                    placeholder="Contoh: Distrik Sentani"
+                    placeholder="Contoh: Distrik Kurik / Tanah Miring"
                     value={formData.asalDaerah}
                     onChange={(e) =>
                       setFormData({ ...formData, asalDaerah: e.target.value })
@@ -676,7 +674,7 @@ export default function AnakYatimAdminPage() {
                 </div>
                 <div>
                   <label className="block text-stone-700 font-medium mb-1">
-                    Kabupaten / Kota
+                    Kabupaten (Papua Selatan)
                   </label>
                   <select
                     value={formData.kabupaten}
@@ -685,12 +683,10 @@ export default function AnakYatimAdminPage() {
                     }
                     className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white"
                   >
-                    <option value="Kota Jayapura">Kota Jayapura</option>
-                    <option value="Kab. Jayapura">Kab. Jayapura</option>
-                    <option value="Kab. Keerom">Kab. Keerom</option>
-                    <option value="Kab. Biak Numfor">Kab. Biak Numfor</option>
-                    <option value="Kab. Jayawijaya">Kab. Jayawijaya</option>
                     <option value="Kab. Merauke">Kab. Merauke</option>
+                    <option value="Kab. Boven Digoel">Kab. Boven Digoel</option>
+                    <option value="Kab. Mappi">Kab. Mappi</option>
+                    <option value="Kab. Asmat">Kab. Asmat</option>
                   </select>
                 </div>
               </div>

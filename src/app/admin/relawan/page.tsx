@@ -535,7 +535,7 @@ export default function RelawanAdminPage() {
                   <input
                     type="text"
                     required
-                    placeholder="Contoh: Sentani / Abepura"
+                    placeholder="Contoh: Merauke / Tanah Miring"
                     value={formData.domisili}
                     onChange={(e) =>
                       setFormData({ ...formData, domisili: e.target.value })

@@ -50,7 +50,7 @@ export function AdminHeader({
   const displayName = session?.user.nama || "Fajar Maulana";
   const firstName = displayName.split(" ")[0];
   const displayEmail = session?.user.email || "admin@sfypapua.org";
-  const wilayahTugas = session?.user.wilayahTugas || "Sekretariat Pusat Jayapura";
+  const wilayahTugas = session?.user.wilayahTugas || "Sekretariat Pusat Merauke (Papua Selatan)";
   const initials = displayName
     .split(" ")
     .map((n) => n[0])

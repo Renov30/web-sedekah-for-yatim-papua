@@ -207,11 +207,11 @@ export default function AdminDashboardPage() {
                   <div className="w-4 h-4 mt-0.5 rounded border border-stone-300 flex items-center justify-center text-white bg-white"></div>
                   <div>
                     <p className="text-sm font-semibold text-stone-900">
-                      Survei Validasi Calon Santri Yatim Arso Keerom
+                      Survei Validasi Calon Santri Yatim Kurik & Tanah Miring
                     </p>
                     <p className="text-xs text-stone-500 mt-0.5 flex items-center gap-1">
                       <MapPin className="w-3 h-3 text-stone-400" />
-                      Distrik Arso, Kab. Keerom — Relawan: Daud Kogoya
+                      Distrik Kurik, Kab. Merauke — Relawan: Daud M. Kaize
                     </p>
                   </div>
                 </div>
@@ -225,11 +225,11 @@ export default function AdminDashboardPage() {
                   <div className="w-4 h-4 mt-0.5 rounded border border-stone-300 flex items-center justify-center text-white bg-white"></div>
                   <div>
                     <p className="text-sm font-semibold text-stone-900">
-                      Penyaluran Paket Pangan & Gizi Asrama Sentani
+                      Penyaluran Paket Pangan & Gizi Asrama Yatim Merauke
                     </p>
                     <p className="text-xs text-stone-500 mt-0.5 flex items-center gap-1">
                       <MapPin className="w-3 h-3 text-stone-400" />
-                      Asrama SFY Sentani — Relawan: Siti Rahmawati
+                      Asrama SFY Merauke — Relawan: Siti Rahmawati
                     </p>
                   </div>
                 </div>
@@ -247,7 +247,7 @@ export default function AdminDashboardPage() {
                     </p>
                     <p className="text-xs text-stone-500 mt-0.5 flex items-center gap-1">
                       <Clock className="w-3 h-3 text-stone-400" />
-                      Sekretariat SFY Jayapura — Bendahara: Ustadzah Wardah
+                      Sekretariat SFY Merauke — Bendahara: Ustadzah Wardah
                     </p>
                   </div>
                 </div>
@@ -298,12 +298,12 @@ export default function AdminDashboardPage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {[
-                { reg: "Kota Jayapura", count: "3 Anak", note: "Abepura & Skouw" },
-                { reg: "Kab. Jayapura", count: "2 Anak", note: "Sentani & Depapre" },
-                { reg: "Kab. Keerom", count: "1 Anak", note: "Distrik Arso" },
-                { reg: "Kab. Biak", count: "1 Anak", note: "Biak Kota" },
-                { reg: "Kab. Jayawijaya", count: "1 Anak", note: "Asal Wamena" },
-                { reg: "Kab. Merauke", count: "1 Anak", note: "MI Al-Ma'arif" },
+                { reg: "Kab. Merauke", count: "5 Anak", note: "Tanah Miring, Kurik, Semangga" },
+                { reg: "Kab. Boven Digoel", count: "1 Anak", note: "Distrik Tanah Merah" },
+                { reg: "Kab. Mappi", count: "1 Anak", note: "Distrik Kepi" },
+                { reg: "Kab. Asmat", count: "1 Anak", note: "Distrik Agats" },
+                { reg: "Asrama SFY Merauke", count: "2 Anak", note: "Pusat Pembinaan" },
+                { reg: "Keluarga Asuh", count: "6 Anak", note: "Dampingan Relawan" },
               ].map((item, idx) => (
                 <div
                   key={idx}
