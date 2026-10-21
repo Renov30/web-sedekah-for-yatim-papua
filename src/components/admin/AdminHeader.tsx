@@ -6,11 +6,8 @@ import {
   Bell,
   Menu,
   X,
-  Search,
   Radio,
-  Clock,
   Calendar,
-  CheckCircle2,
   LogOut,
 } from "lucide-react";
 import { getStoredSession, clearSession, AuthSession } from "@/lib/auth";
@@ -51,6 +48,7 @@ export function AdminHeader({
   };
 
   const displayName = session?.user.nama || "Fajar Maulana";
+  const firstName = displayName.split(" ")[0];
   const displayEmail = session?.user.email || "admin@sfypapua.org";
   const wilayahTugas = session?.user.wilayahTugas || "Sekretariat Pusat Jayapura";
   const initials = displayName
@@ -61,14 +59,14 @@ export function AdminHeader({
     .toUpperCase();
 
   return (
-    <header className="px-6 py-4 border-b border-stone-100 flex items-center justify-between gap-4 bg-white">
+    <header className="px-3 sm:px-6 py-3 sm:py-4 border-b border-stone-100 flex items-center justify-between gap-2 sm:gap-4 bg-white">
       {/* Left: Mobile hamburger & Welcome Banner */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         {onToggleSidebar && (
           <button
             type="button"
             onClick={onToggleSidebar}
-            className="lg:hidden p-2 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors"
+            className="lg:hidden p-1.5 sm:p-2 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors shrink-0"
             aria-label="Toggle Menu"
           >
             {isSidebarOpen ? (
@@ -79,21 +77,23 @@ export function AdminHeader({
           </button>
         )}
 
-        {/* Welcome Pill */}
-        <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#FAF4FC] border border-[#823296]/15 text-[#5E2276] text-xs font-medium">
-          <Radio className="w-3.5 h-3.5 text-[#823296] animate-pulse" />
+        {/* Welcome Pill (Responsive compact on mobile) */}
+        <div className="inline-flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-[#FAF4FC] border border-[#823296]/15 text-[#5E2276] text-xs font-medium max-w-[180px] sm:max-w-none">
+          <Radio className="w-3.5 h-3.5 text-[#823296] animate-pulse shrink-0" />
           <span className="truncate">
-            Assalamu&apos;alaikum, <strong className="font-semibold">{displayName}</strong>
+            <span className="hidden md:inline">Assalamu&apos;alaikum, </span>
+            <strong className="font-semibold">{firstName}</strong>
+            <span className="hidden sm:inline"> {displayName.split(" ").slice(1).join(" ")}</span>
           </span>
-          <span className="hidden sm:inline-block text-[11px] px-2 py-0.5 rounded-full bg-white text-[#5E2276] border border-[#823296]/10 shadow-2xs font-normal">
+          <span className="hidden lg:inline-block text-[11px] px-2 py-0.5 rounded-full bg-white text-[#5E2276] border border-[#823296]/10 shadow-2xs font-normal">
             {wilayahTugas}
           </span>
         </div>
       </div>
 
       {/* Right: Quick Date, Notifications & Account */}
-      <div className="flex items-center gap-3 sm:gap-4">
-        {/* Date badge */}
+      <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
+        {/* Date badge - Desktop only */}
         <div className="hidden md:flex items-center gap-1.5 text-xs text-stone-500 font-medium px-3 py-1.5 bg-stone-50 rounded-lg border border-stone-200/60">
           <Calendar className="w-3.5 h-3.5 text-stone-400" />
           <span>{currentDateString || "Papua, WIT"}</span>
@@ -103,25 +103,28 @@ export function AdminHeader({
         <div className="relative">
           <button
             type="button"
-            className="p-2 rounded-xl text-stone-500 hover:text-[#5E2276] hover:bg-purple-50 transition-colors relative"
+            className="p-1.5 sm:p-2 rounded-xl text-stone-500 hover:text-[#5E2276] hover:bg-purple-50 transition-colors relative"
             title="Pemberitahuan Sistem"
             aria-label="Notifikasi"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white"></span>
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white"></span>
           </button>
         </div>
 
         {/* User Profile Mini Badge */}
-        <div className="flex items-center gap-2.5 pl-2 border-l border-stone-200">
-          <div className="w-8 h-8 rounded-full bg-[#823296] text-white flex items-center justify-center text-xs font-bold shadow-2xs">
+        <div className="flex items-center gap-2 pl-1.5 sm:pl-2 border-l border-stone-200">
+          <div
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#823296] text-white flex items-center justify-center text-[11px] sm:text-xs font-bold shadow-2xs shrink-0"
+            title={displayName}
+          >
             {initials}
           </div>
-          <div className="hidden sm:block text-left">
-            <p className="text-xs font-semibold text-stone-900 leading-tight">
+          <div className="hidden sm:block text-left max-w-[140px] truncate">
+            <p className="text-xs font-semibold text-stone-900 leading-tight truncate">
               {displayEmail}
             </p>
-            <p className="text-[10px] text-stone-500 leading-tight">
+            <p className="text-[10px] text-stone-500 leading-tight truncate">
               {session?.roleName || "Akses Penuh"}
             </p>
           </div>
@@ -129,7 +132,7 @@ export function AdminHeader({
             type="button"
             onClick={handleLogout}
             title="Keluar dari akun"
-            className="hidden sm:inline-flex p-1.5 ml-1 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+            className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors shrink-0"
           >
             <LogOut className="w-4 h-4" />
           </button>
