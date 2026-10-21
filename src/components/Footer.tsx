@@ -1,11 +1,19 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { BrandLogo } from "@/components/BrandLogo";
 import { footerNavigation } from "@/data/navigation";
 import { organization } from "@/data/organization";
 
 export function Footer() {
+  const pathname = usePathname();
   const currentYear = new Date().getFullYear();
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <footer className="mt-20 sm:mt-28 border-t border-stone-200/80 bg-white">
@@ -109,7 +117,16 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-10 pt-6 border-t border-stone-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
-          <p>© {currentYear} {organization.name}. Seluruh hak cipta dilindungi.</p>
+          <div className="flex items-center gap-2.5">
+            <p>© {currentYear} {organization.name}. Seluruh hak cipta dilindungi.</p>
+            <span>•</span>
+            <Link
+              href="/admin"
+              className="text-stone-400 hover:text-[#823296] transition-colors"
+            >
+              Portal Admin
+            </Link>
+          </div>
           <div className="text-stone-600 font-medium text-center sm:text-right">
             Dikelola dengan integritas dan ketulusan oleh Relawan Sedekah for Yatim Papua
           </div>
