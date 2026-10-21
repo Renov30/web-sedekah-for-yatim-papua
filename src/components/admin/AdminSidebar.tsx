@@ -27,49 +27,41 @@ export const adminNavItems = [
     title: "Dashboard",
     href: "/admin",
     icon: LayoutDashboard,
-    badge: null,
   },
   {
     title: "Pendataan Anak Yatim",
     href: "/admin/anak-yatim",
     icon: GraduationCap,
-    badge: "8 Anak",
   },
   {
     title: "Pendataan Relawan",
     href: "/admin/relawan",
     icon: HeartHandshake,
-    badge: "6 Orang",
   },
   {
     title: "Pendataan Donatur",
     href: "/admin/donatur",
     icon: Users2,
-    badge: "6 Donatur",
   },
   {
     title: "Manajemen Keuangan",
     href: "/admin/keuangan",
     icon: Wallet,
-    badge: null,
   },
   {
     title: "Kelola User",
     href: "/admin/users",
     icon: ShieldAlert,
-    badge: null,
   },
   {
     title: "Manajemen Role",
     href: "/admin/roles",
     icon: ShieldCheck,
-    badge: null,
   },
   {
     title: "Permission Role",
     href: "/admin/permissions",
     icon: KeyRound,
-    badge: null,
   },
 ];
 
@@ -77,7 +69,7 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-full h-full flex flex-col justify-between bg-[#5E2276] text-white p-5 lg:p-6 select-none overflow-y-auto">
+    <aside className="w-full h-full flex flex-col justify-between bg-[#5E2276] text-white p-5 lg:p-6 select-none overflow-y-auto overscroll-contain">
       {/* Top Section: Brand & Nav */}
       <div className="space-y-6">
         {/* Brand Header */}
@@ -131,31 +123,18 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
                 key={item.href}
                 href={item.href}
                 onClick={onCloseMobile}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   isActive
                     ? "bg-white text-[#5E2276] shadow-sm font-semibold"
                     : "text-purple-100 hover:bg-white/10 hover:text-white"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Icon
-                    className={`w-4 h-4 shrink-0 ${
-                      isActive ? "text-[#5E2276]" : "text-purple-200"
-                    }`}
-                  />
-                  <span>{item.title}</span>
-                </div>
-                {item.badge && (
-                  <span
-                    className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
-                      isActive
-                        ? "bg-[#5E2276]/10 text-[#5E2276]"
-                        : "bg-white/15 text-purple-100"
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
+                <Icon
+                  className={`w-4 h-4 shrink-0 ${
+                    isActive ? "text-[#5E2276]" : "text-purple-200"
+                  }`}
+                />
+                <span>{item.title}</span>
               </Link>
             );
           })}
@@ -173,20 +152,18 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
                 key={item.href}
                 href={item.href}
                 onClick={onCloseMobile}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   isActive
                     ? "bg-white text-[#5E2276] shadow-sm font-semibold"
                     : "text-purple-100 hover:bg-white/10 hover:text-white"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Icon
-                    className={`w-4 h-4 shrink-0 ${
-                      isActive ? "text-[#5E2276]" : "text-purple-200"
-                    }`}
-                  />
-                  <span>{item.title}</span>
-                </div>
+                <Icon
+                  className={`w-4 h-4 shrink-0 ${
+                    isActive ? "text-[#5E2276]" : "text-purple-200"
+                  }`}
+                />
+                <span>{item.title}</span>
               </Link>
             );
           })}

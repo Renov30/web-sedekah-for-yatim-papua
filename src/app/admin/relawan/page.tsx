@@ -161,14 +161,9 @@ export default function RelawanAdminPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-stone-200/80">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
-              Pendataan Relawan Lapangan
-            </h1>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-              {volunteers.length} Relawan
-            </span>
-          </div>
+          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
+            Pendataan Relawan Lapangan
+          </h1>
           <p className="text-sm text-stone-500 mt-0.5">
             Manajemen relawan pendamping santri yatim, tim logistik, dan tenaga medis di tanah Papua.
           </p>

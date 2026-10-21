@@ -144,14 +144,9 @@ export default function UsersAdminPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-stone-200/80">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
-              Kelola Pengguna Sistem
-            </h1>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-50 text-[#823296] border border-purple-200">
-              {users.length} Akun
-            </span>
-          </div>
+          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
+            Kelola Pengguna Sistem
+          </h1>
           <p className="text-sm text-stone-500 mt-0.5">
             Manajemen akun administrator, staf operasional, pendata lapangan, dan bendahara lembaga SFY Papua.
           </p>

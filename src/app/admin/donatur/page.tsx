@@ -128,14 +128,9 @@ export default function DonaturAdminPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-stone-200/80">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
-              Pendataan Donatur & Muzakki
-            </h1>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
-              {donors.length} Donatur
-            </span>
-          </div>
+          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
+            Pendataan Donatur & Muzakki
+          </h1>
           <p className="text-sm text-stone-500 mt-0.5">
             Database para muhsinin, muzakki individu, dan mitra korporasi pendukung dakwah yatim Papua.
           </p>

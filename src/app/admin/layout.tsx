@@ -12,9 +12,9 @@ export default function AdminLayout({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen w-full bg-[#FAF8FB] flex flex-row antialiased">
-      {/* Desktop Fixed/Sticky Sidebar (Edge-to-Edge) */}
-      <div className="hidden lg:flex w-64 xl:w-72 shrink-0 h-screen sticky top-0 bg-[#5E2276] border-r border-[#4A1860] z-40">
+    <div className="h-screen w-full bg-[#FAF8FB] flex flex-row overflow-hidden antialiased">
+      {/* Desktop Fixed Sidebar (Edge-to-Edge, locked height) */}
+      <div className="hidden lg:flex w-64 xl:w-72 shrink-0 h-full bg-[#5E2276] border-r border-[#4A1860] z-40 overflow-hidden">
         <AdminSidebar />
       </div>
 
@@ -33,8 +33,8 @@ export default function AdminLayout({
         </div>
       )}
 
-      {/* Main Workspace (Full Width & Expansive) */}
-      <div className="flex-1 min-w-0 flex flex-col min-h-screen bg-[#FAF8FB]">
+      {/* Main Workspace (Independent Scroll Container) */}
+      <div className="flex-1 min-w-0 flex flex-col h-full overflow-y-auto overscroll-contain bg-[#FAF8FB]">
         <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-stone-200/80">
           <AdminHeader
             onToggleSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
