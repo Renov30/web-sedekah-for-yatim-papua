@@ -163,9 +163,6 @@ export function AdminSidebar({
                     Admin
                   </span>
                 </div>
-                <p className="text-[11px] text-purple-200/80 font-normal truncate">
-                  Sistem Tata Kelola Amanah
-                </p>
               </div>
             </Link>
 

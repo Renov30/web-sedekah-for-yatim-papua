@@ -6,16 +6,11 @@ import {
   GraduationCap,
   MapPinHouse,
   MapPin,
-  Wallet,
   ArrowUpRight,
   ArrowDownLeft,
   CheckCircle2,
-  AlertCircle,
   ChevronRight,
   MessageCircle,
-  ShieldCheck,
-  Phone,
-  BarChart3,
 } from "lucide-react";
 import {
   initialOrphans,
@@ -145,9 +140,6 @@ export default function AdminDashboardPage() {
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
             Dashboard Operasional
           </h1>
-          <p className="text-sm text-stone-500 mt-0.5">
-            Ikhtisar real-time data santri yatim, koordinator lapangan AV, dan data wilayah binaan di Papua.
-          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -175,35 +167,27 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* 4 Metric Cards (All 100% Data-Driven) */}
+      {/* 4 Metric Cards (All 100% Data-Driven, 3 Parts: Atas, Tengah, Bawah) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Anak Yatim */}
         <Link
           href="/admin/anak-yatim"
-          className="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-2xs hover:border-[#5E2276]/40 transition-colors group"
+          className="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-2xs hover:border-[#5E2276]/40 transition-colors group flex flex-col justify-between"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-              Santri Yatim Binaan
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-purple-50 text-[#5E2276] flex items-center justify-center group-hover:scale-105 transition-transform">
-              <GraduationCap className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
+            Santri Yatim Binaan
+          </p>
+          <div className="my-3 flex items-baseline gap-2">
             <span className="text-3xl font-extrabold text-stone-900 tracking-tight">
               {totalOrphans}
             </span>
             <span className="text-xs font-medium text-stone-500">Santri</span>
           </div>
-          <div className="mt-2.5 flex items-center justify-between text-xs text-stone-500 border-t border-stone-100 pt-2.5">
-            <span className="flex items-center gap-1 text-emerald-700 font-medium">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              {verifiedOrphans} Terverifikasi
-            </span>
+          <div className="pt-2.5 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+            <span>{verifiedOrphans} Terverifikasi</span>
             {actionableOrphans.length > 0 && (
-              <span className="text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded-full">
-                {actionableOrphans.length} Perlu Survei
+              <span className="text-amber-700 font-semibold">
+                {actionableOrphans.length} Butuh Tindakan
               </span>
             )}
           </div>
@@ -212,81 +196,63 @@ export default function AdminDashboardPage() {
         {/* Card 2: Koordinator AV */}
         <Link
           href="/admin/av"
-          className="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-2xs hover:border-[#5E2276]/40 transition-colors group"
+          className="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-2xs hover:border-[#5E2276]/40 transition-colors group flex flex-col justify-between"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-              Koordinator Lapangan (AV)
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <MapPinHouse className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
+            Koordinator Lapangan (AV)
+          </p>
+          <div className="my-3 flex items-baseline gap-2">
             <span className="text-3xl font-extrabold text-stone-900 tracking-tight">
               {totalAVs}
             </span>
             <span className="text-xs font-medium text-stone-500">Personel PJ</span>
           </div>
-          <div className="mt-2.5 flex items-center justify-between text-xs text-stone-500 border-t border-stone-100 pt-2.5">
+          <div className="pt-2.5 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
             <span className="text-blue-700 font-medium">
-              {activeAVs} Aktif Bertugas
+              {activeAVs} Aktif
             </span>
-            <span>{coveredKampungsFromAV} Kampung Terjangkau</span>
+            <span>{coveredKampungsFromAV} Kampung</span>
           </div>
         </Link>
 
         {/* Card 3: Data Wilayah */}
         <Link
           href="/admin/wilayah"
-          className="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-2xs hover:border-[#5E2276]/40 transition-colors group"
+          className="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-2xs hover:border-[#5E2276]/40 transition-colors group flex flex-col justify-between"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-              Cakupan Data Wilayah
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <MapPin className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
+            Cakupan Data Wilayah
+          </p>
+          <div className="my-3 flex items-baseline gap-2">
             <span className="text-3xl font-extrabold text-stone-900 tracking-tight">
               {totalKampungCount}
             </span>
             <span className="text-xs font-medium text-stone-500">Kampung Binaan</span>
           </div>
-          <div className="mt-2.5 flex items-center justify-between text-xs text-stone-500 border-t border-stone-100 pt-2.5">
+          <div className="pt-2.5 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
             <span className="text-stone-700 font-medium">
               {totalDistrikCount} Distrik
             </span>
-            <span className="text-stone-400">Papua Selatan</span>
+            <span>Papua Selatan</span>
           </div>
         </Link>
 
         {/* Card 4: Saldo Kas */}
         <Link
           href="/admin/keuangan"
-          className="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-2xs hover:border-[#5E2276]/40 transition-colors group"
+          className="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-2xs hover:border-[#5E2276]/40 transition-colors group flex flex-col justify-between"
         >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-              Saldo Kas Amanah
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Wallet className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
+            Saldo Kas Amanah
+          </p>
+          <div className="my-3">
             <span className="text-2xl font-extrabold text-stone-900 tracking-tight">
               Rp {cashBalance.toLocaleString("id-ID")}
             </span>
           </div>
-          <div className="mt-2.5 flex items-center justify-between text-xs text-stone-500 border-t border-stone-100 pt-2.5">
-            <span className="text-emerald-700 font-medium flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              100% Diaudit
-            </span>
-            <span>BSI & Mandiri</span>
+          <div className="pt-2.5 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+            <span className="text-emerald-700 font-medium">Kas BSI & Mandiri</span>
+            <span>Tervalidasi</span>
           </div>
         </Link>
       </div>
@@ -302,9 +268,6 @@ export default function AdminDashboardPage() {
                 <h2 className="text-base font-bold text-stone-900">
                   Prioritas Survei & Verifikasi Santri
                 </h2>
-                <p className="text-xs text-stone-500">
-                  Data santri baru atau pembaruan yang memerlukan validasi relawan dan PJ AV lapangan
-                </p>
               </div>
               <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
                 actionableOrphans.length > 0 
@@ -321,52 +284,40 @@ export default function AdminDashboardPage() {
                 <p className="text-sm font-bold text-emerald-900">
                   Semua Data Santri Yatim Telah Terverifikasi Amanah
                 </p>
-                <p className="text-xs text-emerald-700 mt-1">
-                  Tidak ada santri dengan status survei tertunda saat ini.
-                </p>
                 <Link
                   href="/admin/anak-yatim"
-                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 underline hover:text-emerald-950"
+                  className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 underline hover:text-emerald-950"
                 >
-                  Buka Data Santri Lengkap <ChevronRight className="w-3.5 h-3.5" />
+                  Buka Data Santri <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {actionableOrphans.map((item) => (
                   <div
                     key={item.id}
-                    className="p-3.5 rounded-xl border border-amber-200/80 bg-amber-50/30 hover:border-amber-300 transition-colors"
+                    className="p-3 rounded-xl border border-stone-200/80 bg-stone-50/40 hover:bg-stone-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div className="flex items-start gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">
-                          <AlertCircle className="w-4 h-4" />
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-stone-900 truncate">
+                            {item.namaLengkap}
+                          </span>
+                          <span className="text-xs text-stone-500">
+                            ({item.usia} th, {item.status})
+                          </span>
                         </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-stone-900">
-                              {item.namaLengkap}
-                            </span>
-                            <span className="text-xs px-2 py-0.5 rounded font-mono font-medium bg-stone-100 text-stone-600">
-                              {item.id}
-                            </span>
-                          </div>
-                          <p className="text-xs text-stone-500 mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <span className="text-stone-700 font-medium">
-                              {item.status} ({item.usia} th)
-                            </span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-3 h-3 text-stone-400" />
-                              {item.kampung || "-"}, {item.asalDaerah}
-                            </span>
-                          </p>
-                        </div>
+                        <p className="text-xs text-stone-500 truncate mt-0.5">
+                          {item.kampung || item.asalDaerah} • PJ: {item.pjAvNama || "Belum ada"}
+                        </p>
                       </div>
+                    </div>
 
+                    <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                       <span
-                        className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 self-start sm:self-center ${
+                        className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
                           item.statusVerifikasi === "Menunggu Survei"
                             ? "bg-amber-100 text-amber-800"
                             : "bg-blue-100 text-blue-800"
@@ -374,20 +325,11 @@ export default function AdminDashboardPage() {
                       >
                         {item.statusVerifikasi}
                       </span>
-                    </div>
-
-                    <div className="mt-3 pt-2.5 border-t border-amber-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                      <div className="text-stone-600">
-                        <span className="font-semibold text-stone-700">PJ AV:</span>{" "}
-                        {item.pjAvNama || "Belum ditentukan"} •{" "}
-                        <span className="font-semibold text-stone-700">Kebutuhan:</span>{" "}
-                        <span className="text-stone-800">{item.kebutuhanMendesak}</span>
-                      </div>
                       <Link
-                        href={`/admin/anak-yatim`}
-                        className="inline-flex items-center gap-1 font-semibold text-[#5E2276] hover:underline shrink-0"
+                        href="/admin/anak-yatim"
+                        className="text-xs font-semibold text-[#5E2276] hover:underline"
                       >
-                        Validasi Berkas <ChevronRight className="w-3.5 h-3.5" />
+                        Tinjau
                       </Link>
                     </div>
                   </div>
@@ -403,9 +345,6 @@ export default function AdminDashboardPage() {
                 <h2 className="text-base font-bold text-stone-900">
                   Sebaran Santri per Distrik Binaan
                 </h2>
-                <p className="text-xs text-stone-500">
-                  Agregasi otomatis jumlah santri yatim terdata pada tiap wilayah
-                </p>
               </div>
               <Link
                 href="/admin/wilayah"
@@ -415,38 +354,14 @@ export default function AdminDashboardPage() {
               </Link>
             </div>
 
-            <div className="space-y-3">
+            <div className="divide-y divide-stone-100">
               {regionalDistribution.slice(0, 5).map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-3.5 rounded-xl bg-stone-50/70 border border-stone-200/70 space-y-2 hover:bg-stone-50 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-stone-900">
-                          {item.distrik}
-                        </span>
-                        <span className="text-xs text-stone-500">
-                          ({item.kabupaten})
-                        </span>
-                      </div>
-                      <p className="text-xs text-stone-500 mt-0.5">
-                        Kampung: {item.kampungList || "-"} {item.avList && `• AV: ${item.avList}`}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-sm font-extrabold text-[#5E2276]">
-                        {item.count} Santri
-                      </span>
-                      <p className="text-[11px] text-stone-400">
-                        {item.percentage}% dari total
-                      </p>
-                    </div>
+                <div key={idx} className="py-2.5 space-y-1.5 first:pt-0 last:pb-0">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-stone-800">{item.distrik}</span>
+                    <span className="font-bold text-[#5E2276]">{item.count} Santri</span>
                   </div>
-
-                  {/* Progress proportion bar */}
-                  <div className="w-full h-1.5 rounded-full bg-stone-200 overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full bg-stone-100 overflow-hidden">
                     <div
                       className="h-full bg-[#5E2276] rounded-full"
                       style={{ width: `${Math.max(item.percentage, 8)}%` }}
@@ -457,14 +372,12 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
-              <span>
-                Menjangkau {regionalDistribution.length} Distrik & {coveredKampungsFromAV} Kampung Dampingan
-              </span>
+              <span>{regionalDistribution.length} Distrik Dampingan</span>
               <Link
                 href="/admin/anak-yatim"
                 className="font-semibold text-[#5E2276] hover:underline inline-flex items-center gap-1"
               >
-                Filter Berdasarkan Wilayah <ChevronRight className="w-3.5 h-3.5" />
+                Filter Wilayah <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
@@ -474,15 +387,11 @@ export default function AdminDashboardPage() {
         <div className="lg:col-span-5 space-y-6">
           {/* Widget 3: Koordinator AV per Kampung (Actual AV Module Data) */}
           <div className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-2xs">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3">
               <div>
-                <h2 className="text-base font-bold text-stone-900 flex items-center gap-2">
-                  <MapPinHouse className="w-4 h-4 text-[#5E2276]" />
+                <h2 className="text-base font-bold text-stone-900">
                   Koordinator AV Lapangan
                 </h2>
-                <p className="text-xs text-stone-500">
-                  Penanggung Jawab (PJ) santri yatim di tiap kampung
-                </p>
               </div>
               <Link
                 href="/admin/av"
@@ -492,56 +401,44 @@ export default function AdminDashboardPage() {
               </Link>
             </div>
 
-            <div className="space-y-3">
+            <div className="divide-y divide-stone-100">
               {avList.slice(0, 4).map((av) => {
                 const assignedCount = orphans.filter(
                   (o) => o.pjAvNama === av.nama || o.pjAvId === av.id
                 ).length;
 
                 return (
-                  <div
-                    key={av.id}
-                    className="p-3 rounded-xl border border-stone-100 bg-stone-50/50 hover:bg-stone-50 transition-colors space-y-2"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-stone-900">
-                            {av.nama}
-                          </span>
-                          <span
-                            className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
-                              av.status === "Aktif"
-                                ? "bg-emerald-50 text-emerald-700"
-                                : "bg-amber-50 text-amber-700"
-                            }`}
-                          >
-                            {av.status}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-stone-500 mt-0.5">
-                          {av.kampung}, {av.distrik}
-                        </p>
+                  <div key={av.id} className="py-2.5 flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-stone-900 truncate">{av.nama}</span>
+                        <span
+                          className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${
+                            av.status === "Aktif"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : "bg-amber-50 text-amber-700"
+                          }`}
+                        >
+                          {av.status}
+                        </span>
                       </div>
-
-                      <span className="text-xs font-semibold font-mono text-[#5E2276] bg-purple-50 px-2 py-0.5 rounded-md">
-                        {assignedCount} Santri
-                      </span>
+                      <p className="text-[11px] text-stone-500 truncate mt-0.5">
+                        {av.kampung}, {av.distrik}
+                      </p>
                     </div>
 
-                    <div className="flex items-center justify-between pt-1 text-[11px] border-t border-stone-100">
-                      <span className="text-stone-500 flex items-center gap-1">
-                        <Phone className="w-3 h-3 text-stone-400" />
-                        {av.noHp}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs font-semibold text-[#5E2276]">
+                        {assignedCount} Santri
                       </span>
                       <a
                         href={`https://wa.me/${av.noHp.replace(/[^0-9]/g, "")}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1 font-semibold text-emerald-700 hover:text-emerald-800"
+                        className="p-1.5 rounded-lg text-emerald-700 hover:bg-emerald-50 transition-colors"
+                        title={`Hubungi ${av.nama}`}
                       >
-                        <MessageCircle className="w-3 h-3" />
-                        Hubungi WA
+                        <MessageCircle className="w-4 h-4" />
                       </a>
                     </div>
                   </div>
@@ -554,47 +451,38 @@ export default function AdminDashboardPage() {
           <div className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-2xs">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h2 className="text-base font-bold text-stone-900 flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-[#5E2276]" />
+                <h2 className="text-base font-bold text-stone-900">
                   Demografi Santri
                 </h2>
-                <p className="text-xs text-stone-500">
-                  Klasifikasi status amanah & jenis kelamin santri
-                </p>
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-2.5 pt-1">
               <div className="p-2.5 rounded-xl bg-purple-50/60 border border-purple-100 text-center">
-                <p className="text-[11px] font-medium text-stone-500">Yatim</p>
+                <p className="text-xs font-medium text-stone-600">Yatim</p>
                 <p className="text-lg font-extrabold text-[#5E2276] mt-0.5">
                   {demoStats.yatim}
                 </p>
-                <p className="text-[10px] text-stone-400">Ayah wafat</p>
               </div>
               <div className="p-2.5 rounded-xl bg-amber-50/60 border border-amber-100 text-center">
-                <p className="text-[11px] font-medium text-stone-500">Piatu</p>
+                <p className="text-xs font-medium text-stone-600">Piatu</p>
                 <p className="text-lg font-extrabold text-amber-700 mt-0.5">
                   {demoStats.piatu}
                 </p>
-                <p className="text-[10px] text-stone-400">Ibu wafat</p>
               </div>
               <div className="p-2.5 rounded-xl bg-rose-50/60 border border-rose-100 text-center">
-                <p className="text-[11px] font-medium text-stone-500">Yatim Piatu</p>
+                <p className="text-xs font-medium text-stone-600">Yatim Piatu</p>
                 <p className="text-lg font-extrabold text-rose-700 mt-0.5">
                   {demoStats.yatimPiatu}
                 </p>
-                <p className="text-[10px] text-stone-400">Keduanya</p>
               </div>
             </div>
 
-            <div className="mt-3 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-600">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-500" />
+            <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between text-xs text-stone-600">
+              <span>
                 Laki-laki: <strong className="text-stone-800">{demoStats.laki}</strong>
               </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-pink-500" />
+              <span>
                 Perempuan: <strong className="text-stone-800">{demoStats.perempuan}</strong>
               </span>
               <span className="text-stone-400">Total {totalOrphans} Anak</span>
@@ -603,14 +491,11 @@ export default function AdminDashboardPage() {
 
           {/* Widget 5: Mutasi Kas Sedekah Terkini (Real Finance Module Data) */}
           <div className="bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-2xs">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3">
               <div>
                 <h2 className="text-base font-bold text-stone-900">
                   Mutasi Kas Terkini
                 </h2>
-                <p className="text-xs text-stone-500">
-                  Arus kas amanah masuk & penyaluran santunan
-                </p>
               </div>
               <Link
                 href="/admin/keuangan"
@@ -620,50 +505,45 @@ export default function AdminDashboardPage() {
               </Link>
             </div>
 
-            <div className="space-y-3">
+            <div className="divide-y divide-stone-100">
               {initialFinances.slice(0, 4).map((trx) => (
                 <div
                   key={trx.id}
-                  className="flex items-center justify-between p-3 rounded-xl border border-stone-100 hover:bg-stone-50/60 transition-colors"
+                  className="flex items-center justify-between py-2.5 gap-2"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex items-center gap-2.5 min-w-0">
                     <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                         trx.jenis === "Pemasukan"
                           ? "bg-emerald-50 text-emerald-700"
                           : "bg-rose-50 text-rose-600"
                       }`}
                     >
                       {trx.jenis === "Pemasukan" ? (
-                        <ArrowDownLeft className="w-4 h-4" />
+                        <ArrowDownLeft className="w-3.5 h-3.5" />
                       ) : (
-                        <ArrowUpRight className="w-4 h-4" />
+                        <ArrowUpRight className="w-3.5 h-3.5" />
                       )}
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-stone-900 truncate">
                         {trx.kategori}
                       </p>
-                      <p className="text-[11px] text-stone-500 truncate">
-                        {trx.tanggal} • {trx.metode}
+                      <p className="text-[11px] text-stone-400 truncate">
+                        {trx.tanggal}
                       </p>
                     </div>
                   </div>
-                  <div className="text-right shrink-0 pl-2">
-                    <p
-                      className={`text-xs font-bold font-mono ${
-                        trx.jenis === "Pemasukan"
-                          ? "text-emerald-700"
-                          : "text-stone-900"
-                      }`}
-                    >
-                      {trx.jenis === "Pemasukan" ? "+" : "-"}Rp{" "}
-                      {trx.jumlah.toLocaleString("id-ID")}
-                    </p>
-                    <span className="text-[10px] text-stone-400">
-                      {trx.status}
-                    </span>
-                  </div>
+                  <span
+                    className={`text-xs font-bold font-mono shrink-0 ${
+                      trx.jenis === "Pemasukan"
+                        ? "text-emerald-700"
+                        : "text-stone-900"
+                    }`}
+                  >
+                    {trx.jenis === "Pemasukan" ? "+" : "-"}Rp{" "}
+                    {trx.jumlah.toLocaleString("id-ID")}
+                  </span>
                 </div>
               ))}
             </div>

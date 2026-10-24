@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  Wallet,
   ArrowDownLeft,
   ArrowUpRight,
   Search,
@@ -11,10 +10,7 @@ import {
   CheckCircle2,
   Clock,
   FileText,
-  Calendar,
   X,
-  CreditCard,
-  Building,
 } from "lucide-react";
 import {
   initialFinances,
@@ -179,9 +175,6 @@ export default function KeuanganAdminPage() {
               100% Diaudit
             </span>
           </div>
-          <p className="text-sm text-stone-500 mt-0.5">
-            Pencatatan sedekah masuk, belanja operasional dakwah, dan penyaluran santunan anak yatim Papua.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -204,64 +197,59 @@ export default function KeuanganAdminPage() {
         </div>
       </div>
 
-      {/* Financial Summary Metric Cards */}
+      {/* Financial Summary Metric Cards (3 Parts: Atas, Tengah, Bawah - No Icons) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs">
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
           <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
             Saldo Kas Berjalan
           </p>
-          <p className="text-2xl font-extrabold font-mono text-stone-900 mt-1">
+          <p className="text-2xl font-extrabold font-mono text-stone-900 my-2">
             Rp {currentBalance.toLocaleString("id-ID")}
           </p>
-          <p className="text-[11px] text-stone-400 mt-1">
-            Rekening BSI, Mandiri & Brankas
-          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Kas Operasional</span>
+            <span>BSI & Mandiri</span>
+          </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-              Total Sedekah Masuk
-            </p>
-            <span className="p-1 rounded-md bg-emerald-50 text-emerald-700">
-              <ArrowDownLeft className="w-3.5 h-3.5" />
-            </span>
-          </div>
-          <p className="text-2xl font-extrabold font-mono text-emerald-700 mt-1">
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Total Sedekah Masuk
+          </p>
+          <p className="text-2xl font-extrabold font-mono text-emerald-700 my-2">
             +Rp {totalIncome.toLocaleString("id-ID")}
           </p>
-          <p className="text-[11px] text-stone-400 mt-1">
-            {transactions.filter((t) => t.jenis === "Pemasukan").length} transaksi
-          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Transaksi Masuk</span>
+            <span>{transactions.filter((t) => t.jenis === "Pemasukan").length} Transaksi</span>
+          </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-              Penyaluran & Belanja
-            </p>
-            <span className="p-1 rounded-md bg-red-50 text-red-600">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-          <p className="text-2xl font-extrabold font-mono text-stone-900 mt-1">
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Penyaluran & Belanja
+          </p>
+          <p className="text-2xl font-extrabold font-mono text-stone-900 my-2">
             -Rp {totalExpense.toLocaleString("id-ID")}
           </p>
-          <p className="text-[11px] text-stone-400 mt-1">
-            {transactions.filter((t) => t.jenis === "Pengeluaran").length} pos program
-          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Pos Program Dakwah</span>
+            <span>{transactions.filter((t) => t.jenis === "Pengeluaran").length} Penyaluran</span>
+          </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs">
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
           <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
             Review Bendahara
           </p>
-          <p className="text-2xl font-extrabold text-amber-600 mt-1">
-            {transactions.filter((t) => t.status === "Review").length} Nota
+          <p className="text-2xl font-extrabold text-amber-600 my-2">
+            {transactions.filter((t) => t.status === "Review").length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Nota</span>
           </p>
-          <p className="text-[11px] text-stone-400 mt-1">
-            Perlu verifikasi fisik kuitansi
-          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Verifikasi Nota</span>
+            <span className="text-amber-700 font-semibold">Perlu Tinjauan</span>
+          </div>
         </div>
       </div>
 
@@ -333,14 +321,14 @@ export default function KeuanganAdminPage() {
                     key={trx.id}
                     className="hover:bg-purple-50/20 transition-colors"
                   >
-                    <td className="py-3.5 px-4">
-                      <div>
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
                         <span className="font-mono text-[11px] font-semibold text-stone-700 bg-stone-100 px-1.5 py-0.5 rounded">
                           {trx.noRef}
                         </span>
-                        <p className="text-xs text-stone-500 mt-1">
+                        <span className="text-xs text-stone-500">
                           {trx.tanggal}
-                        </p>
+                        </span>
                       </div>
                     </td>
                     <td className="py-3.5 px-3">
@@ -379,11 +367,8 @@ export default function KeuanganAdminPage() {
                         {trx.jumlah.toLocaleString("id-ID")}
                       </span>
                     </td>
-                    <td className="py-3.5 px-3 text-xs">
-                      <p className="font-medium text-stone-800">{trx.metode}</p>
-                      <p className="text-[11px] text-stone-400 truncate">
-                        {trx.petugas}
-                      </p>
+                    <td className="py-3.5 px-3 text-xs text-stone-800">
+                      {trx.metode}
                     </td>
                     <td className="py-3.5 px-3 text-center">
                       <button

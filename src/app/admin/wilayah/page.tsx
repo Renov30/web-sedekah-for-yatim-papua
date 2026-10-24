@@ -318,9 +318,6 @@ export default function MasterWilayahAdminPage() {
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
             Data Wilayah
           </h1>
-          <p className="text-sm text-stone-500 mt-0.5">
-            Daftar distrik dan kampung binaan di Merauke & Papua Selatan untuk pendataan anak yatim dan koordinator AV.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -366,31 +363,62 @@ export default function MasterWilayahAdminPage() {
         </div>
       </div>
 
-      {/* Metrics Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Total Kampung Terdaftar</p>
-          <p className="text-xl font-bold text-stone-900 mt-0.5">
-            {kampungs.length} Kampung / Kelurahan
+      {/* Metrics Bar (3 Parts: Atas, Tengah, Bawah - No Icons) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Total Kampung
           </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {kampungs.length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Kampung</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Terdaftar di Sistem</span>
+            <span className="font-semibold text-stone-700">Aktif</span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Total Distrik Terjangkau</p>
-          <p className="text-xl font-bold text-[#823296] mt-0.5">
-            {distriks.length} Distrik
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Total Distrik
           </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {distriks.length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Distrik</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Cakupan Wilayah</span>
+            <span className="font-semibold text-stone-700">Papua Selatan</span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Basis Kabupaten</p>
-          <p className="text-xl font-bold text-emerald-700 mt-0.5">
-            {uniqueKabupatens.length} Kabupaten
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Basis Kabupaten
           </p>
+          <p className="text-2xl font-extrabold text-emerald-700 my-2">
+            {uniqueKabupatens.length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Kabupaten</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Fokus Utama</span>
+            <span className="font-semibold text-stone-700">Kab. Merauke</span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Distrik Basis Utama</p>
-          <p className="text-xl font-bold text-blue-700 mt-0.5">
-            Merauke (Papua Selatan)
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Rata-rata Kampung
           </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {distriks.length > 0 ? (kampungs.length / distriks.length).toFixed(1) : 0}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">per Distrik</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Distribusi Wilayah</span>
+            <span className="font-semibold text-stone-700">Terpetakan</span>
+          </div>
         </div>
       </div>
 
@@ -512,12 +540,7 @@ export default function MasterWilayahAdminPage() {
                           <div className="w-7 h-7 rounded-lg bg-purple-100 text-[#823296] flex items-center justify-center shrink-0">
                             <MapPin className="w-3.5 h-3.5" />
                           </div>
-                          <div>
-                            <p className="font-semibold text-stone-900">{k.nama}</p>
-                            <span className="font-mono text-[10px] text-stone-400">
-                              {k.id}
-                            </span>
-                          </div>
+                          <p className="font-semibold text-stone-900">{k.nama}</p>
                         </div>
                       </td>
                       <td className="py-3.5 px-3">
@@ -602,14 +625,9 @@ export default function MasterWilayahAdminPage() {
                             <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
                               <Building2 className="w-3.5 h-3.5" />
                             </div>
-                            <div>
-                              <p className="font-semibold text-stone-900">
-                                {d.nama}
-                              </p>
-                              <span className="font-mono text-[10px] text-stone-400">
-                                {d.id}
-                              </span>
-                            </div>
+                            <p className="font-semibold text-stone-900">
+                              {d.nama}
+                            </p>
                           </div>
                         </td>
                         <td className="py-3.5 px-3 text-xs text-stone-700">

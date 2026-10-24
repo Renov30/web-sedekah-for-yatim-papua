@@ -2,17 +2,13 @@
 
 import React, { useState } from "react";
 import {
-  Users2,
   Search,
   Plus,
   Download,
   Building2,
   User,
   ShieldCheck,
-  CheckCircle2,
-  Calendar,
   X,
-  CreditCard,
 } from "lucide-react";
 import { initialDonors, DonorRecord } from "@/data/admin/adminData";
 
@@ -131,9 +127,6 @@ export default function DonaturAdminPage() {
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
             Pendataan Donatur & Muzakki
           </h1>
-          <p className="text-sm text-stone-500 mt-0.5">
-            Database para muhsinin, muzakki individu, dan mitra korporasi pendukung dakwah yatim Papua.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -156,35 +149,67 @@ export default function DonaturAdminPage() {
         </div>
       </div>
 
-      {/* Metrics Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Total Donatur</p>
-          <p className="text-xl font-bold text-stone-900 mt-0.5">
-            {donors.length} Entitas
+      {/* Metrics Bar (3 Parts: Atas, Tengah, Bawah - No Icons) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Total Donatur
           </p>
-        </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Donatur Rutin Bulanan</p>
-          <p className="text-xl font-bold text-emerald-700 mt-0.5">
-            {donors.filter((d) => d.status === "Donatur Rutin").length} Orang
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {donors.length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Entitas</span>
           </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Tercatat di Database</span>
+            <span className="font-semibold text-stone-700">Aktif</span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Mitra Lembaga / CSR</p>
-          <p className="text-xl font-bold text-stone-900 mt-0.5">
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Donatur Rutin Bulanan
+          </p>
+          <p className="text-2xl font-extrabold text-emerald-700 my-2">
+            {donors.filter((d) => d.status === "Donatur Rutin").length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Orang</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Komitmen Donasi</span>
+            <span className="font-semibold text-stone-700">Rutin</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Mitra Lembaga / CSR
+          </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
             {
               donors.filter((d) => d.tipe === "Lembaga/Komunitas")
                 .length
             }{" "}
-            Lembaga
+            <span className="text-xs font-medium text-stone-500 font-sans">Lembaga</span>
           </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Individu & Hamba Allah</span>
+            <span className="font-semibold text-stone-700">
+              {donors.filter((d) => d.tipe !== "Lembaga/Komunitas").length} Donatur
+            </span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Akumulasi Sedekah</p>
-          <p className="text-xl font-bold text-[#823296] mt-0.5">
-            Rp {(totalAccumulated / 1000000).toFixed(1)} Jt
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Akumulasi Sedekah
           </p>
+          <p className="text-2xl font-extrabold text-[#823296] font-mono my-2">
+            Rp {(totalAccumulated / 1000000).toFixed(1)}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Juta</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Total Dihimpun</span>
+            <span className="font-semibold text-stone-700">Tervalidasi</span>
+          </div>
         </div>
       </div>
 
@@ -258,14 +283,14 @@ export default function DonaturAdminPage() {
                     key={d.id}
                     className="hover:bg-purple-50/20 transition-colors"
                   >
-                    <td className="py-3.5 px-4">
-                      <div>
-                        <span className="font-mono text-[11px] font-semibold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded">
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[11px] font-semibold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded shrink-0">
                           {d.id}
                         </span>
-                        <p className="font-semibold text-stone-900 mt-1">
+                        <span className="font-semibold text-stone-900">
                           {d.nama}
-                        </p>
+                        </span>
                       </div>
                     </td>
                     <td className="py-3.5 px-3">
@@ -280,11 +305,8 @@ export default function DonaturAdminPage() {
                         <span>{d.tipe}</span>
                       </span>
                     </td>
-                    <td className="py-3.5 px-3">
-                      <p className="text-xs font-mono text-stone-800">
-                        {d.noTelepon}
-                      </p>
-                      <p className="text-[11px] text-stone-400">{d.email}</p>
+                    <td className="py-3.5 px-3 text-xs font-mono text-stone-800">
+                      {d.noTelepon}
                     </td>
                     <td className="py-3.5 px-3">
                       <span className="font-bold font-mono text-stone-900 text-sm">

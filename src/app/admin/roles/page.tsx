@@ -3,11 +3,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  ShieldCheck,
   Plus,
   KeyRound,
   Users,
-  CheckCircle2,
   X,
   ArrowRight,
 } from "lucide-react";
@@ -45,9 +43,6 @@ export default function RolesAdminPage() {
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
             Manajemen Role & Jabatan
           </h1>
-          <p className="text-sm text-stone-500 mt-0.5">
-            Definisi klasifikasi wewenang operasional untuk memastikan tata kelola amanah dan rapi.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -77,22 +72,17 @@ export default function RolesAdminPage() {
             className="bg-white rounded-2xl border border-stone-200/80 p-5 shadow-2xs flex flex-col justify-between hover:border-[#823296]/30 transition-colors"
           >
             <div>
-              <div className="flex items-start justify-between gap-2">
-                <span
-                  className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${role.badgeColor}`}
-                >
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="text-base font-bold text-stone-900">
                   {role.nama}
-                </span>
+                </h2>
                 <span className="flex items-center gap-1 text-xs text-stone-500 font-medium">
                   <Users className="w-3.5 h-3.5" />
                   <span>{role.userCount} User</span>
                 </span>
               </div>
 
-              <h2 className="text-base font-bold text-stone-900 mt-3">
-                {role.nama}
-              </h2>
-              <p className="text-xs text-stone-600 mt-1.5 leading-relaxed min-h-[48px]">
+              <p className="text-xs text-stone-600 mt-2 line-clamp-2">
                 {role.deskripsi}
               </p>
             </div>

@@ -137,9 +137,6 @@ function PermissionsContent() {
               Matriks Akses Granular
             </span>
           </div>
-          <p className="text-sm text-stone-500 mt-0.5">
-            Konfigurasi izin Create, Read, Update, Delete untuk setiap modul operasional sistem.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -186,21 +183,16 @@ function PermissionsContent() {
       </div>
 
       {/* Selected Role Scope Card */}
-      <div className="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span
-              className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${currentRole.badgeColor}`}
-            >
-              {currentRole.nama}
-            </span>
-            <span className="text-xs text-stone-400 font-mono">
-              ({currentRole.id})
-            </span>
-          </div>
-          <p className="text-xs text-stone-600 mt-2 max-w-2xl">
-            {currentRole.deskripsi}
-          </p>
+      <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span
+            className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${currentRole.badgeColor}`}
+          >
+            {currentRole.nama}
+          </span>
+          <span className="text-xs text-stone-400 font-mono">
+            ({currentRole.id})
+          </span>
         </div>
 
         {/* Quick Batch Actions */}
@@ -208,21 +200,21 @@ function PermissionsContent() {
           <button
             type="button"
             onClick={() => handleSetAll(true)}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 text-stone-800 hover:bg-stone-200"
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 text-stone-800 hover:bg-stone-200 cursor-pointer"
           >
             Pilih Semua
           </button>
           <button
             type="button"
             onClick={handleSetReadOnly}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 text-stone-800 hover:bg-stone-200"
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 text-stone-800 hover:bg-stone-200 cursor-pointer"
           >
-            Hanya Baca (Read-Only)
+            Hanya Baca
           </button>
           <button
             type="button"
             onClick={() => handleSetAll(false)}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 text-red-600 hover:bg-red-50"
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-stone-100 text-red-600 hover:bg-red-50 cursor-pointer"
           >
             Kosongkan
           </button>
@@ -235,17 +227,17 @@ function PermissionsContent() {
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4 w-1/3">Modul Aplikasi</th>
-                <th className="py-3.5 px-3 text-center">
+                <th className="py-3 px-4 w-1/3">Modul Aplikasi</th>
+                <th className="py-3 px-3 text-center">
                   <span className="inline-block">Read (Lihat)</span>
                 </th>
-                <th className="py-3.5 px-3 text-center">
+                <th className="py-3 px-3 text-center">
                   <span className="inline-block">Create (Tambah)</span>
                 </th>
-                <th className="py-3.5 px-3 text-center">
+                <th className="py-3 px-3 text-center">
                   <span className="inline-block">Update (Ubah)</span>
                 </th>
-                <th className="py-3.5 px-3 text-center">
+                <th className="py-3 px-3 text-center">
                   <span className="inline-block">Delete (Hapus)</span>
                 </th>
               </tr>
@@ -264,11 +256,10 @@ function PermissionsContent() {
                     key={mod.id}
                     className="hover:bg-purple-50/20 transition-colors"
                   >
-                    <td className="py-4 px-4">
+                    <td className="py-3 px-4">
                       <p className="font-semibold text-stone-900 text-sm">
                         {mod.name}
                       </p>
-                      <p className="text-xs text-stone-500 mt-0.5">{mod.desc}</p>
                     </td>
 
                     {/* Read */}

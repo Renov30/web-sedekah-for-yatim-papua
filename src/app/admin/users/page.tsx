@@ -292,9 +292,6 @@ export default function UsersAdminPage() {
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
             Kelola Pengguna Sistem
           </h1>
-          <p className="text-sm text-stone-500 mt-0.5">
-            Manajemen akun pengguna, pemberian kata sandi, dan pembagian hak akses operasional.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -317,31 +314,64 @@ export default function UsersAdminPage() {
         </div>
       </div>
 
-      {/* Metrics Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Total Akun Terdaftar</p>
-          <p className="text-xl font-bold text-stone-900 mt-0.5">
-            {users.length} Pengguna
+      {/* Metrics Bar (3 Parts: Atas, Tengah, Bawah - No Icons) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Total Pengguna
           </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {users.length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Akun</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Terdaftar di Sistem</span>
+            <span className="font-semibold text-stone-700">SFY Merauke</span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Akun Aktif</p>
-          <p className="text-xl font-bold text-emerald-700 mt-0.5">
-            {users.filter((u) => u.status === "Aktif").length} Akun
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Status Akun
           </p>
+          <p className="text-2xl font-extrabold text-emerald-700 my-2">
+            {users.filter((u) => u.status === "Aktif").length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Aktif</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Non-aktif / Dibatasi</span>
+            <span className="font-semibold text-stone-700">
+              {users.filter((u) => u.status === "Non-aktif").length} Akun
+            </span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Super Administrator</p>
-          <p className="text-xl font-bold text-[#823296] mt-0.5">
-            {users.filter((u) => u.roleId === "super_admin").length} Akun
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Super Administrator
           </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {users.filter((u) => u.roleId === "super_admin").length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Akun</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Akses Penuh</span>
+            <span className="font-semibold text-[#823296]">RBAC</span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Akun Non-aktif</p>
-          <p className="text-xl font-bold text-stone-600 mt-0.5">
-            {users.filter((u) => u.status === "Non-aktif").length} Akun
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Operator & Koordinator
           </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {users.filter((u) => u.roleId !== "super_admin").length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Akun</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Staf & PJ Wilayah</span>
+            <span className="font-semibold text-stone-700">Operasional</span>
+          </div>
         </div>
       </div>
 
@@ -430,18 +460,13 @@ export default function UsersAdminPage() {
                             u.nama.slice(0, 2).toUpperCase()
                           )}
                         </div>
-                        <div>
-                          <div className="flex items-center gap-1.5">
-                            <p className="font-semibold text-stone-900">{u.nama}</p>
-                            {isMasterAccount(u) && (
-                              <span className="text-[10px] bg-purple-100 text-[#5E2276] font-bold px-1.5 py-0.2 rounded">
-                                Master
-                              </span>
-                            )}
-                          </div>
-                          <span className="font-mono text-[10px] text-stone-400">
-                            {u.id}
-                          </span>
+                        <div className="flex items-center gap-1.5">
+                          <p className="font-semibold text-stone-900">{u.nama}</p>
+                          {isMasterAccount(u) && (
+                            <span className="text-[10px] bg-purple-100 text-[#5E2276] font-bold px-1.5 py-0.2 rounded">
+                              Master
+                            </span>
+                          )}
                         </div>
                       </div>
                     </td>

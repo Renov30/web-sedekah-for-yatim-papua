@@ -2,9 +2,7 @@
 
 import React, { useState } from "react";
 import {
-  HeartHandshake,
   Search,
-  Filter,
   Plus,
   Download,
   CheckCircle2,
@@ -13,7 +11,6 @@ import {
   Mail,
   MapPin,
   X,
-  UserCheck,
   AlertCircle,
 } from "lucide-react";
 import { initialVolunteers, VolunteerRecord } from "@/data/admin/adminData";
@@ -164,9 +161,6 @@ export default function RelawanAdminPage() {
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
             Pendataan Relawan Lapangan
           </h1>
-          <p className="text-sm text-stone-500 mt-0.5">
-            Manajemen relawan pendamping santri yatim, tim logistik, dan tenaga medis di tanah Papua.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -189,39 +183,70 @@ export default function RelawanAdminPage() {
         </div>
       </div>
 
-      {/* Metrics Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Total Personel</p>
-          <p className="text-xl font-bold text-stone-900 mt-0.5">
-            {volunteers.length} Relawan
+      {/* Metrics Bar (3 Parts: Atas, Tengah, Bawah - No Icons) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Total Personel
           </p>
-        </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Relawan Aktif</p>
-          <p className="text-xl font-bold text-emerald-700 mt-0.5">
-            {volunteers.filter((v) => v.status === "Aktif").length} Orang
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {volunteers.length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Relawan</span>
           </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Terdaftar di SFY</span>
+            <span className="font-semibold text-stone-700">Semua Wilayah</span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Menunggu Verifikasi</p>
-          <p className="text-xl font-bold text-amber-600 mt-0.5">
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Relawan Aktif
+          </p>
+          <p className="text-2xl font-extrabold text-emerald-700 my-2">
+            {volunteers.filter((v) => v.status === "Aktif").length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Orang</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Siap Bertugas</span>
+            <span className="font-semibold text-stone-700">Lapangan & Posko</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Menunggu Verifikasi
+          </p>
+          <p className="text-2xl font-extrabold text-amber-600 my-2">
             {
               volunteers.filter((v) => v.status === "Menunggu Verifikasi")
                 .length
             }{" "}
-            Orang
+            <span className="text-xs font-medium text-stone-500 font-sans">Orang</span>
           </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Pendaftar Baru</span>
+            <span className="font-semibold text-amber-700">Perlu Review</span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Divisi Pendidikan</p>
-          <p className="text-xl font-bold text-stone-900 mt-0.5">
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Divisi Pendidikan
+          </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
             {
               volunteers.filter((v) => v.divisi === "Pendidikan & Bimbel")
                 .length
             }{" "}
-            Guru
+            <span className="text-xs font-medium text-stone-500 font-sans">Guru</span>
           </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Divisi Lainnya</span>
+            <span className="font-semibold text-stone-700">
+              {volunteers.filter((v) => v.divisi !== "Pendidikan & Bimbel").length} Relawan
+            </span>
+          </div>
         </div>
       </div>
 
@@ -296,21 +321,18 @@ export default function RelawanAdminPage() {
                     key={v.id}
                     className="hover:bg-purple-50/20 transition-colors"
                   >
-                    <td className="py-3.5 px-4">
-                      <div>
-                        <span className="font-mono text-[11px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[11px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded shrink-0">
                           {v.id}
                         </span>
-                        <p className="font-semibold text-stone-900 mt-1">
+                        <span className="font-semibold text-stone-900">
                           {v.namaLengkap}
-                        </p>
+                        </span>
                       </div>
                     </td>
-                    <td className="py-3.5 px-3">
-                      <p className="text-xs font-mono font-medium text-stone-800">
-                        {v.noTelepon}
-                      </p>
-                      <p className="text-[11px] text-stone-400">{v.email}</p>
+                    <td className="py-3.5 px-3 text-xs font-mono font-medium text-stone-800">
+                      {v.noTelepon}
                     </td>
                     <td className="py-3.5 px-3 text-xs text-stone-700">
                       <div className="flex items-center gap-1">

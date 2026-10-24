@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  MapPinHouse,
+  MapPin,
   Search,
   Plus,
   Download,
@@ -227,9 +227,6 @@ export default function AVAdminPage() {
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
             Pendataan Koordinator Lapangan (AV)
           </h1>
-          <p className="text-sm text-stone-500 mt-0.5">
-            Data Area Volunteer (PJ kampung) dan santri binaan di wilayah Merauke & sekitarnya.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -252,31 +249,66 @@ export default function AVAdminPage() {
         </div>
       </div>
 
-      {/* Metrics Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Total Koordinator AV</p>
-          <p className="text-xl font-bold text-stone-900 mt-0.5">
-            {avList.length} Personel
+      {/* Metrics Bar (3 Parts: Atas, Tengah, Bawah - No Icons) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Total Koordinator AV
           </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {avList.length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Personel</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Penanggung Jawab</span>
+            <span className="font-semibold text-stone-700">Wilayah Dampingan</span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">AV Aktif Bertugas</p>
-          <p className="text-xl font-bold text-emerald-700 mt-0.5">
-            {avList.filter((a) => a.status === "Aktif").length} Orang
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            AV Aktif Bertugas
           </p>
+          <p className="text-2xl font-extrabold text-emerald-700 my-2">
+            {avList.filter((a) => a.status === "Aktif").length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Orang</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Status Cuti / Nonaktif</span>
+            <span className="font-semibold text-stone-700">
+              {avList.filter((a) => a.status !== "Aktif").length} Personel
+            </span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Kampung Terjangkau</p>
-          <p className="text-xl font-bold text-[#823296] mt-0.5">
-            {uniqueKampungCount} Kampung
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Kampung Terjangkau
           </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {uniqueKampungCount}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Kampung</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Cakupan Wilayah</span>
+            <span className="font-semibold text-stone-700">Papua Selatan</span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Santri Dampingan AV</p>
-          <p className="text-xl font-bold text-blue-700 mt-0.5">
-            {totalOrphansSupervised} Anak Yatim
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Santri Dampingan AV
           </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {totalOrphansSupervised}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Anak Yatim</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Rata-rata Pendampingan</span>
+            <span className="font-semibold text-stone-700">
+              ~{avList.length > 0 ? Math.round(totalOrphansSupervised / avList.length) : 0} Santri/AV
+            </span>
+          </div>
         </div>
       </div>
 
@@ -353,16 +385,16 @@ export default function AVAdminPage() {
                     className="hover:bg-purple-50/20 transition-colors"
                   >
                     <td className="py-3.5 px-4">
-                      <div>
-                        <span className="font-mono text-[11px] font-semibold text-[#823296] bg-purple-50 px-1.5 py-0.5 rounded">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[11px] font-semibold text-[#823296] bg-purple-50 px-1.5 py-0.5 rounded shrink-0">
                           {av.id}
                         </span>
-                        <p className="font-semibold text-stone-900 mt-1">
+                        <span className="font-semibold text-stone-900">
                           {av.nama}
-                        </p>
+                        </span>
                       </div>
                     </td>
-                    <td className="py-3.5 px-3">
+                    <td className="py-3.5 px-3 whitespace-nowrap">
                       <a
                         href={`https://wa.me/${av.noHp.replace(/[^0-9]/g, "")}`}
                         target="_blank"
@@ -375,36 +407,24 @@ export default function AVAdminPage() {
                       </a>
                     </td>
                     <td className="py-3.5 px-3">
-                      <div className="flex items-center gap-1.5">
-                        <MapPinHouse className="w-3.5 h-3.5 text-[#823296] shrink-0" />
-                        <span className="font-semibold text-stone-900 text-xs">
-                          {av.kampung}
-                        </span>
+                      <div className="flex items-center gap-1.5 text-xs text-stone-800">
+                        <MapPin className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                        <span>{av.kampung}, {av.distrik}</span>
                       </div>
-                      <p className="text-[11px] text-stone-500 pl-5">
-                        {av.distrik}, {av.kabupaten}
-                      </p>
                     </td>
                     <td className="py-3.5 px-3 text-xs text-stone-600 max-w-[220px] truncate" title={av.alamat}>
                       {av.alamat}
                     </td>
                     <td className="py-3.5 px-3">
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                            av.anakDampingan.length > 0
-                              ? "bg-purple-100 text-purple-800"
-                              : "bg-stone-100 text-stone-600"
-                          }`}
-                        >
-                          {av.anakDampingan.length} Anak
-                        </span>
-                      </div>
-                      {av.anakDampingan.length > 0 && (
-                        <p className="text-[11px] text-stone-500 truncate max-w-[160px] mt-0.5">
-                          {av.anakDampingan.join(", ")}
-                        </p>
-                      )}
+                      <span
+                        className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${
+                          av.anakDampingan.length > 0
+                            ? "bg-purple-100 text-purple-800"
+                            : "bg-stone-100 text-stone-600"
+                        }`}
+                      >
+                        {av.anakDampingan.length} Anak
+                      </span>
                     </td>
                     <td className="py-3.5 px-3 text-xs text-stone-500">
                       {av.tanggalBergabung}

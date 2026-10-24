@@ -116,8 +116,6 @@ export default function AdminLayout({
           <AdminHeader
             onToggleSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
             isSidebarOpen={mobileSidebarOpen}
-            onToggleCollapse={toggleSidebarCollapse}
-            isSidebarCollapsed={isSidebarCollapsed}
           />
         </div>
         <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 xl:p-10 focus:outline-none">

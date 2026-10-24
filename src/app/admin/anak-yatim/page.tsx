@@ -314,9 +314,6 @@ export default function AnakYatimAdminPage() {
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
             Pendataan Anak Yatim Papua
           </h1>
-          <p className="text-sm text-stone-500 mt-0.5">
-            Database santri binaan, yatim/piatu dhuafa, dan asrama SFY di berbagai distrik Papua.
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -339,35 +336,73 @@ export default function AnakYatimAdminPage() {
         </div>
       </div>
 
-      {/* Quick Metrics Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Total Santri Yatim</p>
-          <p className="text-xl font-bold text-stone-900 mt-0.5">
-            {orphans.length} Anak
+      {/* Quick Metrics Bar (3 Parts: Atas, Tengah, Bawah - No Icons) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Total Santri Yatim
           </p>
-        </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Status Yatim Piatu</p>
-          <p className="text-xl font-bold text-stone-900 mt-0.5">
-            {orphans.filter((o) => o.status === "Yatim Piatu").length} Anak
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {orphans.length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Anak</span>
           </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Terverifikasi</span>
+            <span className="font-semibold text-stone-700">
+              {orphans.filter((o) => o.statusVerifikasi === "Terverifikasi").length} Santri
+            </span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Asrama Binaan SFY</p>
-          <p className="text-xl font-bold text-stone-900 mt-0.5">
-            {orphans.filter((o) => o.tempatTinggal.includes("Asrama")).length} Anak
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Status Yatim Piatu
           </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {orphans.filter((o) => o.status === "Yatim Piatu").length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Anak</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Yatim / Piatu</span>
+            <span className="font-semibold text-stone-700">
+              {orphans.filter((o) => o.status !== "Yatim Piatu").length} Anak
+            </span>
+          </div>
         </div>
-        <div className="bg-white p-3.5 rounded-xl border border-stone-200/80">
-          <p className="text-xs text-stone-500">Menunggu Survei</p>
-          <p className="text-xl font-bold text-amber-600 mt-0.5">
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Tempat Tinggal
+          </p>
+          <p className="text-2xl font-extrabold text-stone-900 my-2">
+            {orphans.filter((o) => o.tempatTinggal.includes("Asrama")).length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">di Asrama</span>
+          </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Bersama Keluarga</span>
+            <span className="font-semibold text-stone-700">
+              {orphans.filter((o) => !o.tempatTinggal.includes("Asrama")).length} Anak
+            </span>
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+            Menunggu Survei
+          </p>
+          <p className="text-2xl font-extrabold text-amber-600 my-2">
             {
               orphans.filter((o) => o.statusVerifikasi === "Menunggu Survei")
                 .length
             }{" "}
-            Anak
+            <span className="text-xs font-medium text-stone-500 font-sans">Anak</span>
           </p>
+          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
+            <span>Perlu Pembaruan</span>
+            <span className="font-semibold text-rose-600">
+              {orphans.filter((o) => o.statusVerifikasi === "Perlu Pembaruan").length} Anak
+            </span>
+          </div>
         </div>
       </div>
 
@@ -556,24 +591,18 @@ export default function AnakYatimAdminPage() {
                     className="hover:bg-purple-50/20 transition-colors"
                   >
                     <td className="py-3.5 px-4">
-                      <div>
-                        <span className="font-mono text-[11px] font-semibold text-[#823296] bg-purple-50 px-1.5 py-0.5 rounded">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[11px] font-semibold text-[#823296] bg-purple-50 px-1.5 py-0.5 rounded shrink-0">
                           {orphan.id}
                         </span>
-                        <p className="font-semibold text-stone-900 mt-1">
+                        <span className="font-semibold text-stone-900">
                           {orphan.namaLengkap}
-                        </p>
-                        <p className="text-xs text-stone-500">
-                          Panggilan: &quot;{orphan.namaPanggilan}&quot;
-                        </p>
+                        </span>
                       </div>
                     </td>
-                    <td className="py-3.5 px-3">
-                      <span className="text-stone-800 font-medium">
-                        {orphan.usia} th
-                      </span>
-                      <span className="text-xs text-stone-400 block">
-                        {orphan.gender === "L" ? "Laki-laki" : "Perempuan"}
+                    <td className="py-3.5 px-3 whitespace-nowrap">
+                      <span className="text-stone-800 text-xs font-medium">
+                        {orphan.usia} th ({orphan.gender === "L" ? "L" : "P"})
                       </span>
                     </td>
                     <td className="py-3.5 px-3">
@@ -590,24 +619,20 @@ export default function AnakYatimAdminPage() {
                       </span>
                     </td>
                     <td className="py-3.5 px-3">
-                      <div className="flex items-center gap-1 font-semibold text-stone-900 text-xs">
-                        <MapPinHouse className="w-3.5 h-3.5 text-[#823296] shrink-0" />
-                        <span>{orphan.kampung || orphan.asalDaerah}</span>
+                      <div className="flex items-center gap-1.5 text-xs text-stone-800">
+                        <MapPin className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                        <span>{orphan.kampung ? `${orphan.kampung}, ${orphan.asalDaerah}` : orphan.asalDaerah}</span>
                       </div>
-                      <p className="text-[11px] text-stone-500 pl-4">
-                        {orphan.asalDaerah}, {orphan.kabupaten}
-                      </p>
                     </td>
                     <td className="py-3.5 px-3">
-                      <p className="text-xs text-stone-800 font-medium">
+                      <p className="text-xs text-stone-800">
                         {orphan.tempatTinggal}
                       </p>
-                      <p className="text-[11px] text-stone-500">
-                        Wali: {orphan.wali}
-                      </p>
-                      <p className="text-[11px] text-purple-700 font-semibold mt-0.5">
-                        PJ AV: {orphan.pjAvNama || "Belum ada"}
-                      </p>
+                      {orphan.pjAvNama && orphan.pjAvNama !== "Belum ditentukan" && (
+                        <p className="text-[11px] text-[#5E2276] font-medium mt-0.5">
+                          PJ: {orphan.pjAvNama}
+                        </p>
+                      )}
                     </td>
                     <td className="py-3.5 px-3 text-xs text-stone-700">
                       {orphan.jenjangPendidikan}
