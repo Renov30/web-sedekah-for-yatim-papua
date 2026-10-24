@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import {
-  GraduationCap,
   Search,
-  Filter,
   Plus,
   Download,
   Eye,
@@ -15,16 +13,17 @@ import {
   X,
   MapPin,
   MapPinHouse,
-  User,
-  BookOpen,
-  Calendar,
+  RotateCcw,
 } from "lucide-react";
 import { initialOrphans, initialAVs, OrphanRecord } from "@/data/admin/adminData";
 
 export default function AnakYatimAdminPage() {
   const [orphans, setOrphans] = useState<OrphanRecord[]>(initialOrphans);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterKabupaten, setFilterKabupaten] = useState("all");
+  const [filterDistrik, setFilterDistrik] = useState("all");
+  const [filterKampung, setFilterKampung] = useState("all");
+  const [filterUsia, setFilterUsia] = useState("all");
+  const [filterGender, setFilterGender] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterVerif, setFilterVerif] = useState("all");
 
@@ -55,23 +54,86 @@ export default function AnakYatimAdminPage() {
       | "Perlu Pembaruan",
   });
 
+  // Dynamic filter lists from data
+  const uniqueDistriks = useMemo(() => {
+    const list = orphans.map((o) => o.asalDaerah).filter(Boolean);
+    return Array.from(new Set(list)).sort();
+  }, [orphans]);
+
+  const uniqueKampungs = useMemo(() => {
+    const list = orphans
+      .map((o) => o.kampung)
+      .filter((k): k is string => Boolean(k));
+    return Array.from(new Set(list)).sort();
+  }, [orphans]);
+
+  const isFilterActive =
+    searchQuery !== "" ||
+    filterDistrik !== "all" ||
+    filterKampung !== "all" ||
+    filterUsia !== "all" ||
+    filterGender !== "all" ||
+    filterStatus !== "all" ||
+    filterVerif !== "all";
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setFilterDistrik("all");
+    setFilterKampung("all");
+    setFilterUsia("all");
+    setFilterGender("all");
+    setFilterStatus("all");
+    setFilterVerif("all");
+  };
+
   // Filtered List
   const filteredOrphans = orphans.filter((item) => {
     const matchesSearch =
       item.namaLengkap.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.asalDaerah.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (item.kampung && item.kampung.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (item.pjAvNama && item.pjAvNama.toLowerCase().includes(searchQuery.toLowerCase()));
+      (item.kampung &&
+        item.kampung.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (item.pjAvNama &&
+        item.pjAvNama.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    const matchesKab =
-      filterKabupaten === "all" || item.kabupaten === filterKabupaten;
+    const matchesDistrik =
+      filterDistrik === "all" || item.asalDaerah === filterDistrik;
+
+    const matchesKampung =
+      filterKampung === "all" || item.kampung === filterKampung;
+
+    const matchesGender =
+      filterGender === "all" || item.gender === filterGender;
+
+    let matchesUsia = true;
+    if (filterUsia === "balita") {
+      matchesUsia = item.usia < 7;
+    } else if (filterUsia === "sd") {
+      matchesUsia = item.usia >= 7 && item.usia <= 12;
+    } else if (filterUsia === "smp") {
+      matchesUsia = item.usia >= 13 && item.usia <= 15;
+    } else if (filterUsia === "sma") {
+      matchesUsia = item.usia >= 16 && item.usia <= 18;
+    } else if (filterUsia === "dewasa") {
+      matchesUsia = item.usia > 18;
+    }
+
     const matchesStatus =
       filterStatus === "all" || item.status === filterStatus;
+
     const matchesVerif =
       filterVerif === "all" || item.statusVerifikasi === filterVerif;
 
-    return matchesSearch && matchesKab && matchesStatus && matchesVerif;
+    return (
+      matchesSearch &&
+      matchesDistrik &&
+      matchesKampung &&
+      matchesGender &&
+      matchesUsia &&
+      matchesStatus &&
+      matchesVerif
+    );
   });
 
   const handleAddSubmit = (e: React.FormEvent) => {
@@ -267,55 +329,152 @@ export default function AnakYatimAdminPage() {
 
       {/* Filters and Search Bar */}
       <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs space-y-3">
-        <div className="flex flex-col sm:flex-row gap-3">
-          {/* Search Input */}
+        {/* Row 1: Search & Reset */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative flex-1">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
             <input
               type="text"
-              placeholder="Cari nama santri, ID, atau distrik..."
+              placeholder="Cari nama santri, ID, kampung, distrik, atau PJ AV..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-2 rounded-xl text-sm border border-stone-200 focus:outline-none focus:border-[#823296] focus:ring-1 focus:ring-[#823296]"
             />
           </div>
 
-          {/* Filter Kabupaten */}
-          <select
-            value={filterKabupaten}
-            onChange={(e) => setFilterKabupaten(e.target.value)}
-            className="px-3 py-2 rounded-xl text-sm border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700"
-          >
-            <option value="all">Semua Kabupaten/Wilayah</option>
-            <option value="Kab. Merauke">Kab. Merauke (Basis Utama)</option>
-            <option value="Kab. Boven Digoel">Kab. Boven Digoel</option>
-            <option value="Kab. Mappi">Kab. Mappi</option>
-            <option value="Kab. Asmat">Kab. Asmat</option>
-          </select>
+          {isFilterActive && (
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-stone-700 bg-stone-100 hover:bg-stone-200 hover:text-stone-900 transition-colors shrink-0 cursor-pointer"
+              title="Reset semua filter ke default"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-stone-500" />
+              <span>Reset Filter</span>
+            </button>
+          )}
+        </div>
+
+        {/* Row 2: Grid of filters (Distrik, Kampung, Usia, Gender, Status Yatim, Verifikasi) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-2 border-t border-stone-100 text-xs">
+          {/* Filter Distrik */}
+          <div>
+            <label className="block text-[11px] font-medium text-stone-500 mb-1">
+              Distrik
+            </label>
+            <select
+              value={filterDistrik}
+              onChange={(e) => setFilterDistrik(e.target.value)}
+              className="w-full px-2.5 py-1.5 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700 truncate"
+            >
+              <option value="all">Semua Distrik</option>
+              {uniqueDistriks.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Filter Kampung */}
+          <div>
+            <label className="block text-[11px] font-medium text-stone-500 mb-1">
+              Kampung
+            </label>
+            <select
+              value={filterKampung}
+              onChange={(e) => setFilterKampung(e.target.value)}
+              className="w-full px-2.5 py-1.5 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700 truncate"
+            >
+              <option value="all">Semua Kampung</option>
+              {uniqueKampungs.map((k) => (
+                <option key={k} value={k}>
+                  {k}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Filter Usia */}
+          <div>
+            <label className="block text-[11px] font-medium text-stone-500 mb-1">
+              Rentang Usia
+            </label>
+            <select
+              value={filterUsia}
+              onChange={(e) => setFilterUsia(e.target.value)}
+              className="w-full px-2.5 py-1.5 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700 truncate"
+            >
+              <option value="all">Semua Usia</option>
+              <option value="balita">&lt; 7 th (Balita/PAUD)</option>
+              <option value="sd">7 - 12 th (Usia SD)</option>
+              <option value="smp">13 - 15 th (Usia SMP)</option>
+              <option value="sma">16 - 18 th (Usia SMA)</option>
+              <option value="dewasa">&gt; 18 th</option>
+            </select>
+          </div>
+
+          {/* Filter Gender */}
+          <div>
+            <label className="block text-[11px] font-medium text-stone-500 mb-1">
+              Jenis Kelamin
+            </label>
+            <select
+              value={filterGender}
+              onChange={(e) => setFilterGender(e.target.value)}
+              className="w-full px-2.5 py-1.5 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700 truncate"
+            >
+              <option value="all">Semua Gender</option>
+              <option value="L">Laki-laki (L)</option>
+              <option value="P">Perempuan (P)</option>
+            </select>
+          </div>
 
           {/* Filter Status Yatim */}
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 rounded-xl text-sm border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700"
-          >
-            <option value="all">Semua Status Yatim</option>
-            <option value="Yatim">Yatim</option>
-            <option value="Piatu">Piatu</option>
-            <option value="Yatim Piatu">Yatim Piatu</option>
-          </select>
+          <div>
+            <label className="block text-[11px] font-medium text-stone-500 mb-1">
+              Status Yatim
+            </label>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="w-full px-2.5 py-1.5 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700 truncate"
+            >
+              <option value="all">Semua Status</option>
+              <option value="Yatim">Yatim</option>
+              <option value="Piatu">Piatu</option>
+              <option value="Yatim Piatu">Yatim Piatu</option>
+            </select>
+          </div>
 
           {/* Filter Status Verifikasi */}
-          <select
-            value={filterVerif}
-            onChange={(e) => setFilterVerif(e.target.value)}
-            className="px-3 py-2 rounded-xl text-sm border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700"
-          >
-            <option value="all">Semua Status Verifikasi</option>
-            <option value="Terverifikasi">Terverifikasi</option>
-            <option value="Menunggu Survei">Menunggu Survei</option>
-            <option value="Perlu Pembaruan">Perlu Pembaruan</option>
-          </select>
+          <div>
+            <label className="block text-[11px] font-medium text-stone-500 mb-1">
+              Verifikasi
+            </label>
+            <select
+              value={filterVerif}
+              onChange={(e) => setFilterVerif(e.target.value)}
+              className="w-full px-2.5 py-1.5 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700 truncate"
+            >
+              <option value="all">Semua Status</option>
+              <option value="Terverifikasi">Terverifikasi</option>
+              <option value="Menunggu Survei">Menunggu Survei</option>
+              <option value="Perlu Pembaruan">Perlu Pembaruan</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Filter Results Summary */}
+        <div className="flex items-center justify-between text-xs text-stone-500 pt-1">
+          <span>
+            Menampilkan <strong>{filteredOrphans.length}</strong> dari <strong>{orphans.length}</strong> santri yatim
+          </span>
+          {isFilterActive && (
+            <span className="text-[11px] text-[#823296] font-medium">
+              Filter aktif diterapkan
+            </span>
+          )}
         </div>
       </div>
 
