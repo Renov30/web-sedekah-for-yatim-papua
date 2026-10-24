@@ -11,6 +11,7 @@ import {
   X,
   Edit2,
   Trash2,
+  RotateCcw,
   Building2,
 } from "lucide-react";
 import {
@@ -21,13 +22,18 @@ import {
   addDistrik,
   updateDistrik,
   deleteDistrik,
+  softDeleteDistrik,
+  restoreDistrik,
   addKampung,
   updateKampung,
   deleteKampung,
+  softDeleteKampung,
+  restoreKampung,
 } from "@/lib/wilayah";
 
 export default function MasterWilayahAdminPage() {
   const [activeTab, setActiveTab] = useState<"kampung" | "distrik">("kampung");
+  const [viewTrash, setViewTrash] = useState(false);
 
   const [distriks, setDistriks] = useState<DistrikRecord[]>([]);
   const [kampungs, setKampungs] = useState<KampungRecord[]>([]);
@@ -47,6 +53,8 @@ export default function MasterWilayahAdminPage() {
   const [isAddKampungOpen, setIsAddKampungOpen] = useState(false);
   const [editingKampung, setEditingKampung] = useState<KampungRecord | null>(null);
   const [deletingKampung, setDeletingKampung] = useState<KampungRecord | null>(null);
+  const [permanentDeleteTargetKampung, setPermanentDeleteTargetKampung] =
+    useState<KampungRecord | null>(null);
   const [kampungForm, setKampungForm] = useState({
     nama: "",
     distrikNama: "Distrik Merauke",
@@ -58,6 +66,8 @@ export default function MasterWilayahAdminPage() {
   const [isAddDistrikOpen, setIsAddDistrikOpen] = useState(false);
   const [editingDistrik, setEditingDistrik] = useState<DistrikRecord | null>(null);
   const [deletingDistrik, setDeletingDistrik] = useState<DistrikRecord | null>(null);
+  const [permanentDeleteTargetDistrik, setPermanentDeleteTargetDistrik] =
+    useState<DistrikRecord | null>(null);
   const [distrikForm, setDistrikForm] = useState({
     nama: "",
     kabupaten: "Kab. Merauke",
@@ -82,9 +92,27 @@ export default function MasterWilayahAdminPage() {
     }, 4000);
   };
 
+  const activeKampungs = useMemo(
+    () => kampungs.filter((k) => !k.isDeleted),
+    [kampungs]
+  );
+  const deletedKampungs = useMemo(
+    () => kampungs.filter((k) => k.isDeleted),
+    [kampungs]
+  );
+  const activeDistriks = useMemo(
+    () => distriks.filter((d) => !d.isDeleted),
+    [distriks]
+  );
+  const deletedDistriks = useMemo(
+    () => distriks.filter((d) => d.isDeleted),
+    [distriks]
+  );
+
   // Filtered Kampungs
   const filteredKampungs = useMemo(() => {
-    return kampungs.filter((k) => {
+    const list = viewTrash ? deletedKampungs : activeKampungs;
+    return list.filter((k) => {
       const matchSearch =
         k.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
         k.distrikNama.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -98,11 +126,12 @@ export default function MasterWilayahAdminPage() {
 
       return matchSearch && matchDistrik && matchKab;
     });
-  }, [kampungs, searchQuery, filterDistrik, filterKabupaten]);
+  }, [viewTrash, activeKampungs, deletedKampungs, searchQuery, filterDistrik, filterKabupaten]);
 
   // Filtered Distriks
   const filteredDistriks = useMemo(() => {
-    return distriks.filter((d) => {
+    const list = viewTrash ? deletedDistriks : activeDistriks;
+    return list.filter((d) => {
       const matchSearch =
         d.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
         d.kabupaten.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -113,21 +142,21 @@ export default function MasterWilayahAdminPage() {
 
       return matchSearch && matchKab;
     });
-  }, [distriks, searchQuery, filterKabupaten]);
+  }, [viewTrash, activeDistriks, deletedDistriks, searchQuery, filterKabupaten]);
 
-  // Count kampungs per distrik
+  // Count kampungs per distrik (active kampungs)
   const getKampungCountForDistrik = (distrikNama: string) => {
-    return kampungs.filter(
+    return activeKampungs.filter(
       (k) => k.distrikNama.toLowerCase() === distrikNama.toLowerCase()
     ).length;
   };
 
   // Distinct kabupaten list
   const uniqueKabupatens = useMemo(() => {
-    const fromDistriks = distriks.map((d) => d.kabupaten);
-    const fromKampungs = kampungs.map((k) => k.kabupaten);
+    const fromDistriks = activeDistriks.map((d) => d.kabupaten);
+    const fromKampungs = activeKampungs.map((k) => k.kabupaten);
     return Array.from(new Set([...fromDistriks, ...fromKampungs])).sort();
-  }, [distriks, kampungs]);
+  }, [activeDistriks, activeKampungs]);
 
   // --- Handlers: Kampung ---
   const handleAddKampungSubmit = (e: React.FormEvent) => {
@@ -148,7 +177,7 @@ export default function MasterWilayahAdminPage() {
     setIsAddKampungOpen(false);
     setKampungForm({
       nama: "",
-      distrikNama: distriks[0]?.nama || "Distrik Merauke",
+      distrikNama: activeDistriks[0]?.nama || "Distrik Merauke",
       kabupaten: "Kab. Merauke",
       catatan: "",
     });
@@ -176,9 +205,9 @@ export default function MasterWilayahAdminPage() {
     showNotification("success", `Data kampung "${kampungForm.nama}" berhasil diperbarui.`);
   };
 
-  const handleDeleteKampung = () => {
+  const handleSoftDeleteKampung = () => {
     if (!deletingKampung) return;
-    const res = deleteKampung(deletingKampung.id);
+    const res = softDeleteKampung(deletingKampung.id);
 
     if (!res.success) {
       showNotification("error", res.message || "Gagal menghapus kampung.");
@@ -188,7 +217,33 @@ export default function MasterWilayahAdminPage() {
 
     refreshData();
     setDeletingKampung(null);
-    showNotification("success", `Kampung "${deletingKampung.nama}" berhasil dihapus.`);
+    showNotification("success", `Kampung "${deletingKampung.nama}" dipindahkan ke Kotak Sampah.`);
+  };
+
+  const handleRestoreKampung = (id: string) => {
+    const res = restoreKampung(id);
+    if (!res.success) {
+      showNotification("error", res.message || "Gagal memulihkan kampung.");
+      return;
+    }
+
+    refreshData();
+    showNotification("success", "Kampung berhasil dipulihkan.");
+  };
+
+  const handlePermanentDeleteKampung = () => {
+    if (!permanentDeleteTargetKampung) return;
+    const res = deleteKampung(permanentDeleteTargetKampung.id);
+
+    if (!res.success) {
+      showNotification("error", res.message || "Gagal menghapus kampung secara permanen.");
+      setPermanentDeleteTargetKampung(null);
+      return;
+    }
+
+    refreshData();
+    setPermanentDeleteTargetKampung(null);
+    showNotification("success", `Kampung "${permanentDeleteTargetKampung.nama}" dihapus secara permanen.`);
   };
 
   // --- Handlers: Distrik ---
@@ -226,9 +281,9 @@ export default function MasterWilayahAdminPage() {
     showNotification("success", `Data distrik "${distrikForm.nama}" berhasil diperbarui.`);
   };
 
-  const handleDeleteDistrik = () => {
+  const handleSoftDeleteDistrik = () => {
     if (!deletingDistrik) return;
-    const res = deleteDistrik(deletingDistrik.id);
+    const res = softDeleteDistrik(deletingDistrik.id);
 
     if (!res.success) {
       showNotification("error", res.message || "Gagal menghapus distrik.");
@@ -238,7 +293,33 @@ export default function MasterWilayahAdminPage() {
 
     refreshData();
     setDeletingDistrik(null);
-    showNotification("success", `Distrik "${deletingDistrik.nama}" berhasil dihapus.`);
+    showNotification("success", `Distrik "${deletingDistrik.nama}" dipindahkan ke Kotak Sampah.`);
+  };
+
+  const handleRestoreDistrik = (id: string) => {
+    const res = restoreDistrik(id);
+    if (!res.success) {
+      showNotification("error", res.message || "Gagal memulihkan distrik.");
+      return;
+    }
+
+    refreshData();
+    showNotification("success", "Distrik berhasil dipulihkan.");
+  };
+
+  const handlePermanentDeleteDistrik = () => {
+    if (!permanentDeleteTargetDistrik) return;
+    const res = deleteDistrik(permanentDeleteTargetDistrik.id);
+
+    if (!res.success) {
+      showNotification("error", res.message || "Gagal menghapus distrik secara permanen.");
+      setPermanentDeleteTargetDistrik(null);
+      return;
+    }
+
+    refreshData();
+    setPermanentDeleteTargetDistrik(null);
+    showNotification("success", `Distrik "${permanentDeleteTargetDistrik.nama}" dihapus secara permanen.`);
   };
 
   // Export CSV
@@ -258,7 +339,7 @@ export default function MasterWilayahAdminPage() {
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `master_kampung_sfy_${Date.now()}.csv`);
+      link.setAttribute("download", "master_kampung_sfy.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -276,7 +357,7 @@ export default function MasterWilayahAdminPage() {
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `master_distrik_sfy_${Date.now()}.csv`);
+      link.setAttribute("download", "master_distrik_sfy.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -370,7 +451,7 @@ export default function MasterWilayahAdminPage() {
             Total Kampung
           </p>
           <p className="text-2xl font-extrabold text-stone-900 my-2">
-            {kampungs.length}{" "}
+            {activeKampungs.length}{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Kampung</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
@@ -384,7 +465,7 @@ export default function MasterWilayahAdminPage() {
             Total Distrik
           </p>
           <p className="text-2xl font-extrabold text-stone-900 my-2">
-            {distriks.length}{" "}
+            {activeDistriks.length}{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Distrik</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
@@ -412,7 +493,7 @@ export default function MasterWilayahAdminPage() {
             Rata-rata Kampung
           </p>
           <p className="text-2xl font-extrabold text-stone-900 my-2">
-            {distriks.length > 0 ? (kampungs.length / distriks.length).toFixed(1) : 0}{" "}
+            {activeDistriks.length > 0 ? (activeKampungs.length / activeDistriks.length).toFixed(1) : 0}{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">per Distrik</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
@@ -437,7 +518,7 @@ export default function MasterWilayahAdminPage() {
           }`}
         >
           <MapPin className="w-4 h-4" />
-          <span>Data Kampung ({kampungs.length})</span>
+          <span>Data Kampung ({activeKampungs.length})</span>
         </button>
         <button
           type="button"
@@ -452,7 +533,7 @@ export default function MasterWilayahAdminPage() {
           }`}
         >
           <Building2 className="w-4 h-4" />
-          <span>Data Distrik ({distriks.length})</span>
+          <span>Data Distrik ({activeDistriks.length})</span>
         </button>
       </div>
 
@@ -504,6 +585,42 @@ export default function MasterWilayahAdminPage() {
         </div>
       </div>
 
+      {/* Tabs Aktif vs Kotak Sampah */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit">
+          <button
+            type="button"
+            onClick={() => setViewTrash(false)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              !viewTrash
+                ? "bg-white text-stone-900 shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            Data Aktif ({activeTab === "kampung" ? activeKampungs.length : activeDistriks.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewTrash(true)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              viewTrash
+                ? "bg-stone-900 text-white shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>
+              Kotak Sampah ({activeTab === "kampung" ? deletedKampungs.length : deletedDistriks.length})
+            </span>
+          </button>
+        </div>
+        {viewTrash && (
+          <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg">
+            Menampilkan data {activeTab === "kampung" ? "kampung" : "distrik"} yang dihapus sementara (Soft Delete). Anda dapat memulihkannya kapan saja.
+          </span>
+        )}
+      </div>
+
       {/* Active Tab Content */}
       {activeTab === "kampung" ? (
         // Table: Kampungs
@@ -515,7 +632,9 @@ export default function MasterWilayahAdminPage() {
                   <th className="py-3.5 px-4 w-[28%] min-w-[180px]">Nama Kampung / Desa</th>
                   <th className="py-3.5 px-3 w-[20%] min-w-[150px]">Distrik Induk</th>
                   <th className="py-3.5 px-3 w-[18%] min-w-[130px]">Kabupaten</th>
-                  <th className="py-3.5 px-3 w-[26%] min-w-[180px]">Catatan / Posko Lapangan</th>
+                  <th className="py-3.5 px-3 w-[26%] min-w-[180px]">
+                    {viewTrash ? "Tgl Dihapus" : "Catatan / Posko Lapangan"}
+                  </th>
                   <th className="py-3.5 px-4 w-[8%] min-w-[80px] text-right">Aksi</th>
                 </tr>
               </thead>
@@ -526,7 +645,9 @@ export default function MasterWilayahAdminPage() {
                       colSpan={5}
                       className="py-10 text-center text-stone-500 text-sm"
                     >
-                      Tidak ada kampung yang sesuai pencarian.
+                      {viewTrash
+                        ? "Kotak sampah kosong. Tidak ada data kampung yang terhapus."
+                        : "Tidak ada kampung yang sesuai pencarian."}
                     </td>
                   </tr>
                 ) : (
@@ -552,35 +673,57 @@ export default function MasterWilayahAdminPage() {
                         {k.kabupaten}
                       </td>
                       <td className="py-3.5 px-3 text-xs text-stone-500 max-w-xs truncate">
-                        {k.catatan || "-"}
+                        {viewTrash ? k.deletedAt || "-" : k.catatan || "-"}
                       </td>
                       <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditingKampung(k);
-                              setKampungForm({
-                                nama: k.nama,
-                                distrikNama: k.distrikNama,
-                                kabupaten: k.kabupaten,
-                                catatan: k.catatan || "",
-                              });
-                            }}
-                            className="p-1.5 rounded-lg text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors"
-                            title="Edit Kampung"
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setDeletingKampung(k)}
-                            className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                            title="Hapus Kampung"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
+                        {viewTrash ? (
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleRestoreKampung(k.id)}
+                              className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer"
+                              title="Pulihkan Kampung"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                              <span>Pulihkan</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setPermanentDeleteTargetKampung(k)}
+                              className="p-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                              title="Hapus Permanen"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingKampung(k);
+                                setKampungForm({
+                                  nama: k.nama,
+                                  distrikNama: k.distrikNama,
+                                  kabupaten: k.kabupaten,
+                                  catatan: k.catatan || "",
+                                });
+                              }}
+                              className="p-1.5 rounded-lg text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                              title="Edit Kampung"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeletingKampung(k)}
+                              className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                              title="Hapus ke Kotak Sampah"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -598,7 +741,9 @@ export default function MasterWilayahAdminPage() {
                 <tr>
                   <th className="py-3.5 px-4 w-[35%] min-w-[200px]">Nama Distrik</th>
                   <th className="py-3.5 px-3 w-[28%] min-w-[170px]">Kabupaten</th>
-                  <th className="py-3.5 px-3 w-[27%] min-w-[160px]">Kampung Terdaftar</th>
+                  <th className="py-3.5 px-3 w-[27%] min-w-[160px]">
+                    {viewTrash ? "Tgl Dihapus" : "Kampung Terdaftar"}
+                  </th>
                   <th className="py-3.5 px-4 w-[10%] min-w-[80px] text-right">Aksi</th>
                 </tr>
               </thead>
@@ -609,7 +754,9 @@ export default function MasterWilayahAdminPage() {
                       colSpan={4}
                       className="py-10 text-center text-stone-500 text-sm"
                     >
-                      Tidak ada distrik yang sesuai pencarian.
+                      {viewTrash
+                        ? "Kotak sampah kosong. Tidak ada data distrik yang terhapus."
+                        : "Tidak ada distrik yang sesuai pencarian."}
                     </td>
                   </tr>
                 ) : (
@@ -634,51 +781,79 @@ export default function MasterWilayahAdminPage() {
                           {d.kabupaten}
                         </td>
                         <td className="py-3.5 px-3">
-                          <span className="text-xs font-semibold text-[#823296] bg-purple-50 px-2.5 py-0.5 rounded-full">
-                            {count} Kampung
-                          </span>
+                          {viewTrash ? (
+                            <span className="text-xs text-stone-500">
+                              {d.deletedAt || "-"}
+                            </span>
+                          ) : (
+                            <span className="text-xs font-semibold text-[#823296] bg-purple-50 px-2.5 py-0.5 rounded-full">
+                              {count} Kampung
+                            </span>
+                          )}
                         </td>
                         <td className="py-3.5 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setKampungForm({
-                                  nama: "",
-                                  distrikNama: d.nama,
-                                  kabupaten: d.kabupaten,
-                                  catatan: "",
-                                });
-                                setIsAddKampungOpen(true);
-                              }}
-                              className="px-2.5 py-1 text-xs font-semibold bg-stone-100 hover:bg-[#823296] hover:text-white rounded-lg text-stone-700 transition-colors"
-                              title="Tambah Kampung di Distrik ini"
-                            >
-                              + Kampung
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setEditingDistrik(d);
-                                setDistrikForm({
-                                  nama: d.nama,
-                                  kabupaten: d.kabupaten,
-                                });
-                              }}
-                              className="p-1.5 rounded-lg text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors"
-                              title="Edit Distrik"
-                            >
-                              <Edit2 className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setDeletingDistrik(d)}
-                              className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                              title="Hapus Distrik"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
+                          {viewTrash ? (
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => handleRestoreDistrik(d.id)}
+                                className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer"
+                                title="Pulihkan Distrik"
+                              >
+                                <RotateCcw className="w-3 h-3" />
+                                <span>Pulihkan</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setPermanentDeleteTargetDistrik(d)}
+                                className="p-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                                title="Hapus Permanen"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setKampungForm({
+                                    nama: "",
+                                    distrikNama: d.nama,
+                                    kabupaten: d.kabupaten,
+                                    catatan: "",
+                                  });
+                                  setIsAddKampungOpen(true);
+                                }}
+                                className="px-2.5 py-1 text-xs font-semibold bg-stone-100 hover:bg-[#823296] hover:text-white rounded-lg text-stone-700 transition-colors cursor-pointer"
+                                title="Tambah Kampung di Distrik ini"
+                              >
+                                + Kampung
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingDistrik(d);
+                                  setDistrikForm({
+                                    nama: d.nama,
+                                    kabupaten: d.kabupaten,
+                                  });
+                                }}
+                                className="p-1.5 rounded-lg text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                                title="Edit Distrik"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setDeletingDistrik(d)}
+                                className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                                title="Hapus ke Kotak Sampah"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     );
@@ -902,31 +1077,68 @@ export default function MasterWilayahAdminPage() {
         </div>
       )}
 
-      {/* --- MODAL: Hapus Kampung --- */}
+      {/* --- MODAL: Hapus Kampung (Soft Delete) --- */}
       {deletingKampung && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
             <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
               <Trash2 className="w-5 h-5" />
-              <span>Hapus Data Kampung</span>
+              <span>Hapus Data Kampung (Soft Delete)</span>
             </h3>
             <p className="text-stone-600 leading-relaxed">
-              Apakah Anda yakin ingin menghapus <strong>{deletingKampung.nama}</strong> ({deletingKampung.distrikNama}) dari database?
+              Apakah Anda yakin ingin memindahkan data kampung <strong>{deletingKampung.nama}</strong> ({deletingKampung.distrikNama}) ke Kotak Sampah?
+            </p>
+            <p className="text-[11px] text-stone-500 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+              Data tidak akan dihapus permanen dan dapat dipulihkan sewaktu-waktu melalui tab <strong>Kotak Sampah</strong>.
             </p>
             <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
               <button
                 type="button"
                 onClick={() => setDeletingKampung(null)}
-                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200"
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 type="button"
-                onClick={handleDeleteKampung}
-                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700"
+                onClick={handleSoftDeleteKampung}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
               >
-                Ya, Hapus
+                Pindahkan ke Sampah
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- MODAL: Hapus Kampung Permanen --- */}
+      {permanentDeleteTargetKampung && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-700 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              <span>Hapus Kampung Secara Permanen</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus data kampung <strong>{permanentDeleteTargetKampung.nama}</strong> ({permanentDeleteTargetKampung.distrikNama}) secara permanen?
+            </p>
+            <p className="text-[11px] text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+              Tindakan ini tidak dapat dibatalkan. Riwayat data kampung ini akan dihapus sepenuhnya dari database lokal.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setPermanentDeleteTargetKampung(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handlePermanentDeleteKampung}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
+              >
+                Hapus Permanen
               </button>
             </div>
           </div>
@@ -1071,31 +1283,68 @@ export default function MasterWilayahAdminPage() {
         </div>
       )}
 
-      {/* --- MODAL: Hapus Distrik --- */}
+      {/* --- MODAL: Hapus Distrik (Soft Delete) --- */}
       {deletingDistrik && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
             <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
               <Trash2 className="w-5 h-5" />
-              <span>Hapus Data Distrik</span>
+              <span>Hapus Data Distrik (Soft Delete)</span>
             </h3>
             <p className="text-stone-600 leading-relaxed">
-              Apakah Anda yakin ingin menghapus <strong>{deletingDistrik.nama}</strong> ({deletingDistrik.kabupaten})?
+              Apakah Anda yakin ingin memindahkan data distrik <strong>{deletingDistrik.nama}</strong> ({deletingDistrik.kabupaten}) ke Kotak Sampah?
+            </p>
+            <p className="text-[11px] text-stone-500 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+              Data tidak akan dihapus permanen dan dapat dipulihkan sewaktu-waktu melalui tab <strong>Kotak Sampah</strong>.
             </p>
             <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
               <button
                 type="button"
                 onClick={() => setDeletingDistrik(null)}
-                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200"
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
               >
                 Batal
               </button>
               <button
                 type="button"
-                onClick={handleDeleteDistrik}
-                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700"
+                onClick={handleSoftDeleteDistrik}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
               >
-                Ya, Hapus
+                Pindahkan ke Sampah
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- MODAL: Hapus Distrik Permanen --- */}
+      {permanentDeleteTargetDistrik && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-700 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              <span>Hapus Distrik Secara Permanen</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus data distrik <strong>{permanentDeleteTargetDistrik.nama}</strong> ({permanentDeleteTargetDistrik.kabupaten}) secara permanen?
+            </p>
+            <p className="text-[11px] text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+              Tindakan ini tidak dapat dibatalkan. Riwayat data distrik ini akan dihapus sepenuhnya dari database lokal.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setPermanentDeleteTargetDistrik(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handlePermanentDeleteDistrik}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
+              >
+                Hapus Permanen
               </button>
             </div>
           </div>

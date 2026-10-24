@@ -8,6 +8,9 @@ import {
   Plus,
   Download,
   Edit2,
+  Trash2,
+  RotateCcw,
+  AlertTriangle,
   CheckCircle2,
   Clock,
   FileText,
@@ -61,17 +64,26 @@ export default function KeuanganAdminPage() {
     status: "Terverifikasi" as "Terverifikasi" | "Review",
   });
 
-  const totalIncome = transactions
+  // Trash / Soft Delete State
+  const [viewTrash, setViewTrash] = useState(false);
+  const [softDeleteTarget, setSoftDeleteTarget] = useState<FinanceTransaction | null>(null);
+  const [permanentDeleteTarget, setPermanentDeleteTarget] = useState<FinanceTransaction | null>(null);
+
+  const activeTransactions = transactions.filter((t) => !t.isDeleted);
+  const deletedTransactions = transactions.filter((t) => !!t.isDeleted);
+  const baseTransactions = viewTrash ? deletedTransactions : activeTransactions;
+
+  const totalIncome = activeTransactions
     .filter((t) => t.jenis === "Pemasukan")
     .reduce((sum, t) => sum + t.jumlah, 0);
 
-  const totalExpense = transactions
+  const totalExpense = activeTransactions
     .filter((t) => t.jenis === "Pengeluaran")
     .reduce((sum, t) => sum + t.jumlah, 0);
 
   const currentBalance = 175000000 + (totalIncome - totalExpense);
 
-  const filteredTransactions = transactions.filter((t) => {
+  const filteredTransactions = baseTransactions.filter((t) => {
     const matchesSearch =
       t.noRef.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.keterangan.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -196,6 +208,52 @@ export default function KeuanganAdminPage() {
     setEditingTx(null);
   };
 
+  const handleSoftDelete = (tx: FinanceTransaction) => {
+    const updated = transactions.map((t) => {
+      if (t.id === tx.id) {
+        return {
+          ...t,
+          isDeleted: true,
+          deletedAt: new Intl.DateTimeFormat("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }).format(new Date()),
+        };
+      }
+      return t;
+    });
+    setTransactions(updated);
+    saveStoredFinances(updated);
+    if (selectedTx?.id === tx.id) setSelectedTx(null);
+    setSoftDeleteTarget(null);
+  };
+
+  const handleRestore = (id: string) => {
+    const updated = transactions.map((t) => {
+      if (t.id === id) {
+        return {
+          ...t,
+          isDeleted: false,
+          deletedAt: undefined,
+        };
+      }
+      return t;
+    });
+    setTransactions(updated);
+    saveStoredFinances(updated);
+  };
+
+  const handlePermanentDelete = (id: string) => {
+    const updated = transactions.filter((t) => t.id !== id);
+    setTransactions(updated);
+    saveStoredFinances(updated);
+    if (selectedTx?.id === id) setSelectedTx(null);
+    setPermanentDeleteTarget(null);
+  };
+
   const handleExportCSV = () => {
     const headers = [
       "No Referensi",
@@ -228,7 +286,7 @@ export default function KeuanganAdminPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `buku_kas_sfy_papua_${Date.now()}.csv`);
+    link.setAttribute("download", "buku_kas_sfy_papua.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -361,6 +419,40 @@ export default function KeuanganAdminPage() {
         </div>
       </div>
 
+      {/* Tabs Aktif vs Kotak Sampah */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit">
+          <button
+            type="button"
+            onClick={() => setViewTrash(false)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              !viewTrash
+                ? "bg-white text-stone-900 shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            Data Aktif ({activeTransactions.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewTrash(true)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              viewTrash
+                ? "bg-stone-900 text-white shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Kotak Sampah ({deletedTransactions.length})</span>
+          </button>
+        </div>
+        {viewTrash && (
+          <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg">
+            Menampilkan catatan kas yang dihapus sementara (Soft Delete). Anda dapat memulihkannya kapan saja.
+          </span>
+        )}
+      </div>
+
       {/* Transactions Table */}
       <div className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
@@ -374,7 +466,7 @@ export default function KeuanganAdminPage() {
                 <th className="py-3.5 px-3 w-[14%] min-w-[120px] text-right">Nominal (Rp)</th>
                 <th className="py-3.5 px-3 w-[16%] min-w-[140px]">Metode & Petugas</th>
                 <th className="py-3.5 px-3 w-[9%] min-w-[85px] text-center">Audit</th>
-                <th className="py-3.5 px-4 w-[10%] min-w-[120px] text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[11%] min-w-[125px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -457,25 +549,55 @@ export default function KeuanganAdminPage() {
                       </button>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedTx(trx)}
-                          className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
-                          title="Lihat Kuitansi"
-                        >
-                          <FileText className="w-3.5 h-3.5" />
-                          <span>Kuitansi</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEdit(trx)}
-                          className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
-                          title="Edit Transaksi Kas"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                      {viewTrash ? (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleRestore(trx.id)}
+                            className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-colors cursor-pointer"
+                            title="Pulihkan Catatan Transaksi"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                            <span>Pulihkan</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPermanentDeleteTarget(trx)}
+                            className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                            title="Hapus Permanen"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedTx(trx)}
+                            className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors cursor-pointer"
+                            title="Lihat Kuitansi"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            <span>Kuitansi</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEdit(trx)}
+                            className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                            title="Edit Transaksi Kas"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSoftDeleteTarget(trx)}
+                            className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                            title="Hapus Transaksi (Soft Delete)"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -586,6 +708,17 @@ export default function KeuanganAdminPage() {
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                     <span>Edit Transaksi</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSoftDeleteTarget(selectedTx);
+                      setSelectedTx(null);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Hapus</span>
                   </button>
                   <button
                     type="button"
@@ -954,6 +1087,74 @@ export default function KeuanganAdminPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Transaksi (Soft Delete) */}
+      {softDeleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              <span>Hapus Transaksi Kas (Soft Delete)</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin memindahkan transaksi <strong>{softDeleteTarget.noRef}</strong> ({softDeleteTarget.kategori} - Rp {softDeleteTarget.jumlah.toLocaleString("id-ID")}) ke Kotak Sampah?
+            </p>
+            <p className="text-[11px] text-stone-500 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+              Catatan mutasi tidak dihapus permanen dan dapat dipulihkan kapan saja melalui tab <strong>Kotak Sampah</strong>.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setSoftDeleteTarget(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSoftDelete(softDeleteTarget)}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+              >
+                Pindahkan ke Sampah
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Permanen */}
+      {permanentDeleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-700 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              <span>Hapus Transaksi Secara Permanen</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus transaksi <strong>{permanentDeleteTarget.noRef}</strong> secara permanen?
+            </p>
+            <p className="text-[11px] text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+              Tindakan ini tidak dapat dibatalkan. Catatan keuangan ini akan dihapus sepenuhnya dari buku kas lokal.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setPermanentDeleteTarget(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePermanentDelete(permanentDeleteTarget.id)}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
+              >
+                Hapus Permanen
+              </button>
+            </div>
           </div>
         </div>
       )}

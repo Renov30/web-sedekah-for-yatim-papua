@@ -6,6 +6,8 @@ import {
   Plus,
   Download,
   Edit2,
+  Trash2,
+  RotateCcw,
   CheckCircle2,
   Clock,
   Phone,
@@ -30,6 +32,11 @@ export default function RelawanAdminPage() {
   const [selectedVolunteer, setSelectedVolunteer] =
     useState<VolunteerRecord | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [viewTrash, setViewTrash] = useState(false);
+  const [softDeleteTarget, setSoftDeleteTarget] =
+    useState<VolunteerRecord | null>(null);
+  const [permanentDeleteTarget, setPermanentDeleteTarget] =
+    useState<VolunteerRecord | null>(null);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -60,7 +67,10 @@ export default function RelawanAdminPage() {
     status: "Aktif" as VolunteerRecord["status"],
   });
 
-  const filteredVolunteers = volunteers.filter((item) => {
+  const activeVolunteers = volunteers.filter((v) => !v.isDeleted);
+  const deletedVolunteers = volunteers.filter((v) => v.isDeleted);
+
+  const filteredVolunteers = (viewTrash ? deletedVolunteers : activeVolunteers).filter((item) => {
     const matchesSearch =
       item.namaLengkap.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -74,6 +84,40 @@ export default function RelawanAdminPage() {
 
     return matchesSearch && matchesDivisi && matchesStatus;
   });
+
+  const handleSoftDelete = (volunteer: VolunteerRecord) => {
+    const updated = volunteers.map((v) =>
+      v.id === volunteer.id
+        ? { ...v, isDeleted: true, deletedAt: new Date().toISOString() }
+        : v
+    );
+    setVolunteers(updated);
+    saveStoredVolunteers(updated);
+    setSoftDeleteTarget(null);
+    if (selectedVolunteer && selectedVolunteer.id === volunteer.id) {
+      setSelectedVolunteer(null);
+    }
+  };
+
+  const handleRestore = (volunteer: VolunteerRecord) => {
+    const updated = volunteers.map((v) =>
+      v.id === volunteer.id
+        ? { ...v, isDeleted: false, deletedAt: undefined }
+        : v
+    );
+    setVolunteers(updated);
+    saveStoredVolunteers(updated);
+  };
+
+  const handlePermanentDelete = (id: string) => {
+    const updated = volunteers.filter((v) => v.id !== id);
+    setVolunteers(updated);
+    saveStoredVolunteers(updated);
+    setPermanentDeleteTarget(null);
+    if (selectedVolunteer && selectedVolunteer.id === id) {
+      setSelectedVolunteer(null);
+    }
+  };
 
   const handleToggleStatus = (id: string) => {
     setVolunteers((prev) => {
@@ -217,7 +261,7 @@ export default function RelawanAdminPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `relawan_sfy_papua_${Date.now()}.csv`);
+    link.setAttribute("download", "data_relawan_sfy_papua.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -260,7 +304,7 @@ export default function RelawanAdminPage() {
             Total Personel
           </p>
           <p className="text-2xl font-extrabold text-stone-900 my-2">
-            {volunteers.length}{" "}
+            {activeVolunteers.length}{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Relawan</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
@@ -274,7 +318,7 @@ export default function RelawanAdminPage() {
             Relawan Aktif
           </p>
           <p className="text-2xl font-extrabold text-emerald-700 my-2">
-            {volunteers.filter((v) => v.status === "Aktif").length}{" "}
+            {activeVolunteers.filter((v) => v.status === "Aktif").length}{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Orang</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
@@ -289,7 +333,7 @@ export default function RelawanAdminPage() {
           </p>
           <p className="text-2xl font-extrabold text-amber-600 my-2">
             {
-              volunteers.filter((v) => v.status === "Menunggu Verifikasi")
+              activeVolunteers.filter((v) => v.status === "Menunggu Verifikasi")
                 .length
             }{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Orang</span>
@@ -306,7 +350,7 @@ export default function RelawanAdminPage() {
           </p>
           <p className="text-2xl font-extrabold text-stone-900 my-2">
             {
-              volunteers.filter((v) => v.divisi === "Pendidikan & Bimbel")
+              activeVolunteers.filter((v) => v.divisi === "Pendidikan & Bimbel")
                 .length
             }{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Guru</span>
@@ -314,7 +358,7 @@ export default function RelawanAdminPage() {
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
             <span>Divisi Lainnya</span>
             <span className="font-semibold text-stone-700">
-              {volunteers.filter((v) => v.divisi !== "Pendidikan & Bimbel").length} Relawan
+              {activeVolunteers.filter((v) => v.divisi !== "Pendidikan & Bimbel").length} Relawan
             </span>
           </div>
         </div>
@@ -359,6 +403,40 @@ export default function RelawanAdminPage() {
         </div>
       </div>
 
+      {/* Tabs Aktif vs Kotak Sampah */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit">
+          <button
+            type="button"
+            onClick={() => setViewTrash(false)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              !viewTrash
+                ? "bg-white text-stone-900 shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            Data Aktif ({activeVolunteers.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewTrash(true)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              viewTrash
+                ? "bg-stone-900 text-white shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Kotak Sampah ({deletedVolunteers.length})</span>
+          </button>
+        </div>
+        {viewTrash && (
+          <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg">
+            Menampilkan data relawan yang dihapus sementara (Soft Delete). Anda dapat memulihkannya kapan saja.
+          </span>
+        )}
+      </div>
+
       {/* Data Table */}
       <div className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
@@ -370,7 +448,7 @@ export default function RelawanAdminPage() {
                 <th className="py-3.5 px-3 w-[18%] min-w-[150px]">Domisili Papua</th>
                 <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Divisi Penugasan</th>
                 <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Keahlian Lapangan</th>
-                <th className="py-3.5 px-3 w-[11%] min-w-[100px]">Tgl Gabung</th>
+                <th className="py-3.5 px-3 w-[11%] min-w-[100px]">{viewTrash ? "Tgl Dihapus" : "Tgl Gabung"}</th>
                 <th className="py-3.5 px-3 w-[8%] min-w-[80px] text-center">Status</th>
                 <th className="py-3.5 px-4 w-[10%] min-w-[120px] text-right">Aksi</th>
               </tr>
@@ -382,7 +460,9 @@ export default function RelawanAdminPage() {
                     colSpan={8}
                     className="py-10 text-center text-stone-500 text-sm"
                   >
-                    Tidak ditemukan data relawan yang sesuai.
+                    {viewTrash
+                      ? "Kotak sampah kosong. Tidak ada data relawan yang terhapus."
+                      : "Tidak ditemukan data relawan yang sesuai."}
                   </td>
                 </tr>
               ) : (
@@ -414,7 +494,13 @@ export default function RelawanAdminPage() {
                       {v.keahlian}
                     </td>
                     <td className="py-3.5 px-3 text-xs text-stone-500">
-                      {v.tanggalGabung}
+                      {viewTrash && v.deletedAt
+                        ? new Intl.DateTimeFormat("id-ID", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          }).format(new Date(v.deletedAt))
+                        : v.tanggalGabung}
                     </td>
                     <td className="py-3.5 px-3 text-center">
                       <button
@@ -440,24 +526,54 @@ export default function RelawanAdminPage() {
                       </button>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedVolunteer(v)}
-                          className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
-                          title="Lihat Profil"
-                        >
-                          <span>Profil</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEdit(v)}
-                          className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
-                          title="Edit Data Relawan"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                      {viewTrash ? (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleRestore(v)}
+                            className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer"
+                            title="Pulihkan Relawan"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                            <span>Pulihkan</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPermanentDeleteTarget(v)}
+                            className="p-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                            title="Hapus Permanen"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedVolunteer(v)}
+                            className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
+                            title="Lihat Profil"
+                          >
+                            <span>Profil</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEdit(v)}
+                            className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                            title="Edit Data Relawan"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSoftDeleteTarget(v)}
+                            className="p-1.5 rounded-lg border border-stone-200 text-stone-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-colors cursor-pointer"
+                            title="Hapus ke Kotak Sampah"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -536,19 +652,33 @@ export default function RelawanAdminPage() {
                 </p>
               </div>
 
-              <div className="pt-2 flex items-center justify-between border-t border-stone-100">
+              <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-stone-100">
                 <button
                   type="button"
                   onClick={() => handleToggleStatus(selectedVolunteer.id)}
-                  className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800"
+                  className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 cursor-pointer"
                 >
                   Ubah Status: {selectedVolunteer.status}
                 </button>
                 <div className="flex items-center gap-2">
+                  {!selectedVolunteer.isDeleted && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const target = selectedVolunteer;
+                        setSelectedVolunteer(null);
+                        setSoftDeleteTarget(target);
+                      }}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Hapus</span>
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => handleOpenEdit(selectedVolunteer)}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl bg-purple-50 text-[#823296] hover:bg-purple-100 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl bg-purple-50 text-[#823296] hover:bg-purple-100 transition-colors cursor-pointer"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                     <span>Edit Data</span>
@@ -879,6 +1009,74 @@ export default function RelawanAdminPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Data Relawan (Soft Delete) */}
+      {softDeleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              <span>Hapus Data Relawan (Soft Delete)</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin memindahkan data relawan <strong>{softDeleteTarget.namaLengkap}</strong> ({softDeleteTarget.divisi}) ke Kotak Sampah?
+            </p>
+            <p className="text-[11px] text-stone-500 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+              Data tidak akan dihapus permanen dan dapat dipulihkan sewaktu-waktu melalui tab <strong>Kotak Sampah</strong>.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setSoftDeleteTarget(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSoftDelete(softDeleteTarget)}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+              >
+                Pindahkan ke Sampah
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Permanen */}
+      {permanentDeleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-700 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              <span>Hapus Data Secara Permanen</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus data relawan <strong>{permanentDeleteTarget.namaLengkap}</strong> secara permanen?
+            </p>
+            <p className="text-[11px] text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+              Tindakan ini tidak dapat dibatalkan. Riwayat data relawan ini akan dihapus sepenuhnya dari database lokal.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setPermanentDeleteTarget(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePermanentDelete(permanentDeleteTarget.id)}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
+              >
+                Hapus Permanen
+              </button>
+            </div>
           </div>
         </div>
       )}

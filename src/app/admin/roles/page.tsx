@@ -7,6 +7,9 @@ import {
   KeyRound,
   Users,
   Edit2,
+  Trash2,
+  RotateCcw,
+  AlertCircle,
   X,
   ArrowRight,
 } from "lucide-react";
@@ -19,6 +22,12 @@ import {
 export default function RolesAdminPage() {
   const [roles, setRoles] = useState<RoleDefinition[]>(initialRoles);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [viewTrash, setViewTrash] = useState(false);
+  const [softDeleteTarget, setSoftDeleteTarget] =
+    useState<RoleDefinition | null>(null);
+  const [permanentDeleteTarget, setPermanentDeleteTarget] =
+    useState<RoleDefinition | null>(null);
+
   const [formData, setFormData] = useState({
     nama: "",
     deskripsi: "",
@@ -36,6 +45,40 @@ export default function RolesAdminPage() {
       setRoles(getStoredRoles());
     });
   }, []);
+
+  const activeRoles = roles.filter((r) => !r.isDeleted);
+  const deletedRoles = roles.filter((r) => r.isDeleted);
+  const displayedRoles = viewTrash ? deletedRoles : activeRoles;
+
+  const handleSoftDelete = (role: RoleDefinition) => {
+    if (role.id === "super_admin") return;
+    const updated = roles.map((r) =>
+      r.id === role.id
+        ? { ...r, isDeleted: true, deletedAt: new Date().toISOString() }
+        : r
+    );
+    setRoles(updated);
+    saveStoredRoles(updated);
+    setSoftDeleteTarget(null);
+  };
+
+  const handleRestore = (role: RoleDefinition) => {
+    const updated = roles.map((r) =>
+      r.id === role.id
+        ? { ...r, isDeleted: false, deletedAt: undefined }
+        : r
+    );
+    setRoles(updated);
+    saveStoredRoles(updated);
+  };
+
+  const handlePermanentDelete = (id: string) => {
+    if (id === "super_admin") return;
+    const updated = roles.filter((r) => r.id !== id);
+    setRoles(updated);
+    saveStoredRoles(updated);
+    setPermanentDeleteTarget(null);
+  };
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,55 +155,131 @@ export default function RolesAdminPage() {
         </div>
       </div>
 
-      {/* Role Grid Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {roles.map((role) => (
-          <div
-            key={role.id}
-            className="bg-white rounded-2xl border border-stone-200/80 p-5 shadow-2xs flex flex-col justify-between hover:border-[#823296]/30 transition-colors"
+      {/* Tabs Aktif vs Kotak Sampah */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit">
+          <button
+            type="button"
+            onClick={() => setViewTrash(false)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              !viewTrash
+                ? "bg-white text-stone-900 shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
           >
-            <div>
-              <div className="flex items-center justify-between gap-2">
-                <h2 className="text-base font-bold text-stone-900">
-                  {role.nama}
-                </h2>
-                <span className="flex items-center gap-1 text-xs text-stone-500 font-medium">
-                  <Users className="w-3.5 h-3.5" />
-                  <span>{role.userCount} User</span>
-                </span>
-              </div>
-
-              <p className="text-xs text-stone-600 mt-2 line-clamp-2">
-                {role.deskripsi}
-              </p>
-            </div>
-
-            <div className="pt-4 mt-4 border-t border-stone-100 flex items-center justify-between">
-              <span className="font-mono text-[10px] text-stone-400">
-                id: {role.id}
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleOpenEdit(role)}
-                  className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
-                  title="Edit Role & Deskripsi"
-                >
-                  <Edit2 className="w-3 h-3" />
-                  <span>Edit</span>
-                </button>
-                <Link
-                  href={`/admin/permissions?role=${role.id}`}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#823296] hover:text-[#5E2276] hover:underline"
-                >
-                  <span>Hak Akses</span>
-                  <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        ))}
+            Data Aktif ({activeRoles.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewTrash(true)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              viewTrash
+                ? "bg-stone-900 text-white shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Kotak Sampah ({deletedRoles.length})</span>
+          </button>
+        </div>
+        {viewTrash && (
+          <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg">
+            Menampilkan data role/jabatan yang dihapus sementara (Soft Delete).
+          </span>
+        )}
       </div>
+
+      {/* Role Grid Cards */}
+      {displayedRoles.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-stone-200/80 p-12 text-center text-stone-500 text-sm">
+          {viewTrash
+            ? "Kotak sampah kosong. Tidak ada role atau jabatan yang terhapus."
+            : "Belum ada data role atau jabatan terdaftar."}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {displayedRoles.map((role) => (
+            <div
+              key={role.id}
+              className="bg-white rounded-2xl border border-stone-200/80 p-5 shadow-2xs flex flex-col justify-between hover:border-[#823296]/30 transition-colors"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <h2 className="text-base font-bold text-stone-900">
+                    {role.nama}
+                  </h2>
+                  <span className="flex items-center gap-1 text-xs text-stone-500 font-medium">
+                    <Users className="w-3.5 h-3.5" />
+                    <span>{role.userCount} User</span>
+                  </span>
+                </div>
+
+                <p className="text-xs text-stone-600 mt-2 line-clamp-2">
+                  {role.deskripsi}
+                </p>
+              </div>
+
+              <div className="pt-4 mt-4 border-t border-stone-100 flex items-center justify-between">
+                <span className="font-mono text-[10px] text-stone-400">
+                  id: {role.id}
+                </span>
+                <div className="flex items-center gap-2">
+                  {viewTrash ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleRestore(role)}
+                        className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer"
+                        title="Pulihkan Role"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        <span>Pulihkan</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPermanentDeleteTarget(role)}
+                        className="p-1 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                        title="Hapus Permanen"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEdit(role)}
+                        className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                        title="Edit Role & Deskripsi"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                        <span>Edit</span>
+                      </button>
+                      {role.id !== "super_admin" && (
+                        <button
+                          type="button"
+                          onClick={() => setSoftDeleteTarget(role)}
+                          className="p-1 rounded-lg border border-stone-200 text-stone-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-colors cursor-pointer"
+                          title="Hapus ke Kotak Sampah"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <Link
+                        href={`/admin/permissions?role=${role.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#823296] hover:text-[#5E2276] hover:underline"
+                      >
+                        <span>Hak Akses</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Add Role Modal */}
       {isAddModalOpen && (
@@ -304,6 +423,74 @@ export default function RolesAdminPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Data Role (Soft Delete) */}
+      {softDeleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              <span>Hapus Data Role (Soft Delete)</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin memindahkan role/jabatan <strong>{softDeleteTarget.nama}</strong> ke Kotak Sampah?
+            </p>
+            <p className="text-[11px] text-stone-500 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+              Role ini tidak akan dihapus permanen dan dapat dipulihkan sewaktu-waktu melalui tab <strong>Kotak Sampah</strong>.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setSoftDeleteTarget(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSoftDelete(softDeleteTarget)}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+              >
+                Pindahkan ke Sampah
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Permanen */}
+      {permanentDeleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-700 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              <span>Hapus Role Secara Permanen</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus role <strong>{permanentDeleteTarget.nama}</strong> secara permanen?
+            </p>
+            <p className="text-[11px] text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+              Tindakan ini tidak dapat dibatalkan. Riwayat role ini akan dihapus sepenuhnya dari database lokal.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setPermanentDeleteTarget(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePermanentDelete(permanentDeleteTarget.id)}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
+              >
+                Hapus Permanen
+              </button>
+            </div>
           </div>
         </div>
       )}

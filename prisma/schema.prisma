@@ -15,6 +15,8 @@ model Role {
   nama        String
   badgeColor  String   @default("bg-purple-100 text-purple-900 border-purple-300")
   deskripsi   String
+  isDeleted   Boolean  @default(false)
+  deletedAt   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -53,6 +55,8 @@ model User {
   status        String   @default("Aktif") // "Aktif" | "Non-aktif"
   wilayahTugas  String   @default("Sekretariat Pusat Jayapura")
   terakhirLogin String?
+  isDeleted     Boolean  @default(false)
+  deletedAt     String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -68,6 +72,8 @@ model District {
   id        String    @id // e.g. "DST-001"
   nama      String    @unique // e.g. "Distrik Merauke"
   kabupaten String    @default("Kab. Merauke")
+  isDeleted Boolean   @default(false)
+  deletedAt String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -82,6 +88,8 @@ model Village {
   districtId String
   kabupaten  String   @default("Kab. Merauke")
   catatan    String?  @db.Text
+  isDeleted  Boolean  @default(false)
+  deletedAt  String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -105,6 +113,8 @@ model AreaVolunteer {
   catatanWilayah   String?  @db.Text
   status           String   @default("Aktif") // "Aktif" | "Non-aktif" | "Menunggu Verifikasi"
   tanggalBergabung String
+  isDeleted        Boolean  @default(false)
+  deletedAt        String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -134,10 +144,12 @@ model Orphan {
   kebutuhanMendesak String   // e.g. "Sepatu Sekolah & Kitab Iqro"
   statusVerifikasi  String   @default("Menunggu Survei") // "Terverifikasi" | "Menunggu Survei" | "Perlu Pembaruan"
   tanggalMasuk      String
+  isDeleted         Boolean  @default(false)
+  deletedAt         String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  pjAv              AreaVolunteer? @relation(fields: [pjAvId], references: [id])
+  pjAv              AreaVolunteer? @relation(fields: [pjAvId], references: [id], onDelete: SetNull)
 
   @@map("orphans")
 }
@@ -155,6 +167,8 @@ model Volunteer {
   keahlian      String   // e.g. "Guru Matematika & Tahsin"
   status        String   @default("Menunggu Verifikasi") // "Aktif" | "Menunggu Verifikasi" | "Cuti"
   tanggalGabung String
+  isDeleted     Boolean  @default(false)
+  deletedAt     String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -175,6 +189,8 @@ model Donor {
   programFavorit  String   @default("Pendidikan Santri Papua")
   status          String   @default("Donatur Rutin") // "Donatur Rutin" | "Donatur Insidental"
   tanggalTerakhir String?
+  isDeleted       Boolean  @default(false)
+  deletedAt       String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -198,6 +214,8 @@ model FinanceTransaction {
   status     String   @default("Terverifikasi") // "Terverifikasi" | "Review"
   petugas    String
   donorId    String?
+  isDeleted  Boolean  @default(false)
+  deletedAt  String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

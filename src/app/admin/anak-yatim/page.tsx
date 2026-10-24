@@ -8,6 +8,7 @@ import {
   Download,
   Eye,
   Edit2,
+  Trash2,
   CheckCircle2,
   Clock,
   AlertTriangle,
@@ -41,6 +42,11 @@ export default function AnakYatimAdminPage() {
   const [selectedOrphan, setSelectedOrphan] = useState<OrphanRecord | null>(
     null
   );
+
+  // Trash / Soft Delete State
+  const [viewTrash, setViewTrash] = useState(false);
+  const [softDeleteTarget, setSoftDeleteTarget] = useState<OrphanRecord | null>(null);
+  const [permanentDeleteTarget, setPermanentDeleteTarget] = useState<OrphanRecord | null>(null);
 
   // Add Form Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -134,8 +140,12 @@ export default function AnakYatimAdminPage() {
     setFilterVerif("all");
   };
 
+  const activeOrphans = orphans.filter((o) => !o.isDeleted);
+  const deletedOrphans = orphans.filter((o) => !!o.isDeleted);
+
   // Filtered List
-  const filteredOrphans = orphans.filter((item) => {
+  const baseList = viewTrash ? deletedOrphans : activeOrphans;
+  const filteredOrphans = baseList.filter((item) => {
     const matchesSearch =
       item.namaLengkap.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -348,6 +358,52 @@ export default function AnakYatimAdminPage() {
     setEditingOrphan(null);
   };
 
+  const handleSoftDelete = (orphan: OrphanRecord) => {
+    const updated = orphans.map((o) => {
+      if (o.id === orphan.id) {
+        return {
+          ...o,
+          isDeleted: true,
+          deletedAt: new Intl.DateTimeFormat("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }).format(new Date()),
+        };
+      }
+      return o;
+    });
+    setOrphans(updated);
+    saveStoredOrphans(updated);
+    if (selectedOrphan?.id === orphan.id) setSelectedOrphan(null);
+    setSoftDeleteTarget(null);
+  };
+
+  const handleRestore = (id: string) => {
+    const updated = orphans.map((o) => {
+      if (o.id === id) {
+        return {
+          ...o,
+          isDeleted: false,
+          deletedAt: undefined,
+        };
+      }
+      return o;
+    });
+    setOrphans(updated);
+    saveStoredOrphans(updated);
+  };
+
+  const handlePermanentDelete = (id: string) => {
+    const updated = orphans.filter((o) => o.id !== id);
+    setOrphans(updated);
+    saveStoredOrphans(updated);
+    if (selectedOrphan?.id === id) setSelectedOrphan(null);
+    setPermanentDeleteTarget(null);
+  };
+
   const handleExportCSV = () => {
     const headers = [
       "ID",
@@ -388,7 +444,7 @@ export default function AnakYatimAdminPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `data_anak_yatim_sfy_papua_${Date.now()}.csv`);
+    link.setAttribute("download", "data_anak_yatim_sfy_papua.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -431,13 +487,13 @@ export default function AnakYatimAdminPage() {
             Total Santri Yatim
           </p>
           <p className="text-2xl font-extrabold text-stone-900 my-2">
-            {orphans.length}{" "}
+            {activeOrphans.length}{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Anak</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
             <span>Terverifikasi</span>
             <span className="font-semibold text-stone-700">
-              {orphans.filter((o) => o.statusVerifikasi === "Terverifikasi").length} Santri
+              {activeOrphans.filter((o) => o.statusVerifikasi === "Terverifikasi").length} Santri
             </span>
           </div>
         </div>
@@ -447,13 +503,13 @@ export default function AnakYatimAdminPage() {
             Status Yatim Piatu
           </p>
           <p className="text-2xl font-extrabold text-stone-900 my-2">
-            {orphans.filter((o) => o.status === "Yatim Piatu").length}{" "}
+            {activeOrphans.filter((o) => o.status === "Yatim Piatu").length}{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Anak</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
             <span>Yatim / Piatu</span>
             <span className="font-semibold text-stone-700">
-              {orphans.filter((o) => o.status !== "Yatim Piatu").length} Anak
+              {activeOrphans.filter((o) => o.status !== "Yatim Piatu").length} Anak
             </span>
           </div>
         </div>
@@ -463,13 +519,13 @@ export default function AnakYatimAdminPage() {
             Kelayakan Santunan (&lt;15 Th)
           </p>
           <p className="text-2xl font-extrabold text-emerald-700 my-2">
-            {orphans.filter((o) => o.usia < 15).length}{" "}
+            {activeOrphans.filter((o) => o.usia < 15).length}{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Santunan Aktif</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
             <span>Batas Usia (≥15 th)</span>
             <span className="font-semibold text-rose-600">
-              {orphans.filter((o) => o.usia >= 15).length} Non-Santunan
+              {activeOrphans.filter((o) => o.usia >= 15).length} Non-Santunan
             </span>
           </div>
         </div>
@@ -480,7 +536,7 @@ export default function AnakYatimAdminPage() {
           </p>
           <p className="text-2xl font-extrabold text-amber-600 my-2">
             {
-              orphans.filter((o) => o.statusVerifikasi === "Menunggu Survei")
+              activeOrphans.filter((o) => o.statusVerifikasi === "Menunggu Survei")
                 .length
             }{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Anak</span>
@@ -488,7 +544,7 @@ export default function AnakYatimAdminPage() {
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
             <span>Perlu Pembaruan</span>
             <span className="font-semibold text-rose-600">
-              {orphans.filter((o) => o.statusVerifikasi === "Perlu Pembaruan").length} Anak
+              {activeOrphans.filter((o) => o.statusVerifikasi === "Perlu Pembaruan").length} Anak
             </span>
           </div>
         </div>
@@ -647,6 +703,40 @@ export default function AnakYatimAdminPage() {
         </div>
       </div>
 
+      {/* Tabs Aktif vs Kotak Sampah */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit">
+          <button
+            type="button"
+            onClick={() => setViewTrash(false)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              !viewTrash
+                ? "bg-white text-stone-900 shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            Data Aktif ({activeOrphans.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewTrash(true)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              viewTrash
+                ? "bg-stone-900 text-white shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Kotak Sampah ({deletedOrphans.length})</span>
+          </button>
+        </div>
+        {viewTrash && (
+          <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg">
+            Menampilkan data santri yang dihapus sementara (Soft Delete). Anda dapat memulihkannya kapan saja.
+          </span>
+        )}
+      </div>
+
       {/* Main Data Table */}
       <div className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
@@ -661,7 +751,7 @@ export default function AnakYatimAdminPage() {
                 <th className="py-3.5 px-3 w-[12%] min-w-[110px]">Pendidikan</th>
                 <th className="py-3.5 px-3 w-[15%] min-w-[130px]">Kebutuhan Prioritas</th>
                 <th className="py-3.5 px-3 w-[10%] min-w-[100px] text-center">Verifikasi</th>
-                <th className="py-3.5 px-4 w-[9%] min-w-[110px] text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[11%] min-w-[125px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -768,25 +858,55 @@ export default function AnakYatimAdminPage() {
                       </button>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedOrphan(orphan)}
-                          className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors cursor-pointer"
-                          title="Lihat Detail Santri"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>Detail</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEdit(orphan)}
-                          className="p-1.5 rounded-lg text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
-                          title="Edit Data Santri"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                      </div>
+                      {viewTrash ? (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleRestore(orphan.id)}
+                            className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-colors cursor-pointer"
+                            title="Pulihkan Data Santri"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                            <span>Pulihkan</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPermanentDeleteTarget(orphan)}
+                            className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                            title="Hapus Permanen"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedOrphan(orphan)}
+                            className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors cursor-pointer"
+                            title="Lihat Detail Santri"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>Detail</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEdit(orphan)}
+                            className="p-1.5 rounded-lg text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                            title="Edit Data Santri"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSoftDeleteTarget(orphan)}
+                            className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                            title="Hapus Data (Soft Delete)"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -946,17 +1066,30 @@ export default function AnakYatimAdminPage() {
             </div>
 
             <div className="pt-2 flex items-center justify-between border-t border-stone-100">
-              <button
-                type="button"
-                onClick={() => {
-                  handleOpenEdit(selectedOrphan);
-                  setSelectedOrphan(null);
-                }}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882] cursor-pointer"
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-                <span>Edit Data Santri</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleOpenEdit(selectedOrphan);
+                    setSelectedOrphan(null);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882] cursor-pointer"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                  <span>Edit Data Santri</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSoftDeleteTarget(selectedOrphan);
+                    setSelectedOrphan(null);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-red-200 text-red-600 hover:bg-red-50 cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Hapus</span>
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={() => setSelectedOrphan(null)}
@@ -1701,6 +1834,74 @@ export default function AnakYatimAdminPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Data (Soft Delete) */}
+      {softDeleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              <span>Hapus Data Santri (Soft Delete)</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin memindahkan data <strong>{softDeleteTarget.namaLengkap}</strong> ke Kotak Sampah?
+            </p>
+            <p className="text-[11px] text-stone-500 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+              Data tidak akan dihapus permanen dan dapat dipulihkan kapan saja melalui tab <strong>Kotak Sampah</strong>.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setSoftDeleteTarget(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSoftDelete(softDeleteTarget)}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+              >
+                Pindahkan ke Sampah
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Permanen */}
+      {permanentDeleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-700 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              <span>Hapus Data Secara Permanen</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus data <strong>{permanentDeleteTarget.namaLengkap}</strong> secara permanen?
+            </p>
+            <p className="text-[11px] text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+              Tindakan ini tidak dapat dibatalkan. Riwayat data santri ini akan dihapus sepenuhnya dari database lokal.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setPermanentDeleteTarget(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePermanentDelete(permanentDeleteTarget.id)}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
+              >
+                Hapus Permanen
+              </button>
+            </div>
           </div>
         </div>
       )}

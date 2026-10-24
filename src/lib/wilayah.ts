@@ -2,6 +2,8 @@ export interface DistrikRecord {
   id: string;
   nama: string;
   kabupaten: string;
+  isDeleted?: boolean;
+  deletedAt?: string;
 }
 
 export interface KampungRecord {
@@ -11,6 +13,8 @@ export interface KampungRecord {
   distrikNama: string;
   kabupaten: string;
   catatan?: string;
+  isDeleted?: boolean;
+  deletedAt?: string;
 }
 
 export const STORAGE_KEY_DISTRIK = "sfy_master_distrik";
@@ -380,6 +384,55 @@ export function updateDistrik(
   return { success: true };
 }
 
+export function softDeleteDistrik(id: string): { success: boolean; message?: string } {
+  const distriks = getStoredDistriks();
+  const target = distriks.find((d) => d.id === id);
+
+  if (!target) {
+    return { success: false, message: "Distrik tidak ditemukan." };
+  }
+
+  // Check if any active kampung is using this distrik
+  const kampungs = getStoredKampungs();
+  const activeKampungsInDistrik = kampungs.filter(
+    (k) => !k.isDeleted && (k.distrikId === id || k.distrikNama.toLowerCase() === target.nama.toLowerCase())
+  );
+
+  if (activeKampungsInDistrik.length > 0) {
+    return {
+      success: false,
+      message: `Distrik "${target.nama}" masih memiliki ${activeKampungsInDistrik.length} kampung aktif. Hapus atau pindahkan kampung terlebih dahulu.`,
+    };
+  }
+
+  target.isDeleted = true;
+  target.deletedAt = new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date());
+
+  saveStoredDistriks(distriks);
+  return { success: true };
+}
+
+export function restoreDistrik(id: string): { success: boolean; message?: string } {
+  const distriks = getStoredDistriks();
+  const target = distriks.find((d) => d.id === id);
+
+  if (!target) {
+    return { success: false, message: "Distrik tidak ditemukan." };
+  }
+
+  target.isDeleted = false;
+  target.deletedAt = undefined;
+
+  saveStoredDistriks(distriks);
+  return { success: true };
+}
+
 export function deleteDistrik(id: string): { success: boolean; message?: string } {
   const distriks = getStoredDistriks();
   const target = distriks.find((d) => d.id === id);
@@ -481,6 +534,42 @@ export function updateKampung(
     ...kampungs[index],
     ...updates,
   };
+
+  saveStoredKampungs(kampungs);
+  return { success: true };
+}
+
+export function softDeleteKampung(id: string): { success: boolean; message?: string } {
+  const kampungs = getStoredKampungs();
+  const target = kampungs.find((k) => k.id === id);
+
+  if (!target) {
+    return { success: false, message: "Kampung tidak ditemukan." };
+  }
+
+  target.isDeleted = true;
+  target.deletedAt = new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date());
+
+  saveStoredKampungs(kampungs);
+  return { success: true };
+}
+
+export function restoreKampung(id: string): { success: boolean; message?: string } {
+  const kampungs = getStoredKampungs();
+  const target = kampungs.find((k) => k.id === id);
+
+  if (!target) {
+    return { success: false, message: "Kampung tidak ditemukan." };
+  }
+
+  target.isDeleted = false;
+  target.deletedAt = undefined;
 
   saveStoredKampungs(kampungs);
   return { success: true };

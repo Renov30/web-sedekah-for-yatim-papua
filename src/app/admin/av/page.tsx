@@ -9,6 +9,8 @@ import {
   Download,
   Eye,
   Edit2,
+  Trash2,
+  RotateCcw,
   CheckCircle2,
   Clock,
   AlertCircle,
@@ -82,8 +84,17 @@ export default function AVAdminPage() {
     status: "Aktif" as AVRecord["status"],
   });
 
+  // Trash / Soft Delete State
+  const [viewTrash, setViewTrash] = useState(false);
+  const [softDeleteTarget, setSoftDeleteTarget] = useState<AVRecord | null>(null);
+  const [permanentDeleteTarget, setPermanentDeleteTarget] = useState<AVRecord | null>(null);
+
   // Filtered List
-  const filteredAVs = avList.filter((item) => {
+  const activeAVs = avList.filter((a) => !a.isDeleted);
+  const deletedAVs = avList.filter((a) => !!a.isDeleted);
+  const baseAVList = viewTrash ? deletedAVs : activeAVs;
+
+  const filteredAVs = baseAVList.filter((item) => {
     const matchesSearch =
       item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -100,9 +111,9 @@ export default function AVAdminPage() {
   });
 
   // Unique villages count
-  const uniqueKampungCount = new Set(avList.map((av) => av.kampung)).size;
+  const uniqueKampungCount = new Set(activeAVs.map((av) => av.kampung)).size;
   // Total orphans under AV supervision
-  const totalOrphansSupervised = orphans.filter((o) => !!o.pjAvId).length;
+  const totalOrphansSupervised = orphans.filter((o) => !o.isDeleted && !!o.pjAvId).length;
 
   const handleToggleStatus = (id: string) => {
     setAvList((prev) => {
@@ -230,6 +241,52 @@ export default function AVAdminPage() {
     setEditingAV(null);
   };
 
+  const handleSoftDelete = (av: AVRecord) => {
+    const updated = avList.map((a) => {
+      if (a.id === av.id) {
+        return {
+          ...a,
+          isDeleted: true,
+          deletedAt: new Intl.DateTimeFormat("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }).format(new Date()),
+        };
+      }
+      return a;
+    });
+    setAvList(updated);
+    saveStoredAVs(updated);
+    if (selectedAV?.id === av.id) setSelectedAV(null);
+    setSoftDeleteTarget(null);
+  };
+
+  const handleRestore = (id: string) => {
+    const updated = avList.map((a) => {
+      if (a.id === id) {
+        return {
+          ...a,
+          isDeleted: false,
+          deletedAt: undefined,
+        };
+      }
+      return a;
+    });
+    setAvList(updated);
+    saveStoredAVs(updated);
+  };
+
+  const handlePermanentDelete = (id: string) => {
+    const updated = avList.filter((a) => a.id !== id);
+    setAvList(updated);
+    saveStoredAVs(updated);
+    if (selectedAV?.id === id) setSelectedAV(null);
+    setPermanentDeleteTarget(null);
+  };
+
   const handleExportCSV = () => {
     const headers = [
       "ID",
@@ -266,7 +323,7 @@ export default function AVAdminPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `data_av_koordinator_kampung_sfy_${Date.now()}.csv`);
+    link.setAttribute("download", "data_av_koordinator_kampung_sfy.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -314,7 +371,7 @@ export default function AVAdminPage() {
             Total Koordinator AV
           </p>
           <p className="text-2xl font-extrabold text-stone-900 my-2">
-            {avList.length}{" "}
+            {activeAVs.length}{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Personel</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
@@ -328,13 +385,13 @@ export default function AVAdminPage() {
             AV Aktif Bertugas
           </p>
           <p className="text-2xl font-extrabold text-emerald-700 my-2">
-            {avList.filter((a) => a.status === "Aktif").length}{" "}
+            {activeAVs.filter((a) => a.status === "Aktif").length}{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Orang</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
             <span>Status Cuti / Nonaktif</span>
             <span className="font-semibold text-stone-700">
-              {avList.filter((a) => a.status !== "Aktif").length} Personel
+              {activeAVs.filter((a) => a.status !== "Aktif").length} Personel
             </span>
           </div>
         </div>
@@ -410,6 +467,40 @@ export default function AVAdminPage() {
         </div>
       </div>
 
+      {/* Tabs Aktif vs Kotak Sampah */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit">
+          <button
+            type="button"
+            onClick={() => setViewTrash(false)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              !viewTrash
+                ? "bg-white text-stone-900 shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            Data Aktif ({activeAVs.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewTrash(true)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              viewTrash
+                ? "bg-stone-900 text-white shadow-2xs"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Kotak Sampah ({deletedAVs.length})</span>
+          </button>
+        </div>
+        {viewTrash && (
+          <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg">
+            Menampilkan data koordinator AV yang dihapus sementara (Soft Delete). Anda dapat memulihkannya kapan saja.
+          </span>
+        )}
+      </div>
+
       {/* Data Table */}
       <div className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
@@ -423,7 +514,7 @@ export default function AVAdminPage() {
                 <th className="py-3.5 px-3 w-[11%] min-w-[100px]">Anak Asuh (PJ)</th>
                 <th className="py-3.5 px-3 w-[11%] min-w-[105px]">Tgl Bergabung</th>
                 <th className="py-3.5 px-3 w-[9%] min-w-[85px] text-center">Status</th>
-                <th className="py-3.5 px-4 w-[10%] min-w-[120px] text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[11%] min-w-[125px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -506,25 +597,55 @@ export default function AVAdminPage() {
                       </button>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedAV(av)}
-                          className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
-                          title="Lihat Detail & Santri Dampingan"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>Detail</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEdit(av)}
-                          className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
-                          title="Edit Data Koordinator AV"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                      {viewTrash ? (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleRestore(av.id)}
+                            className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-colors cursor-pointer"
+                            title="Pulihkan Data AV"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                            <span>Pulihkan</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPermanentDeleteTarget(av)}
+                            className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                            title="Hapus Permanen"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedAV(av)}
+                            className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors cursor-pointer"
+                            title="Lihat Detail & Santri Dampingan"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>Detail</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEdit(av)}
+                            className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                            title="Edit Data Koordinator AV"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSoftDeleteTarget(av)}
+                            className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                            title="Hapus Data (Soft Delete)"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -691,6 +812,17 @@ export default function AVAdminPage() {
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                     <span>Edit Data AV</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSoftDeleteTarget(selectedAV);
+                      setSelectedAV(null);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Hapus</span>
                   </button>
                   <button
                     type="button"
@@ -1105,6 +1237,74 @@ export default function AVAdminPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Data AV (Soft Delete) */}
+      {softDeleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              <span>Hapus Data Koordinator AV (Soft Delete)</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin memindahkan data koordinator <strong>{softDeleteTarget.nama}</strong> ({softDeleteTarget.kampung}) ke Kotak Sampah?
+            </p>
+            <p className="text-[11px] text-stone-500 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+              Data tidak akan dihapus permanen dan dapat dipulihkan sewaktu-waktu melalui tab <strong>Kotak Sampah</strong>.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setSoftDeleteTarget(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSoftDelete(softDeleteTarget)}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+              >
+                Pindahkan ke Sampah
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Permanen */}
+      {permanentDeleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-700 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              <span>Hapus Data Secara Permanen</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus data koordinator <strong>{permanentDeleteTarget.nama}</strong> secara permanen?
+            </p>
+            <p className="text-[11px] text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+              Tindakan ini tidak dapat dibatalkan. Riwayat data koordinator ini akan dihapus sepenuhnya dari database lokal.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setPermanentDeleteTarget(null)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePermanentDelete(permanentDeleteTarget.id)}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
+              >
+                Hapus Permanen
+              </button>
+            </div>
           </div>
         </div>
       )}

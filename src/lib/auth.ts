@@ -90,6 +90,13 @@ export function authenticateUser(
     };
   }
 
+  if (user.isDeleted) {
+    return {
+      success: false,
+      message: "Akun ini telah dihapus dari sistem.",
+    };
+  }
+
   if (user.status !== "Aktif") {
     return {
       success: false,
@@ -257,6 +264,59 @@ export function deleteStoredUser(
     return {
       success: false,
       message: "Akun Master Admin utama tidak dapat dihapus demi keamanan sistem.",
+    };
+  }
+
+  // Soft Delete: tandai isDeleted = true & status = "Non-aktif"
+  target.isDeleted = true;
+  target.deletedAt = new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date());
+  target.status = "Non-aktif";
+
+  saveStoredUsers(users);
+  return { success: true };
+}
+
+export function restoreStoredUser(
+  id: string
+): { success: boolean; message?: string } {
+  const users = getStoredUsers();
+  const target = users.find((u) => u.id === id);
+
+  if (!target) {
+    return { success: false, message: "Pengguna tidak ditemukan." };
+  }
+
+  target.isDeleted = false;
+  target.deletedAt = undefined;
+  target.status = "Aktif";
+
+  saveStoredUsers(users);
+  return { success: true };
+}
+
+export function permanentDeleteStoredUser(
+  id: string
+): { success: boolean; message?: string } {
+  const users = getStoredUsers();
+  const target = users.find((u) => u.id === id);
+
+  if (!target) {
+    return { success: false, message: "Pengguna tidak ditemukan." };
+  }
+
+  if (
+    target.id === "USR-001" ||
+    target.email.toLowerCase() === MASTER_ADMIN_CREDENTIALS.email.toLowerCase()
+  ) {
+    return {
+      success: false,
+      message: "Akun Master Admin tidak dapat dihapus secara permanen.",
     };
   }
 
