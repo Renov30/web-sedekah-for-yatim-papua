@@ -3,12 +3,8 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
-  KeyRound,
-  ShieldCheck,
-  Check,
   CheckCircle2,
   Save,
-  RotateCcw,
 } from "lucide-react";
 import {
   initialRoles,
@@ -30,7 +26,7 @@ function PermissionsContent() {
 
   useEffect(() => {
     if (requestedRole && initialRoles.some((r) => r.id === requestedRole)) {
-      setSelectedRoleId(requestedRole);
+      queueMicrotask(() => setSelectedRoleId(requestedRole));
     }
   }, [requestedRole]);
 

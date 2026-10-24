@@ -2,17 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  ShieldAlert,
   Search,
-  Plus,
   Download,
   CheckCircle2,
   XCircle,
-  Mail,
   MapPin,
   X,
   UserPlus,
-  Lock,
   KeyRound,
   Trash2,
   Eye,
@@ -63,7 +59,7 @@ export default function UsersAdminPage() {
 
   useEffect(() => {
     // Load persisted users from storage
-    setUsers(getStoredUsers());
+    queueMicrotask(() => setUsers(getStoredUsers()));
   }, []);
 
   const refreshUsers = () => {

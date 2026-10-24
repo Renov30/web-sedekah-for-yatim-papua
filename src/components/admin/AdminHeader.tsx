@@ -26,7 +26,7 @@ export function AdminHeader({
   const [session, setSession] = useState<AuthSession | null>(null);
 
   useEffect(() => {
-    setSession(getStoredSession());
+    queueMicrotask(() => setSession(getStoredSession()));
 
     const updateTime = () => {
       const now = new Date();

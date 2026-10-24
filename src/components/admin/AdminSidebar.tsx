@@ -84,7 +84,7 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
 
   useEffect(() => {
     const activeSession = getStoredSession();
-    setSession(activeSession);
+    queueMicrotask(() => setSession(activeSession));
   }, []);
 
   const handleLogout = () => {

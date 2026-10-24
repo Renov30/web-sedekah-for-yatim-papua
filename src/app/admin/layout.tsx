@@ -21,7 +21,7 @@ export default function AdminLayout({
 
   useEffect(() => {
     if (isLoginPage) {
-      setIsCheckingAuth(false);
+      queueMicrotask(() => setIsCheckingAuth(false));
       return;
     }
 
@@ -31,7 +31,7 @@ export default function AdminLayout({
       // If not logged in, redirect to login page
       router.replace("/admin/login");
     } else {
-      setIsCheckingAuth(false);
+      queueMicrotask(() => setIsCheckingAuth(false));
     }
   }, [isLoginPage, router]);
 
