@@ -148,6 +148,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
   const [lastSyncFeedback, setLastSyncFeedback] = useState<string | null>(null);
 
   const syncingRef = useRef(false);
+  const pendingResyncRef = useRef(false);
 
   const showSyncToast = useCallback((msg: string) => {
     setLastSyncFeedback(msg);
@@ -158,7 +159,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const triggerSync = useCallback(
     async (silent = false): Promise<void> => {
-      if (syncingRef.current) return;
+      if (syncingRef.current) {
+        pendingResyncRef.current = true;
+        return;
+      }
       syncingRef.current = true;
       if (!silent) setIsSyncing(true);
 
@@ -172,8 +176,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
         }
 
         if (res.success && res.data) {
+          const currentUrl = await getServerUrl();
+          setServerUrlState(currentUrl);
           setOrphans(res.data.orphans);
-          setAvs(res.data.avs);
+          setAvs(
+            computeAvSupervisedOrphans(res.data.avs, res.data.orphans)
+          );
           setDistriks(res.data.distriks);
           setKampungs(res.data.kampungs);
           if (!silent) {
@@ -195,6 +203,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
       } finally {
         syncingRef.current = false;
         if (!silent) setIsSyncing(false);
+        if (pendingResyncRef.current) {
+          pendingResyncRef.current = false;
+          void triggerSync(true);
+        }
       }
     },
     [showSyncToast]

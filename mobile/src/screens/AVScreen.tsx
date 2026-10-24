@@ -17,6 +17,7 @@ import { AVRecord } from "../types/admin";
 
 export const AVScreen: React.FC = () => {
   const {
+    orphans,
     avs,
     distriks,
     kampungs,
@@ -51,6 +52,10 @@ export const AVScreen: React.FC = () => {
     "Aktif" | "Non-aktif" | "Menunggu Verifikasi"
   >("Aktif");
 
+  const activeOrphans = useMemo(
+    () => orphans.filter((o) => !o.isDeleted),
+    [orphans]
+  );
   const activeAvs = useMemo(() => avs.filter((a) => !a.isDeleted), [avs]);
   const deletedAvs = useMemo(() => avs.filter((a) => !!a.isDeleted), [avs]);
   const activeDistriks = useMemo(
@@ -61,6 +66,26 @@ export const AVScreen: React.FC = () => {
     () => kampungs.filter((k) => !k.isDeleted),
     [kampungs]
   );
+
+  const getSupervisedOrphans = (av: AVRecord) => {
+    return activeOrphans
+      .filter(
+        (o) =>
+          o.pjAvId === av.id ||
+          (o.pjAvNama && o.pjAvNama.toLowerCase() === av.nama.toLowerCase())
+      )
+      .map((o) => o.namaLengkap);
+  };
+
+  const totalSupervisedCount = useMemo(() => {
+    return activeOrphans.filter((o) =>
+      activeAvs.some(
+        (av) =>
+          av.id === o.pjAvId ||
+          (o.pjAvNama && o.pjAvNama.toLowerCase() === av.nama.toLowerCase())
+      )
+    ).length;
+  }, [activeOrphans, activeAvs]);
 
   const filteredList = useMemo(() => {
     const base = viewTrash ? deletedAvs : activeAvs;
@@ -165,7 +190,8 @@ export const AVScreen: React.FC = () => {
               Koordinator Kampung (AV)
             </Text>
             <Text style={styles.screenSub} numberOfLines={1}>
-              {activeAvs.length} Koordinator • {deletedAvs.length} Sampah
+              {activeAvs.length} Koordinator •{" "}
+              {activeAvs.filter((a) => a.status === "Aktif").length} Aktif
             </Text>
           </View>
 
@@ -182,20 +208,38 @@ export const AVScreen: React.FC = () => {
                 size={15}
                 color={viewTrash ? "#be123c" : "#57534e"}
               />
-              <Text
-                style={[
-                  styles.trashToggleText,
-                  viewTrash && { color: "#be123c" },
-                ]}
-              >
-                {deletedAvs.length}
-              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.addBtn} onPress={openAddModal}>
               <Ionicons name="add" size={16} color="#ffffff" />
               <Text style={styles.addBtnText}>Input AV</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Summary Widgets (Only Non-Deleted Data) */}
+        <View style={styles.summaryRow}>
+          <View style={styles.summaryBox}>
+            <Text style={styles.summaryValue}>{activeAvs.length}</Text>
+            <Text style={styles.summaryLabel} numberOfLines={1}>
+              Total AV
+            </Text>
+          </View>
+          <View style={styles.summaryBox}>
+            <Text style={[styles.summaryValue, { color: "#047857" }]}>
+              {activeAvs.filter((a) => a.status === "Aktif").length}
+            </Text>
+            <Text style={styles.summaryLabel} numberOfLines={1}>
+              Posko Aktif
+            </Text>
+          </View>
+          <View style={styles.summaryBox}>
+            <Text style={[styles.summaryValue, { color: "#5E2276" }]}>
+              {totalSupervisedCount}
+            </Text>
+            <Text style={styles.summaryLabel} numberOfLines={1}>
+              Santri Dampingan
+            </Text>
           </View>
         </View>
 
@@ -331,10 +375,10 @@ export const AVScreen: React.FC = () => {
                 <View style={styles.infoRow}>
                   <Ionicons name="school-outline" size={14} color="#2563eb" />
                   <Text style={styles.infoText}>
-                    {item.anakDampingan.length > 0
+                    {getSupervisedOrphans(item).length > 0
                       ? `${
-                          item.anakDampingan.length
-                        } Anak Dampingan: ${item.anakDampingan.join(", ")}`
+                          getSupervisedOrphans(item).length
+                        } Anak Dampingan: ${getSupervisedOrphans(item).join(", ")}`
                       : "Belum ada anak dampingan terdaftar"}
                   </Text>
                 </View>
@@ -456,11 +500,11 @@ export const AVScreen: React.FC = () => {
                   </View>
                   <View style={styles.detailRow}>
                     <Text style={styles.detailLabel}>
-                      Anak Yatim Dampingan ({selectedAV.anakDampingan.length})
+                      Anak Yatim Dampingan ({getSupervisedOrphans(selectedAV).length})
                     </Text>
                     <Text style={styles.detailValue}>
-                      {selectedAV.anakDampingan.length > 0
-                        ? selectedAV.anakDampingan.join(", ")
+                      {getSupervisedOrphans(selectedAV).length > 0
+                        ? getSupervisedOrphans(selectedAV).join(", ")
                         : "Belum ada"}
                     </Text>
                   </View>
@@ -1077,5 +1121,30 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
     color: "#ffffff",
+  },
+  summaryRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  summaryBox: {
+    flex: 1,
+    backgroundColor: "#FAF8FB",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#e7e5e4",
+    paddingVertical: 7,
+    paddingHorizontal: 8,
+    alignItems: "center",
+  },
+  summaryValue: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#1c1917",
+  },
+  summaryLabel: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#78716c",
+    marginTop: 1,
   },
 });

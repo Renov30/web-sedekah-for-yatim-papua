@@ -13,8 +13,6 @@ import {
   MessageCircle,
 } from "lucide-react";
 import {
-  initialOrphans,
-  initialAVs,
   initialFinances,
   OrphanRecord,
   AVRecord,
@@ -36,8 +34,8 @@ import {
 } from "@/lib/wilayah";
 
 export default function AdminDashboardPage() {
-  const [orphans, setOrphans] = useState<OrphanRecord[]>(initialOrphans);
-  const [avList, setAvList] = useState<AVRecord[]>(initialAVs);
+  const [orphans, setOrphans] = useState<OrphanRecord[]>([]);
+  const [avList, setAvList] = useState<AVRecord[]>([]);
   const [distriksList, setDistriksList] = useState<DistrikRecord[]>([]);
   const [kampungsList, setKampungsList] = useState<KampungRecord[]>([]);
   const [finances, setFinances] = useState<FinanceTransaction[]>(initialFinances);
@@ -352,7 +350,9 @@ export default function AdminDashboardPage() {
               <div className="p-6 text-center rounded-xl bg-emerald-50/50 border border-emerald-200/60">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
                 <p className="text-sm font-bold text-emerald-900">
-                  Semua Data Santri Yatim Telah Terverifikasi Amanah
+                  {totalOrphans === 0
+                    ? "Belum Ada Data Santri Yatim Aktif"
+                    : "Semua Data Santri Yatim Telah Terverifikasi Amanah"}
                 </p>
                 <Link
                   href="/admin/anak-yatim"

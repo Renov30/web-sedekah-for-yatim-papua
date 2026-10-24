@@ -56,7 +56,14 @@ export const OrphansScreen: React.FC = () => {
   const [pjAvNama, setPjAvNama] = useState("Yohanes Gebze");
   const [tempatTinggal, setTempatTinggal] = useState("Asrama SFY Merauke");
   const [wali, setWali] = useState("");
+  const [pekerjaanWali, setPekerjaanWali] = useState("");
+  const [noHpWali, setNoHpWali] = useState("");
   const [jenjangPendidikan, setJenjangPendidikan] = useState("SD Kelas 4");
+  const [namaSekolah, setNamaSekolah] = useState("");
+  const [tempatLahir, setTempatLahir] = useState("");
+  const [tanggalLahir, setTanggalLahir] = useState("");
+  const [hobi, setHobi] = useState("");
+  const [citaCita, setCitaCita] = useState("");
   const [kebutuhanMendesak, setKebutuhanMendesak] = useState(
     "Seragam & Buku Pelajaran"
   );
@@ -81,6 +88,13 @@ export const OrphansScreen: React.FC = () => {
     [kampungs]
   );
   const activeAvs = useMemo(() => avs.filter((a) => !a.isDeleted), [avs]);
+  const deletedAvNames = useMemo(
+    () =>
+      new Set(
+        avs.filter((a) => a.isDeleted).map((a) => a.nama.toLowerCase())
+      ),
+    [avs]
+  );
 
   const filteredList = useMemo(() => {
     const base = viewTrash ? deletedOrphans : activeOrphans;
@@ -124,7 +138,14 @@ export const OrphansScreen: React.FC = () => {
     setPjAvNama(activeAvs[0]?.nama || "Yohanes Gebze");
     setTempatTinggal("Asrama SFY Merauke");
     setWali("");
+    setPekerjaanWali("");
+    setNoHpWali("");
     setJenjangPendidikan("SD Kelas 4");
+    setNamaSekolah("");
+    setTempatLahir("");
+    setTanggalLahir("");
+    setHobi("");
+    setCitaCita("");
     setKebutuhanMendesak("Seragam & Buku Pelajaran");
     setStatusVerifikasi("Menunggu Survei");
     setIsFormVisible(true);
@@ -144,7 +165,14 @@ export const OrphansScreen: React.FC = () => {
     setPjAvNama(item.pjAvNama || activeAvs[0]?.nama || "");
     setTempatTinggal(item.tempatTinggal);
     setWali(item.wali);
+    setPekerjaanWali(item.pekerjaanWali || "");
+    setNoHpWali(item.noHpWali || "");
     setJenjangPendidikan(item.jenjangPendidikan);
+    setNamaSekolah(item.namaSekolah || "");
+    setTempatLahir(item.tempatLahir || "");
+    setTanggalLahir(item.tanggalLahir || "");
+    setHobi(item.hobi || "");
+    setCitaCita(item.citaCita || "");
     setKebutuhanMendesak(item.kebutuhanMendesak);
     setStatusVerifikasi(item.statusVerifikasi);
     setIsFormVisible(true);
@@ -180,7 +208,14 @@ export const OrphansScreen: React.FC = () => {
       pjAvNama: pjAvNama.trim(),
       tempatTinggal: tempatTinggal.trim() || "Keluarga Asuh",
       wali: wali.trim() || "-",
+      pekerjaanWali: pekerjaanWali.trim() || undefined,
+      noHpWali: noHpWali.trim() || undefined,
       jenjangPendidikan: jenjangPendidikan.trim() || "SD",
+      namaSekolah: namaSekolah.trim() || undefined,
+      tempatLahir: tempatLahir.trim() || undefined,
+      tanggalLahir: tanggalLahir.trim() || undefined,
+      hobi: hobi.trim() || undefined,
+      citaCita: citaCita.trim() || undefined,
       kebutuhanMendesak: kebutuhanMendesak.trim() || "Perlengkapan Sekolah",
       statusVerifikasi,
     };
@@ -221,7 +256,13 @@ export const OrphansScreen: React.FC = () => {
               Pendataan Anak Yatim
             </Text>
             <Text style={styles.screenSub} numberOfLines={1}>
-              {activeOrphans.length} Aktif • {deletedOrphans.length} Sampah
+              {activeOrphans.length} Santri •{" "}
+              {
+                activeOrphans.filter(
+                  (o) => o.statusVerifikasi === "Terverifikasi"
+                ).length
+              }{" "}
+              Terverifikasi
             </Text>
           </View>
 
@@ -238,20 +279,42 @@ export const OrphansScreen: React.FC = () => {
                 size={15}
                 color={viewTrash ? "#be123c" : "#57534e"}
               />
-              <Text
-                style={[
-                  styles.trashToggleText,
-                  viewTrash && { color: "#be123c" },
-                ]}
-              >
-                {deletedOrphans.length}
-              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.addBtn} onPress={openAddModal}>
               <Ionicons name="add" size={16} color="#ffffff" />
               <Text style={styles.addBtnText}>Input Anak</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Summary Widgets (Only Non-Deleted Data) */}
+        <View style={styles.summaryRow}>
+          <View style={styles.summaryBox}>
+            <Text style={styles.summaryValue}>{activeOrphans.length}</Text>
+            <Text style={styles.summaryLabel} numberOfLines={1}>
+              Total Santri
+            </Text>
+          </View>
+          <View style={styles.summaryBox}>
+            <Text style={[styles.summaryValue, { color: "#047857" }]}>
+              {activeOrphans.filter((o) => o.usia < 15).length}
+            </Text>
+            <Text style={styles.summaryLabel} numberOfLines={1}>
+              Santunan (&lt;15th)
+            </Text>
+          </View>
+          <View style={styles.summaryBox}>
+            <Text style={[styles.summaryValue, { color: "#b45309" }]}>
+              {
+                activeOrphans.filter(
+                  (o) => o.statusVerifikasi === "Menunggu Survei"
+                ).length
+              }
+            </Text>
+            <Text style={styles.summaryLabel} numberOfLines={1}>
+              Antrean Survei
+            </Text>
           </View>
         </View>
 
@@ -410,8 +473,12 @@ export const OrphansScreen: React.FC = () => {
                 <View style={styles.infoRow}>
                   <Ionicons name="person-outline" size={14} color="#059669" />
                   <Text style={styles.infoText}>
-                    PJ AV: {item.pjAvNama || "Belum ditentukan"} • Wali:{" "}
-                    {item.wali}
+                    PJ AV:{" "}
+                    {item.pjAvNama &&
+                    !deletedAvNames.has(item.pjAvNama.toLowerCase())
+                      ? item.pjAvNama
+                      : "Belum ditentukan"}{" "}
+                    • Wali: {item.wali}
                   </Text>
                 </View>
 
@@ -543,6 +610,18 @@ export const OrphansScreen: React.FC = () => {
                       }, ${selectedOrphan.usia} Tahun`}
                     />
                     <DetailRow
+                      label="Tempat, Tgl Lahir"
+                      value={
+                        selectedOrphan.tempatLahir || selectedOrphan.tanggalLahir
+                          ? `${selectedOrphan.tempatLahir || "-"}${
+                              selectedOrphan.tanggalLahir
+                                ? `, ${selectedOrphan.tanggalLahir}`
+                                : ""
+                            }`
+                          : "-"
+                      }
+                    />
+                    <DetailRow
                       label="Status"
                       value={selectedOrphan.status}
                     />
@@ -561,12 +640,34 @@ export const OrphansScreen: React.FC = () => {
                       value={selectedOrphan.tempatTinggal}
                     />
                     <DetailRow
-                      label="Wali / Pengasuh"
-                      value={selectedOrphan.wali}
+                      label="Wali & Pekerjaan"
+                      value={`${selectedOrphan.wali}${
+                        selectedOrphan.pekerjaanWali
+                          ? ` (${selectedOrphan.pekerjaanWali})`
+                          : ""
+                      }`}
                     />
                     <DetailRow
-                      label="Jenjang Pendidikan"
-                      value={selectedOrphan.jenjangPendidikan}
+                      label="No. HP / WA Wali"
+                      value={selectedOrphan.noHpWali || "Belum dicatat"}
+                    />
+                    <DetailRow
+                      label="Pendidikan"
+                      value={`${selectedOrphan.jenjangPendidikan}${
+                        selectedOrphan.namaSekolah
+                          ? ` - ${selectedOrphan.namaSekolah}`
+                          : ""
+                      }`}
+                    />
+                    <DetailRow
+                      label="Hobi & Cita-Cita"
+                      value={
+                        selectedOrphan.hobi || selectedOrphan.citaCita
+                          ? `${selectedOrphan.hobi || "-"} • ${
+                              selectedOrphan.citaCita || "-"
+                            }`
+                          : "-"
+                      }
                     />
                     <DetailRow
                       label="Kebutuhan Mendesak"
@@ -657,6 +758,27 @@ export const OrphansScreen: React.FC = () => {
                     onChangeText={setUsia}
                     keyboardType="numeric"
                     placeholder="10"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.row2}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.formLabel}>Tempat Lahir</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    value={tempatLahir}
+                    onChangeText={setTempatLahir}
+                    placeholder="Merauke"
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.formLabel}>Tanggal Lahir</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    value={tanggalLahir}
+                    onChangeText={setTanggalLahir}
+                    placeholder="15 Mei 2014"
                   />
                 </View>
               </View>
@@ -826,13 +948,69 @@ export const OrphansScreen: React.FC = () => {
                 placeholder="Contoh: Fatima Mahuze (Bibi)"
               />
 
-              <Text style={styles.formLabel}>Jenjang Pendidikan & Sekolah</Text>
-              <TextInput
-                style={styles.formInput}
-                value={jenjangPendidikan}
-                onChangeText={setJenjangPendidikan}
-                placeholder="Contoh: SD Kelas 5 MI Al-Ma'arif Merauke"
-              />
+              <View style={styles.row2}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.formLabel}>Pekerjaan Wali</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    value={pekerjaanWali}
+                    onChangeText={setPekerjaanWali}
+                    placeholder="Petani / Guru"
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.formLabel}>No. HP / WA Wali</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    value={noHpWali}
+                    onChangeText={setNoHpWali}
+                    placeholder="0812-xxxx-xxxx"
+                    keyboardType="phone-pad"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.row2}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.formLabel}>Jenjang Pendidikan</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    value={jenjangPendidikan}
+                    onChangeText={setJenjangPendidikan}
+                    placeholder="SD Kelas 5"
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.formLabel}>Nama Sekolah</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    value={namaSekolah}
+                    onChangeText={setNamaSekolah}
+                    placeholder="MI Al-Ma'arif"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.row2}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.formLabel}>Hobi / Minat</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    value={hobi}
+                    onChangeText={setHobi}
+                    placeholder="Membaca"
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.formLabel}>Cita-cita</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    value={citaCita}
+                    onChangeText={setCitaCita}
+                    placeholder="Dokter"
+                  />
+                </View>
+              </View>
 
               <Text style={styles.formLabel}>Kebutuhan Mendesak</Text>
               <TextInput
@@ -1345,5 +1523,30 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
     color: "#ffffff",
+  },
+  summaryRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  summaryBox: {
+    flex: 1,
+    backgroundColor: "#FAF8FB",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#e7e5e4",
+    paddingVertical: 7,
+    paddingHorizontal: 8,
+    alignItems: "center",
+  },
+  summaryValue: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#1c1917",
+  },
+  summaryLabel: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#78716c",
+    marginTop: 1,
   },
 });

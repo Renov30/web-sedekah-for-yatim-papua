@@ -298,7 +298,9 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
           <View style={styles.emptyBox}>
             <Ionicons name="checkmark-done-circle" size={32} color="#10b981" />
             <Text style={styles.emptyText}>
-              Seluruh data anak yatim sudah terverifikasi!
+              {activeOrphans.length === 0
+                ? "Belum ada data anak yatim aktif saat ini."
+                : "Seluruh data anak yatim sudah terverifikasi!"}
             </Text>
           </View>
         ) : (
@@ -739,5 +741,45 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 999,
     backgroundColor: "#5E2276",
+  },
+  demoGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  demoBox: {
+    flex: 1,
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    alignItems: "center",
+  },
+  demoLabel: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#57534e",
+  },
+  demoValue: {
+    fontSize: 18,
+    fontWeight: "800",
+    marginTop: 2,
+  },
+  demoFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#f5f5f4",
+  },
+  demoFooterGreen: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#047857",
+  },
+  demoFooterRose: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#be123c",
   },
 });

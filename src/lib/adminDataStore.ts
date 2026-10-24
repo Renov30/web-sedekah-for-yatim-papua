@@ -20,6 +20,9 @@ export const STORAGE_KEY_VOLUNTEERS = "sfy_registered_volunteers";
 export const STORAGE_KEY_DONORS = "sfy_registered_donors";
 export const STORAGE_KEY_ROLES = "sfy_registered_roles";
 
+let pendingOrphansSave: Promise<void> | null = null;
+let pendingAVsSave: Promise<void> | null = null;
+
 export function getStoredOrphans(): OrphanRecord[] {
   if (typeof window === "undefined") {
     return initialOrphans;
@@ -31,16 +34,9 @@ export function getStoredOrphans(): OrphanRecord[] {
       return initialOrphans;
     }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    if (!Array.isArray(parsed)) {
       localStorage.setItem(STORAGE_KEY_ORPHANS, JSON.stringify(initialOrphans));
       return initialOrphans;
-    }
-    const existingIds = new Set(parsed.map((item: OrphanRecord) => item.id));
-    const missing = initialOrphans.filter((o) => !existingIds.has(o.id));
-    if (missing.length > 0) {
-      const merged = [...parsed, ...missing];
-      localStorage.setItem(STORAGE_KEY_ORPHANS, JSON.stringify(merged));
-      return merged;
     }
     return parsed;
   } catch {
@@ -52,13 +48,18 @@ export function saveStoredOrphans(list: OrphanRecord[]): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(STORAGE_KEY_ORPHANS, JSON.stringify(list));
-    fetch("/api/admin/orphans", {
+    pendingOrphansSave = fetch("/api/admin/orphans", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ items: list }),
-    }).catch((err) =>
-      console.error("Gagal sinkronisasi anak yatim ke database:", err)
-    );
+    })
+      .then(() => undefined)
+      .catch((err) => {
+        console.error("Gagal sinkronisasi anak yatim ke database:", err);
+      })
+      .finally(() => {
+        pendingOrphansSave = null;
+      });
   } catch (e) {
     console.error("Gagal menyimpan data anak yatim:", e);
   }
@@ -66,6 +67,9 @@ export function saveStoredOrphans(list: OrphanRecord[]): void {
 
 export async function fetchOrphansFromApi(): Promise<OrphanRecord[]> {
   try {
+    if (pendingOrphansSave) {
+      await pendingOrphansSave;
+    }
     const res = await fetch("/api/admin/orphans", { cache: "no-store" });
     if (!res.ok) return getStoredOrphans();
     const json = await res.json();
@@ -92,7 +96,7 @@ export function getStoredAVs(): AVRecord[] {
       return initialAVs;
     }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    if (!Array.isArray(parsed)) {
       localStorage.setItem(STORAGE_KEY_AVS, JSON.stringify(initialAVs));
       return initialAVs;
     }
@@ -106,13 +110,18 @@ export function saveStoredAVs(list: AVRecord[]): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(STORAGE_KEY_AVS, JSON.stringify(list));
-    fetch("/api/admin/av", {
+    pendingAVsSave = fetch("/api/admin/av", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ items: list }),
-    }).catch((err) =>
-      console.error("Gagal sinkronisasi AV ke database:", err)
-    );
+    })
+      .then(() => undefined)
+      .catch((err) => {
+        console.error("Gagal sinkronisasi AV ke database:", err);
+      })
+      .finally(() => {
+        pendingAVsSave = null;
+      });
   } catch (e) {
     console.error("Gagal menyimpan data AV:", e);
   }
@@ -120,6 +129,9 @@ export function saveStoredAVs(list: AVRecord[]): void {
 
 export async function fetchAVsFromApi(): Promise<AVRecord[]> {
   try {
+    if (pendingAVsSave) {
+      await pendingAVsSave;
+    }
     const res = await fetch("/api/admin/av", { cache: "no-store" });
     if (!res.ok) return getStoredAVs();
     const json = await res.json();
@@ -146,7 +158,7 @@ export function getStoredFinances(): FinanceTransaction[] {
       return initialFinances;
     }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    if (!Array.isArray(parsed)) {
       localStorage.setItem(STORAGE_KEY_FINANCES, JSON.stringify(initialFinances));
       return initialFinances;
     }
@@ -176,7 +188,7 @@ export function getStoredVolunteers(): VolunteerRecord[] {
       return initialVolunteers;
     }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    if (!Array.isArray(parsed)) {
       localStorage.setItem(STORAGE_KEY_VOLUNTEERS, JSON.stringify(initialVolunteers));
       return initialVolunteers;
     }
@@ -206,7 +218,7 @@ export function getStoredDonors(): DonorRecord[] {
       return initialDonors;
     }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    if (!Array.isArray(parsed)) {
       localStorage.setItem(STORAGE_KEY_DONORS, JSON.stringify(initialDonors));
       return initialDonors;
     }
@@ -236,7 +248,7 @@ export function getStoredRoles(): RoleDefinition[] {
       return initialRoles;
     }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    if (!Array.isArray(parsed)) {
       localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(initialRoles));
       return initialRoles;
     }

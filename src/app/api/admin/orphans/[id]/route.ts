@@ -99,9 +99,51 @@ export async function PUT(
             : undefined,
         wali:
           body.wali !== undefined ? String(body.wali).trim() : undefined,
+        pekerjaanWali:
+          body.pekerjaanWali !== undefined
+            ? body.pekerjaanWali
+              ? String(body.pekerjaanWali).trim()
+              : null
+            : undefined,
+        noHpWali:
+          body.noHpWali !== undefined
+            ? body.noHpWali
+              ? String(body.noHpWali).trim()
+              : null
+            : undefined,
         jenjangPendidikan:
           body.jenjangPendidikan !== undefined
             ? String(body.jenjangPendidikan).trim()
+            : undefined,
+        namaSekolah:
+          body.namaSekolah !== undefined
+            ? body.namaSekolah
+              ? String(body.namaSekolah).trim()
+              : null
+            : undefined,
+        tempatLahir:
+          body.tempatLahir !== undefined
+            ? body.tempatLahir
+              ? String(body.tempatLahir).trim()
+              : null
+            : undefined,
+        tanggalLahir:
+          body.tanggalLahir !== undefined
+            ? body.tanggalLahir
+              ? String(body.tanggalLahir).trim()
+              : null
+            : undefined,
+        hobi:
+          body.hobi !== undefined
+            ? body.hobi
+              ? String(body.hobi).trim()
+              : null
+            : undefined,
+        citaCita:
+          body.citaCita !== undefined
+            ? body.citaCita
+              ? String(body.citaCita).trim()
+              : null
             : undefined,
         kebutuhanMendesak:
           body.kebutuhanMendesak !== undefined

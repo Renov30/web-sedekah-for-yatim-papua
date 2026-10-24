@@ -116,7 +116,14 @@ CREATE TABLE IF NOT EXISTS "orphans" (
     "pjAvNama" TEXT,
     "tempatTinggal" TEXT NOT NULL,
     "wali" TEXT NOT NULL,
+    "pekerjaanWali" TEXT,
+    "noHpWali" TEXT,
     "jenjangPendidikan" TEXT NOT NULL,
+    "namaSekolah" TEXT,
+    "tempatLahir" TEXT,
+    "tanggalLahir" TEXT,
+    "hobi" TEXT,
+    "citaCita" TEXT,
     "kebutuhanMendesak" TEXT NOT NULL,
     "statusVerifikasi" TEXT NOT NULL DEFAULT 'Menunggu Survei',
     "tanggalMasuk" TEXT NOT NULL,
@@ -214,4 +221,14 @@ BEGIN
         ALTER TABLE "finance_transactions" ADD CONSTRAINT "finance_transactions_donorId_fkey" FOREIGN KEY ("donorId") REFERENCES "donors"("id") ON DELETE SET NULL ON UPDATE CASCADE;
     END IF;
 END $$;
+
+-- MIGRATION CHECKS (Add new columns if table already exists)
+ALTER TABLE "orphans" ADD COLUMN IF NOT EXISTS "tempatLahir" TEXT;
+ALTER TABLE "orphans" ADD COLUMN IF NOT EXISTS "tanggalLahir" TEXT;
+ALTER TABLE "orphans" ADD COLUMN IF NOT EXISTS "namaSekolah" TEXT;
+ALTER TABLE "orphans" ADD COLUMN IF NOT EXISTS "hobi" TEXT;
+ALTER TABLE "orphans" ADD COLUMN IF NOT EXISTS "citaCita" TEXT;
+ALTER TABLE "orphans" ADD COLUMN IF NOT EXISTS "pekerjaanWali" TEXT;
+ALTER TABLE "orphans" ADD COLUMN IF NOT EXISTS "noHpWali" TEXT;
+
 

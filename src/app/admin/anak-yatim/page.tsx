@@ -18,10 +18,14 @@ import {
   RotateCcw,
   ExternalLink,
   CheckSquare,
+  GraduationCap,
+  Heart,
+  Target,
+  Phone,
+  Briefcase,
+  Calendar,
 } from "lucide-react";
 import {
-  initialOrphans,
-  initialAVs,
   OrphanRecord,
   AVRecord,
 } from "@/data/admin/adminData";
@@ -42,8 +46,8 @@ import {
 } from "@/lib/wilayah";
 
 export default function AnakYatimAdminPage() {
-  const [orphans, setOrphans] = useState<OrphanRecord[]>(initialOrphans);
-  const [avList, setAvList] = useState<AVRecord[]>(initialAVs);
+  const [orphans, setOrphans] = useState<OrphanRecord[]>([]);
+  const [avList, setAvList] = useState<AVRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterDistrik, setFilterDistrik] = useState("all");
   const [filterKampung, setFilterKampung] = useState("all");
@@ -82,7 +86,14 @@ export default function AnakYatimAdminPage() {
     pjAvNama: "Yohanes Gebze",
     tempatTinggal: "Asrama SFY Merauke",
     wali: "",
+    pekerjaanWali: "",
+    noHpWali: "",
     jenjangPendidikan: "SD Kelas 4",
+    namaSekolah: "",
+    tempatLahir: "",
+    tanggalLahir: "",
+    hobi: "",
+    citaCita: "",
     kebutuhanMendesak: "Seragam & Buku Pelajaran",
     statusVerifikasi: "Menunggu Survei" as
       | "Terverifikasi"
@@ -101,7 +112,14 @@ export default function AnakYatimAdminPage() {
     pjAvNama: "Yohanes Gebze",
     tempatTinggal: "Asrama SFY Merauke",
     wali: "",
+    pekerjaanWali: "",
+    noHpWali: "",
     jenjangPendidikan: "SD Kelas 4",
+    namaSekolah: "",
+    tempatLahir: "",
+    tanggalLahir: "",
+    hobi: "",
+    citaCita: "",
     kebutuhanMendesak: "Seragam & Buku Pelajaran",
     statusVerifikasi: "Menunggu Survei" as
       | "Terverifikasi"
@@ -287,7 +305,14 @@ export default function AnakYatimAdminPage() {
       pjAvNama: formData.pjAvNama || "Belum ditentukan",
       tempatTinggal: formData.tempatTinggal,
       wali: formData.wali || "Keluarga Asuh",
+      pekerjaanWali: formData.pekerjaanWali.trim() || undefined,
+      noHpWali: formData.noHpWali.trim() || undefined,
       jenjangPendidikan: formData.jenjangPendidikan,
+      namaSekolah: formData.namaSekolah.trim() || undefined,
+      tempatLahir: formData.tempatLahir.trim() || undefined,
+      tanggalLahir: formData.tanggalLahir.trim() || undefined,
+      hobi: formData.hobi.trim() || undefined,
+      citaCita: formData.citaCita.trim() || undefined,
       kebutuhanMendesak: formData.kebutuhanMendesak,
       statusVerifikasi: formData.statusVerifikasi,
       tanggalMasuk: new Intl.DateTimeFormat("id-ID", {
@@ -318,7 +343,14 @@ export default function AnakYatimAdminPage() {
       pjAvNama: "Yohanes Gebze",
       tempatTinggal: "Asrama SFY Merauke",
       wali: "",
+      pekerjaanWali: "",
+      noHpWali: "",
       jenjangPendidikan: "SD Kelas 4",
+      namaSekolah: "",
+      tempatLahir: "",
+      tanggalLahir: "",
+      hobi: "",
+      citaCita: "",
       kebutuhanMendesak: "Seragam & Buku Pelajaran",
       statusVerifikasi: "Menunggu Survei",
     });
@@ -373,7 +405,14 @@ export default function AnakYatimAdminPage() {
       pjAvNama: orphan.pjAvNama || "",
       tempatTinggal: orphan.tempatTinggal,
       wali: orphan.wali,
+      pekerjaanWali: orphan.pekerjaanWali || "",
+      noHpWali: orphan.noHpWali || "",
       jenjangPendidikan: orphan.jenjangPendidikan,
+      namaSekolah: orphan.namaSekolah || "",
+      tempatLahir: orphan.tempatLahir || "",
+      tanggalLahir: orphan.tanggalLahir || "",
+      hobi: orphan.hobi || "",
+      citaCita: orphan.citaCita || "",
       kebutuhanMendesak: orphan.kebutuhanMendesak,
       statusVerifikasi: orphan.statusVerifikasi,
     });
@@ -403,7 +442,14 @@ export default function AnakYatimAdminPage() {
           pjAvNama: matchedAV ? matchedAV.nama : editFormData.pjAvNama,
           tempatTinggal: editFormData.tempatTinggal.trim(),
           wali: editFormData.wali.trim(),
+          pekerjaanWali: editFormData.pekerjaanWali.trim() || undefined,
+          noHpWali: editFormData.noHpWali.trim() || undefined,
           jenjangPendidikan: editFormData.jenjangPendidikan.trim(),
+          namaSekolah: editFormData.namaSekolah.trim() || undefined,
+          tempatLahir: editFormData.tempatLahir.trim() || undefined,
+          tanggalLahir: editFormData.tanggalLahir.trim() || undefined,
+          hobi: editFormData.hobi.trim() || undefined,
+          citaCita: editFormData.citaCita.trim() || undefined,
           kebutuhanMendesak: editFormData.kebutuhanMendesak.trim(),
           statusVerifikasi: editFormData.statusVerifikasi,
         };
@@ -543,11 +589,19 @@ export default function AnakYatimAdminPage() {
       "Usia",
       "Status Santunan",
       "Status",
+      "Tempat Lahir",
+      "Tanggal Lahir",
       "Distrik",
       "Kabupaten",
+      "Kampung",
       "Tempat Tinggal",
       "Wali",
-      "Pendidikan",
+      "Pekerjaan Wali",
+      "No HP Wali",
+      "Jenjang Pendidikan",
+      "Nama Sekolah",
+      "Hobi",
+      "Cita-cita",
       "Kebutuhan Mendesak",
       "Status Verifikasi",
     ];
@@ -559,11 +613,19 @@ export default function AnakYatimAdminPage() {
       o.usia,
       o.usia >= 15 ? '"Non-Santunan (Batas Usia ≥15 th)"' : '"Penerima Santunan (<15 th)"',
       o.status,
+      `"${o.tempatLahir || "-"}"`,
+      `"${o.tanggalLahir || "-"}"`,
       `"${o.asalDaerah}"`,
       `"${o.kabupaten}"`,
+      `"${o.kampung || "-"}"`,
       `"${o.tempatTinggal}"`,
       `"${o.wali}"`,
+      `"${o.pekerjaanWali || "-"}"`,
+      `"${o.noHpWali || "-"}"`,
       `"${o.jenjangPendidikan}"`,
+      `"${o.namaSekolah || "-"}"`,
+      `"${o.hobi || "-"}"`,
+      `"${o.citaCita || "-"}"`,
       `"${o.kebutuhanMendesak}"`,
       o.statusVerifikasi,
     ]);
@@ -1123,7 +1185,7 @@ export default function AnakYatimAdminPage() {
       {/* DETAIL MODAL */}
       {selectedOrphan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl border border-stone-200 space-y-5">
+          <div className="bg-white rounded-2xl w-full max-w-xl p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-stone-100">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs font-semibold text-[#823296] bg-purple-50 px-2 py-0.5 rounded">
@@ -1131,6 +1193,11 @@ export default function AnakYatimAdminPage() {
                 </span>
                 <h3 className="text-lg font-bold text-stone-900">
                   {selectedOrphan.namaLengkap}
+                  {selectedOrphan.namaPanggilan && (
+                    <span className="text-stone-500 font-normal text-sm ml-1.5">
+                      ({selectedOrphan.namaPanggilan})
+                    </span>
+                  )}
                 </h3>
               </div>
               <button
@@ -1143,9 +1210,10 @@ export default function AnakYatimAdminPage() {
             </div>
 
             <div className="space-y-3.5 text-xs">
+              {/* Bio & Kelahiran */}
               <div className="grid grid-cols-2 gap-3 p-3.5 bg-stone-50 rounded-xl">
                 <div>
-                  <span className="text-stone-500">Status Yatim:</span>
+                  <span className="text-stone-500">Status Santri:</span>
                   <p className="font-semibold text-stone-900 text-sm mt-0.5">
                     {selectedOrphan.status}
                   </p>
@@ -1158,9 +1226,16 @@ export default function AnakYatimAdminPage() {
                   </p>
                 </div>
                 <div>
-                  <span className="text-stone-500">Pendidikan:</span>
+                  <span className="text-stone-500 flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-[#823296]" />
+                    <span>Tempat, Tanggal Lahir:</span>
+                  </span>
                   <p className="font-semibold text-stone-900 mt-0.5">
-                    {selectedOrphan.jenjangPendidikan}
+                    {selectedOrphan.tempatLahir || selectedOrphan.tanggalLahir
+                      ? `${selectedOrphan.tempatLahir || "-"}${
+                          selectedOrphan.tanggalLahir ? `, ${selectedOrphan.tanggalLahir}` : ""
+                        }`
+                      : "-"}
                   </p>
                 </div>
                 <div>
@@ -1202,6 +1277,90 @@ export default function AnakYatimAdminPage() {
                 </p>
               </div>
 
+              {/* Pendidikan & Sekolah */}
+              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200/80">
+                <span className="font-semibold text-stone-900 flex items-center gap-1.5 text-xs mb-2">
+                  <GraduationCap className="w-4 h-4 text-[#823296]" />
+                  <span>Pendidikan & Sekolah</span>
+                </span>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <span className="text-stone-500">Jenjang:</span>
+                    <p className="font-semibold text-stone-900 mt-0.5">
+                      {selectedOrphan.jenjangPendidikan}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-stone-500">Nama Sekolah:</span>
+                    <p className="font-semibold text-stone-900 mt-0.5">
+                      {selectedOrphan.namaSekolah || "Belum dicatat"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Minat, Hobi & Cita-Cita */}
+              <div className="grid grid-cols-2 gap-3 p-3 bg-stone-50 rounded-xl border border-stone-200/80">
+                <div>
+                  <span className="text-stone-500 flex items-center gap-1.5">
+                    <Heart className="w-3.5 h-3.5 text-rose-500" />
+                    <span>Hobi / Minat:</span>
+                  </span>
+                  <p className="font-semibold text-stone-900 mt-1">
+                    {selectedOrphan.hobi || "Belum dicatat"}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-stone-500 flex items-center gap-1.5">
+                    <Target className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Cita-cita:</span>
+                  </span>
+                  <p className="font-semibold text-stone-900 mt-1">
+                    {selectedOrphan.citaCita || "Belum dicatat"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Informasi Wali & Kontak */}
+              <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-200/60 space-y-2">
+                <span className="font-semibold text-blue-950 flex items-center gap-1.5 text-xs">
+                  <Briefcase className="w-4 h-4 text-blue-700" />
+                  <span>Wali / Orang Tua & Kontak</span>
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                  <div>
+                    <span className="text-stone-500">Nama Wali:</span>
+                    <p className="font-bold text-stone-900 mt-0.5">
+                      {selectedOrphan.wali}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-stone-500">Pekerjaan:</span>
+                    <p className="font-semibold text-stone-800 mt-0.5">
+                      {selectedOrphan.pekerjaanWali || "Tidak tercatat"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-stone-500">No. HP / WA Wali:</span>
+                    {selectedOrphan.noHpWali ? (
+                      <a
+                        href={`https://wa.me/${selectedOrphan.noHpWali.replace(/[^0-9]/g, "").replace(/^0/, "62")}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 font-bold text-emerald-700 hover:text-emerald-800 hover:underline mt-0.5"
+                      >
+                        <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>{selectedOrphan.noHpWali}</span>
+                      </a>
+                    ) : (
+                      <p className="font-normal text-stone-500 mt-0.5">
+                        Belum dicatat
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-1">
                 <span className="text-stone-500">Domisili & Asal:</span>
                 <p className="font-medium text-stone-900 flex items-center gap-1.5">
@@ -1238,9 +1397,9 @@ export default function AnakYatimAdminPage() {
               </div>
 
               <div className="space-y-1">
-                <span className="text-stone-500">Tempat Tinggal & Pengasuh:</span>
+                <span className="text-stone-500">Tempat Tinggal Saat Ini:</span>
                 <p className="font-medium text-stone-900">
-                  {selectedOrphan.tempatTinggal} — Wali: {selectedOrphan.wali}
+                  {selectedOrphan.tempatTinggal}
                 </p>
               </div>
 
@@ -1353,6 +1512,37 @@ export default function AnakYatimAdminPage() {
                         ...formData,
                         namaPanggilan: e.target.value,
                       })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Tempat Lahir
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Merauke"
+                    value={formData.tempatLahir}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tempatLahir: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Tanggal Lahir
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: 15 Mei 2014"
+                    value={formData.tanggalLahir}
+                    onChange={(e) =>
+                      setFormData({ ...formData, tanggalLahir: e.target.value })
                     }
                     className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
                   />
@@ -1615,24 +1805,26 @@ export default function AnakYatimAdminPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-stone-700 font-medium mb-1">
-                    Tempat Tinggal Saat Ini
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Asrama SFY / Keluarga Asuh..."
-                    value={formData.tempatTinggal}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        tempatTinggal: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
-                  />
-                </div>
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Tempat Tinggal Saat Ini
+                </label>
+                <input
+                  type="text"
+                  placeholder="Asrama SFY / Keluarga Asuh..."
+                  value={formData.tempatTinggal}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      tempatTinggal: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              {/* Data Wali / Pengasuh */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-stone-700 font-medium mb-1">
                     Nama Wali / Pengasuh
@@ -1647,24 +1839,104 @@ export default function AnakYatimAdminPage() {
                     className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
                   />
                 </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Pekerjaan Wali / Ortu
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Petani / Guru"
+                    value={formData.pekerjaanWali}
+                    onChange={(e) =>
+                      setFormData({ ...formData, pekerjaanWali: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    No. HP / WA Wali
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: 0812-xxxx-xxxx"
+                    value={formData.noHpWali}
+                    onChange={(e) =>
+                      setFormData({ ...formData, noHpWali: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-stone-700 font-medium mb-1">
-                  Jenjang & Sekolah
-                </label>
-                <input
-                  type="text"
-                  placeholder="Contoh: SD Kelas 4 MI Nurul Huda"
-                  value={formData.jenjangPendidikan}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      jenjangPendidikan: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
-                />
+              {/* Pendidikan & Sekolah */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Jenjang Pendidikan
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: SD Kelas 4"
+                    value={formData.jenjangPendidikan}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        jenjangPendidikan: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Nama Sekolah
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: MI Nurul Huda Merauke"
+                    value={formData.namaSekolah}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        namaSekolah: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              {/* Minat, Hobi & Cita-Cita */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Hobi / Minat
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Membaca & Badminton"
+                    value={formData.hobi}
+                    onChange={(e) =>
+                      setFormData({ ...formData, hobi: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Cita-cita
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Guru / Dokter"
+                    value={formData.citaCita}
+                    onChange={(e) =>
+                      setFormData({ ...formData, citaCita: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
               </div>
 
               <div>
@@ -1752,6 +2024,43 @@ export default function AnakYatimAdminPage() {
                       setEditFormData({
                         ...editFormData,
                         namaPanggilan: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Tempat Lahir
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Merauke"
+                    value={editFormData.tempatLahir}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        tempatLahir: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Tanggal Lahir
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: 15 Mei 2014"
+                    value={editFormData.tanggalLahir}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        tanggalLahir: e.target.value,
                       })
                     }
                     className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
@@ -1932,29 +2241,33 @@ export default function AnakYatimAdminPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-stone-700 font-medium mb-1">
-                    Tempat Tinggal Saat Ini
-                  </label>
-                  <input
-                    type="text"
-                    value={editFormData.tempatTinggal}
-                    onChange={(e) =>
-                      setEditFormData({
-                        ...editFormData,
-                        tempatTinggal: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
-                  />
-                </div>
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Tempat Tinggal Saat Ini
+                </label>
+                <input
+                  type="text"
+                  placeholder="Asrama SFY / Keluarga Asuh..."
+                  value={editFormData.tempatTinggal}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      tempatTinggal: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              {/* Data Wali / Pengasuh */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-stone-700 font-medium mb-1">
                     Nama Wali / Pengasuh
                   </label>
                   <input
                     type="text"
+                    placeholder="Nama wali..."
                     value={editFormData.wali}
                     onChange={(e) =>
                       setEditFormData({
@@ -1965,15 +2278,51 @@ export default function AnakYatimAdminPage() {
                     className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-stone-700 font-medium mb-1">
-                    Jenjang & Sekolah
+                    Pekerjaan Wali / Ortu
                   </label>
                   <input
                     type="text"
+                    placeholder="Contoh: Petani / Guru"
+                    value={editFormData.pekerjaanWali}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        pekerjaanWali: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    No. HP / WA Wali
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: 0812-xxxx-xxxx"
+                    value={editFormData.noHpWali}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        noHpWali: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              {/* Pendidikan & Sekolah */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Jenjang Pendidikan
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: SD Kelas 4"
                     value={editFormData.jenjangPendidikan}
                     onChange={(e) =>
                       setEditFormData({
@@ -1986,23 +2335,79 @@ export default function AnakYatimAdminPage() {
                 </div>
                 <div>
                   <label className="block text-stone-700 font-medium mb-1">
-                    Status Verifikasi
+                    Nama Sekolah
                   </label>
-                  <select
-                    value={editFormData.statusVerifikasi}
+                  <input
+                    type="text"
+                    placeholder="Contoh: MI Nurul Huda Merauke"
+                    value={editFormData.namaSekolah}
                     onChange={(e) =>
                       setEditFormData({
                         ...editFormData,
-                        statusVerifikasi: e.target.value as OrphanRecord["statusVerifikasi"],
+                        namaSekolah: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white font-medium"
-                  >
-                    <option value="Terverifikasi">Terverifikasi</option>
-                    <option value="Menunggu Survei">Menunggu Survei</option>
-                    <option value="Perlu Pembaruan">Perlu Pembaruan</option>
-                  </select>
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
                 </div>
+              </div>
+
+              {/* Minat, Hobi & Cita-Cita */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Hobi / Minat
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Membaca & Badminton"
+                    value={editFormData.hobi}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        hobi: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Cita-cita
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Guru / Dokter"
+                    value={editFormData.citaCita}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        citaCita: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Status Verifikasi
+                </label>
+                <select
+                  value={editFormData.statusVerifikasi}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      statusVerifikasi: e.target.value as OrphanRecord["statusVerifikasi"],
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white font-medium"
+                >
+                  <option value="Terverifikasi">Terverifikasi</option>
+                  <option value="Menunggu Survei">Menunggu Survei</option>
+                  <option value="Perlu Pembaruan">Perlu Pembaruan</option>
+                </select>
               </div>
 
               <div>

@@ -61,29 +61,58 @@ export function detectDefaultServerUrl(): string {
     return "http://localhost:3000";
   }
 
-  // 3. Try to detect LAN IP from Expo hostUri during development (e.g. "192.168.1.15:8081")
-  const hostUri = Constants.expoConfig?.hostUri;
-  if (hostUri) {
-    const host = hostUri.split(":")[0];
+  // 3. Try to detect LAN IP from Expo hostUri / debuggerHost / experienceUrl during development
+  const manifest2DebuggerHost = (
+    Constants.manifest2 as {
+      extra?: { expoGo?: { debuggerHost?: string } };
+    } | null
+  )?.extra?.expoGo?.debuggerHost;
+
+  const expHost = Constants.experienceUrl
+    ? Constants.experienceUrl.replace(/^exp:\/\//, "").split("/")[0]
+    : undefined;
+
+  const rawHostUri =
+    Constants.expoConfig?.hostUri || manifest2DebuggerHost || expHost;
+
+  if (rawHostUri) {
+    const host = rawHostUri.split(":")[0];
     if (host && host !== "localhost" && host !== "127.0.0.1") {
       return `http://${host}:3000`;
     }
   }
 
-  // 4. Fallback in standalone production APK when not running inside Expo Go dev server
+  // 4. In development mode, default to local LAN server; in standalone production APK, fallback to sfypapua.org
+  if (typeof __DEV__ !== "undefined" && __DEV__) {
+    return "http://192.168.1.15:3000";
+  }
+
   return PRODUCTION_SERVER_URL;
 }
 
 export async function getServerUrl(): Promise<string> {
+  const detected = detectDefaultServerUrl();
   try {
     const saved = await AsyncStorage.getItem(KEY_SERVER_URL);
     if (saved && saved.trim()) {
-      return saved.trim().replace(/\/+$/, "");
+      const cleanSaved = saved.trim().replace(/\/+$/, "");
+      // In Expo Go dev mode, if an old LAN IP or undeployed production domain was cached, auto-heal to current LAN IP
+      if (
+        typeof __DEV__ !== "undefined" &&
+        __DEV__ &&
+        cleanSaved !== detected &&
+        (cleanSaved === PRODUCTION_SERVER_URL ||
+          cleanSaved.includes("10.145.210.220"))
+      ) {
+        await AsyncStorage.setItem(KEY_SERVER_URL, detected);
+        return detected;
+      }
+      return cleanSaved;
     }
   } catch {
     // ignore
   }
-  return detectDefaultServerUrl();
+  return detected;
 }
 
 export async function saveServerUrl(url: string): Promise<string> {
@@ -254,6 +283,115 @@ export async function enqueueSyncOperation(
   return updated;
 }
 
+function applyPendingQueueLocally(
+  data: {
+    orphans: OrphanRecord[];
+    avs: AVRecord[];
+    distriks: DistrikRecord[];
+    kampungs: KampungRecord[];
+  },
+  queue: SyncQueueItem[]
+) {
+  let { orphans, avs, distriks, kampungs } = data;
+
+  for (const op of queue) {
+    const id = op.recordId;
+    const p = (op.payload || {}) as Record<string, unknown>;
+
+    if (op.entity === "orphan") {
+      if (op.action === "soft_delete") {
+        orphans = orphans.map((o) =>
+          o.id === id
+            ? {
+                ...o,
+                isDeleted: true,
+                deletedAt: (p.deletedAt as string) || o.deletedAt,
+              }
+            : o
+        );
+      } else if (op.action === "restore") {
+        orphans = orphans.map((o) =>
+          o.id === id ? { ...o, isDeleted: false, deletedAt: undefined } : o
+        );
+      } else if (op.action === "delete") {
+        orphans = orphans.filter((o) => o.id !== id);
+      } else if (op.action === "create") {
+        if (!orphans.some((o) => o.id === id)) {
+          orphans = [p as unknown as OrphanRecord, ...orphans];
+        }
+      } else if (op.action === "update") {
+        orphans = orphans.map((o) =>
+          o.id === id ? ({ ...o, ...p } as OrphanRecord) : o
+        );
+      }
+    } else if (op.entity === "av") {
+      if (op.action === "soft_delete") {
+        avs = avs.map((a) =>
+          a.id === id
+            ? {
+                ...a,
+                isDeleted: true,
+                deletedAt: (p.deletedAt as string) || a.deletedAt,
+              }
+            : a
+        );
+      } else if (op.action === "restore") {
+        avs = avs.map((a) =>
+          a.id === id ? { ...a, isDeleted: false, deletedAt: undefined } : a
+        );
+      } else if (op.action === "delete") {
+        avs = avs.filter((a) => a.id !== id);
+      } else if (op.action === "create") {
+        if (!avs.some((a) => a.id === id)) {
+          avs = [p as unknown as AVRecord, ...avs];
+        }
+      } else if (op.action === "update") {
+        avs = avs.map((a) =>
+          a.id === id ? ({ ...a, ...p } as AVRecord) : a
+        );
+      }
+    } else if (op.entity === "distrik") {
+      if (op.action === "soft_delete") {
+        distriks = distriks.map((d) =>
+          d.id === id
+            ? {
+                ...d,
+                isDeleted: true,
+                deletedAt: (p.deletedAt as string) || d.deletedAt,
+              }
+            : d
+        );
+      } else if (op.action === "restore") {
+        distriks = distriks.map((d) =>
+          d.id === id ? { ...d, isDeleted: false, deletedAt: undefined } : d
+        );
+      } else if (op.action === "delete") {
+        distriks = distriks.filter((d) => d.id !== id);
+      }
+    } else if (op.entity === "kampung") {
+      if (op.action === "soft_delete") {
+        kampungs = kampungs.map((k) =>
+          k.id === id
+            ? {
+                ...k,
+                isDeleted: true,
+                deletedAt: (p.deletedAt as string) || k.deletedAt,
+              }
+            : k
+        );
+      } else if (op.action === "restore") {
+        kampungs = kampungs.map((k) =>
+          k.id === id ? { ...k, isDeleted: false, deletedAt: undefined } : k
+        );
+      } else if (op.action === "delete") {
+        kampungs = kampungs.filter((k) => k.id !== id);
+      }
+    }
+  }
+
+  return { orphans, avs, distriks, kampungs };
+}
+
 /**
  * Two-Way Synchronization (Upload pending local changes + Download latest server database)
  */
@@ -272,11 +410,12 @@ export async function performTwoWaySync(): Promise<{
   errorMessage?: string;
 }> {
   const baseUrl = await getServerUrl();
+  const detectedUrl = detectDefaultServerUrl();
   const queueBefore = await getSyncQueue();
 
-  try {
+  const trySyncWithUrl = async (targetUrl: string) => {
     const response = await fetchWithTimeout(
-      `${baseUrl}/api/admin/sync`,
+      `${targetUrl}/api/admin/sync`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -292,6 +431,21 @@ export async function performTwoWaySync(): Promise<{
     const json = await response.json();
     if (!json.success || !json.data) {
       throw new Error(json.message || "Respons server tidak valid");
+    }
+    return json;
+  };
+
+  try {
+    let json;
+    try {
+      json = await trySyncWithUrl(baseUrl);
+    } catch (firstErr) {
+      if (detectedUrl && detectedUrl !== baseUrl) {
+        json = await trySyncWithUrl(detectedUrl);
+        await AsyncStorage.setItem(KEY_SERVER_URL, detectedUrl);
+      } else {
+        throw firstErr;
+      }
     }
 
     const processedIds = new Set<string>(
@@ -310,12 +464,17 @@ export async function performTwoWaySync(): Promise<{
     const syncTimestamp = json.serverTime || formatNowIndonesian();
     await AsyncStorage.setItem(KEY_LAST_SYNC, syncTimestamp);
 
-    const serverData = {
+    const rawServerData = {
       orphans: json.data.orphans as OrphanRecord[],
       avs: json.data.avs as AVRecord[],
       distriks: json.data.distriks as DistrikRecord[],
       kampungs: json.data.kampungs as KampungRecord[],
     };
+
+    const serverData =
+      remainingQueue.length > 0
+        ? applyPendingQueueLocally(rawServerData, remainingQueue)
+        : rawServerData;
 
     await saveLocalCollections(serverData);
 

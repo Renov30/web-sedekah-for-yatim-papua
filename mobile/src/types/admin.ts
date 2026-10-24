@@ -12,7 +12,14 @@ export interface OrphanRecord {
   pjAvNama?: string;
   tempatTinggal: string;
   wali: string;
+  pekerjaanWali?: string;
+  noHpWali?: string;
   jenjangPendidikan: string;
+  namaSekolah?: string;
+  tempatLahir?: string;
+  tanggalLahir?: string;
+  hobi?: string;
+  citaCita?: string;
   kebutuhanMendesak: string;
   statusVerifikasi: "Terverifikasi" | "Menunggu Survei" | "Perlu Pembaruan";
   tanggalMasuk: string;

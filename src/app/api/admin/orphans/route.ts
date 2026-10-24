@@ -30,7 +30,14 @@ export async function GET() {
       pjAvNama: o.pjAvNama ?? undefined,
       tempatTinggal: o.tempatTinggal,
       wali: o.wali,
+      pekerjaanWali: o.pekerjaanWali ?? undefined,
+      noHpWali: o.noHpWali ?? undefined,
       jenjangPendidikan: o.jenjangPendidikan,
+      namaSekolah: o.namaSekolah ?? undefined,
+      tempatLahir: o.tempatLahir ?? undefined,
+      tanggalLahir: o.tanggalLahir ?? undefined,
+      hobi: o.hobi ?? undefined,
+      citaCita: o.citaCita ?? undefined,
       kebutuhanMendesak: o.kebutuhanMendesak,
       statusVerifikasi: o.statusVerifikasi as
         | "Terverifikasi"
@@ -129,9 +136,16 @@ export async function POST(request: NextRequest) {
           body.tempatTinggal || "Asrama SFY Merauke"
         ).trim(),
         wali: String(body.wali || "-").trim(),
+        pekerjaanWali: body.pekerjaanWali ? String(body.pekerjaanWali).trim() : null,
+        noHpWali: body.noHpWali ? String(body.noHpWali).trim() : null,
         jenjangPendidikan: String(
           body.jenjangPendidikan || "SD"
         ).trim(),
+        namaSekolah: body.namaSekolah ? String(body.namaSekolah).trim() : null,
+        tempatLahir: body.tempatLahir ? String(body.tempatLahir).trim() : null,
+        tanggalLahir: body.tanggalLahir ? String(body.tanggalLahir).trim() : null,
+        hobi: body.hobi ? String(body.hobi).trim() : null,
+        citaCita: body.citaCita ? String(body.citaCita).trim() : null,
         kebutuhanMendesak: String(
           body.kebutuhanMendesak || "Perlengkapan Sekolah"
         ).trim(),
@@ -158,9 +172,16 @@ export async function POST(request: NextRequest) {
           body.tempatTinggal || "Asrama SFY Merauke"
         ).trim(),
         wali: String(body.wali || "-").trim(),
+        pekerjaanWali: body.pekerjaanWali ? String(body.pekerjaanWali).trim() : null,
+        noHpWali: body.noHpWali ? String(body.noHpWali).trim() : null,
         jenjangPendidikan: String(
           body.jenjangPendidikan || "SD"
         ).trim(),
+        namaSekolah: body.namaSekolah ? String(body.namaSekolah).trim() : null,
+        tempatLahir: body.tempatLahir ? String(body.tempatLahir).trim() : null,
+        tanggalLahir: body.tanggalLahir ? String(body.tanggalLahir).trim() : null,
+        hobi: body.hobi ? String(body.hobi).trim() : null,
+        citaCita: body.citaCita ? String(body.citaCita).trim() : null,
         kebutuhanMendesak: String(
           body.kebutuhanMendesak || "Perlengkapan Sekolah"
         ).trim(),
@@ -195,73 +216,114 @@ export async function PUT(request: NextRequest) {
     }
 
     const incomingIds = new Set(items.map((i) => String(i.id)));
-    const existing = await prisma.orphan.findMany({ select: { id: true } });
+    const [existing, allAvs] = await Promise.all([
+      prisma.orphan.findMany({ select: { id: true } }),
+      prisma.areaVolunteer.findMany({ select: { id: true, nama: true } }),
+    ]);
 
-    // Delete records removed permanently from list
+    const avById = new Map(allAvs.map((a) => [a.id, a]));
+    const avByName = new Map(allAvs.map((a) => [a.nama.toLowerCase(), a]));
+
     const toDelete = existing
       .map((e) => e.id)
       .filter((id) => !incomingIds.has(id));
+
+    const txOps = [];
     if (toDelete.length > 0) {
-      await prisma.orphan.deleteMany({
-        where: { id: { in: toDelete } },
-      });
+      txOps.push(
+        prisma.orphan.deleteMany({
+          where: { id: { in: toDelete } },
+        })
+      );
     }
 
-    // Upsert all items in list
     for (const item of items) {
-      const { pjAvId, pjAvNama } = await resolveValidAv(
-        item.pjAvId,
-        item.pjAvNama
-      );
+      let pjAvId: string | null = null;
+      let pjAvNama: string | null = item.pjAvNama ? String(item.pjAvNama) : null;
 
-      await prisma.orphan.upsert({
-        where: { id: String(item.id) },
-        update: {
-          namaLengkap: String(item.namaLengkap || ""),
-          namaPanggilan: String(item.namaPanggilan || ""),
-          gender: item.gender === "P" ? "P" : "L",
-          usia: Number(item.usia) || 10,
-          status: String(item.status || "Yatim"),
-          asalDaerah: String(item.asalDaerah || "Distrik Merauke"),
-          kabupaten: String(item.kabupaten || "Kab. Merauke"),
-          kampung: item.kampung ? String(item.kampung) : null,
-          pjAvId,
-          pjAvNama,
-          tempatTinggal: String(item.tempatTinggal || ""),
-          wali: String(item.wali || ""),
-          jenjangPendidikan: String(item.jenjangPendidikan || ""),
-          kebutuhanMendesak: String(item.kebutuhanMendesak || ""),
-          statusVerifikasi: String(
-            item.statusVerifikasi || "Menunggu Survei"
-          ),
-          tanggalMasuk: String(item.tanggalMasuk || ""),
-          isDeleted: Boolean(item.isDeleted),
-          deletedAt: item.deletedAt ? String(item.deletedAt) : null,
-        },
-        create: {
-          id: String(item.id),
-          namaLengkap: String(item.namaLengkap || ""),
-          namaPanggilan: String(item.namaPanggilan || ""),
-          gender: item.gender === "P" ? "P" : "L",
-          usia: Number(item.usia) || 10,
-          status: String(item.status || "Yatim"),
-          asalDaerah: String(item.asalDaerah || "Distrik Merauke"),
-          kabupaten: String(item.kabupaten || "Kab. Merauke"),
-          kampung: item.kampung ? String(item.kampung) : null,
-          pjAvId,
-          pjAvNama,
-          tempatTinggal: String(item.tempatTinggal || ""),
-          wali: String(item.wali || ""),
-          jenjangPendidikan: String(item.jenjangPendidikan || ""),
-          kebutuhanMendesak: String(item.kebutuhanMendesak || ""),
-          statusVerifikasi: String(
-            item.statusVerifikasi || "Menunggu Survei"
-          ),
-          tanggalMasuk: String(item.tanggalMasuk || ""),
-          isDeleted: Boolean(item.isDeleted),
-          deletedAt: item.deletedAt ? String(item.deletedAt) : null,
-        },
-      });
+      if (item.pjAvId && avById.has(String(item.pjAvId))) {
+        const matched = avById.get(String(item.pjAvId))!;
+        pjAvId = matched.id;
+        pjAvNama = pjAvNama || matched.nama;
+      } else if (
+        item.pjAvNama &&
+        avByName.has(String(item.pjAvNama).trim().toLowerCase())
+      ) {
+        const matched = avByName.get(
+          String(item.pjAvNama).trim().toLowerCase()
+        )!;
+        pjAvId = matched.id;
+        pjAvNama = matched.nama;
+      }
+
+      txOps.push(
+        prisma.orphan.upsert({
+          where: { id: String(item.id) },
+          update: {
+            namaLengkap: String(item.namaLengkap || ""),
+            namaPanggilan: String(item.namaPanggilan || ""),
+            gender: item.gender === "P" ? "P" : "L",
+            usia: Number(item.usia) || 10,
+            status: String(item.status || "Yatim"),
+            asalDaerah: String(item.asalDaerah || "Distrik Merauke"),
+            kabupaten: String(item.kabupaten || "Kab. Merauke"),
+            kampung: item.kampung ? String(item.kampung) : null,
+            pjAvId,
+            pjAvNama,
+            tempatTinggal: String(item.tempatTinggal || ""),
+            wali: String(item.wali || ""),
+            pekerjaanWali: item.pekerjaanWali ? String(item.pekerjaanWali).trim() : null,
+            noHpWali: item.noHpWali ? String(item.noHpWali).trim() : null,
+            jenjangPendidikan: String(item.jenjangPendidikan || ""),
+            namaSekolah: item.namaSekolah ? String(item.namaSekolah).trim() : null,
+            tempatLahir: item.tempatLahir ? String(item.tempatLahir).trim() : null,
+            tanggalLahir: item.tanggalLahir ? String(item.tanggalLahir).trim() : null,
+            hobi: item.hobi ? String(item.hobi).trim() : null,
+            citaCita: item.citaCita ? String(item.citaCita).trim() : null,
+            kebutuhanMendesak: String(item.kebutuhanMendesak || ""),
+            statusVerifikasi: String(
+              item.statusVerifikasi || "Menunggu Survei"
+            ),
+            tanggalMasuk: String(item.tanggalMasuk || ""),
+            isDeleted: Boolean(item.isDeleted),
+            deletedAt: item.deletedAt ? String(item.deletedAt) : null,
+          },
+          create: {
+            id: String(item.id),
+            namaLengkap: String(item.namaLengkap || ""),
+            namaPanggilan: String(item.namaPanggilan || ""),
+            gender: item.gender === "P" ? "P" : "L",
+            usia: Number(item.usia) || 10,
+            status: String(item.status || "Yatim"),
+            asalDaerah: String(item.asalDaerah || "Distrik Merauke"),
+            kabupaten: String(item.kabupaten || "Kab. Merauke"),
+            kampung: item.kampung ? String(item.kampung) : null,
+            pjAvId,
+            pjAvNama,
+            tempatTinggal: String(item.tempatTinggal || ""),
+            wali: String(item.wali || ""),
+            pekerjaanWali: item.pekerjaanWali ? String(item.pekerjaanWali).trim() : null,
+            noHpWali: item.noHpWali ? String(item.noHpWali).trim() : null,
+            jenjangPendidikan: String(item.jenjangPendidikan || ""),
+            namaSekolah: item.namaSekolah ? String(item.namaSekolah).trim() : null,
+            tempatLahir: item.tempatLahir ? String(item.tempatLahir).trim() : null,
+            tanggalLahir: item.tanggalLahir ? String(item.tanggalLahir).trim() : null,
+            hobi: item.hobi ? String(item.hobi).trim() : null,
+            citaCita: item.citaCita ? String(item.citaCita).trim() : null,
+            kebutuhanMendesak: String(item.kebutuhanMendesak || ""),
+            statusVerifikasi: String(
+              item.statusVerifikasi || "Menunggu Survei"
+            ),
+            tanggalMasuk: String(item.tanggalMasuk || ""),
+            isDeleted: Boolean(item.isDeleted),
+            deletedAt: item.deletedAt ? String(item.deletedAt) : null,
+          },
+        })
+      );
+    }
+
+    if (txOps.length > 0) {
+      await prisma.$transaction(txOps);
     }
 
     return jsonResponse({ success: true });

@@ -217,16 +217,6 @@ export const WilayahScreen: React.FC = () => {
                 size={15}
                 color={viewTrash ? "#be123c" : "#57534e"}
               />
-              <Text
-                style={[
-                  styles.trashToggleText,
-                  viewTrash && { color: "#be123c" },
-                ]}
-              >
-                {activeTab === "kampung"
-                  ? deletedKampungs.length
-                  : deletedDistriks.length}
-              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -242,6 +232,32 @@ export const WilayahScreen: React.FC = () => {
                 {activeTab === "kampung" ? "Kampung" : "Distrik"}
               </Text>
             </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Summary Widgets (Only Non-Deleted Data) */}
+        <View style={styles.summaryRow}>
+          <View style={styles.summaryBox}>
+            <Text style={styles.summaryValue}>{activeKampungs.length}</Text>
+            <Text style={styles.summaryLabel} numberOfLines={1}>
+              Kampung Binaan
+            </Text>
+          </View>
+          <View style={styles.summaryBox}>
+            <Text style={[styles.summaryValue, { color: "#2563eb" }]}>
+              {activeDistriks.length}
+            </Text>
+            <Text style={styles.summaryLabel} numberOfLines={1}>
+              Distrik Aktif
+            </Text>
+          </View>
+          <View style={styles.summaryBox}>
+            <Text style={[styles.summaryValue, { color: "#5E2276" }]}>
+              {activeOrphans.length}
+            </Text>
+            <Text style={styles.summaryLabel} numberOfLines={1}>
+              Santri Terdata
+            </Text>
           </View>
         </View>
 
@@ -1058,5 +1074,30 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
     color: "#ffffff",
+  },
+  summaryRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  summaryBox: {
+    flex: 1,
+    backgroundColor: "#FAF8FB",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#e7e5e4",
+    paddingVertical: 7,
+    paddingHorizontal: 8,
+    alignItems: "center",
+  },
+  summaryValue: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#1c1917",
+  },
+  summaryLabel: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#78716c",
+    marginTop: 1,
   },
 });

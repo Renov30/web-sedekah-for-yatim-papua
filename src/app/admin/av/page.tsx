@@ -20,7 +20,7 @@ import {
   ExternalLink,
   CheckSquare,
 } from "lucide-react";
-import { initialAVs, initialOrphans, AVRecord, OrphanRecord } from "@/data/admin/adminData";
+import { AVRecord, OrphanRecord } from "@/data/admin/adminData";
 import {
   getStoredAVs,
   saveStoredAVs,
@@ -38,8 +38,8 @@ import {
 } from "@/lib/wilayah";
 
 export default function AVAdminPage() {
-  const [avList, setAvList] = useState<AVRecord[]>(initialAVs);
-  const [orphans, setOrphans] = useState<OrphanRecord[]>(initialOrphans);
+  const [avList, setAvList] = useState<AVRecord[]>([]);
+  const [orphans, setOrphans] = useState<OrphanRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterDistrik, setFilterDistrik] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");

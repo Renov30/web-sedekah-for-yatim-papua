@@ -140,7 +140,14 @@ model Orphan {
   pjAvNama          String?
   tempatTinggal     String   // e.g. "Asrama SFY Merauke"
   wali              String   // e.g. "Ustadz Harun (Pengasuh)"
+  pekerjaanWali     String?
+  noHpWali          String?
   jenjangPendidikan String   // e.g. "SD Kelas 5 MI Al-Ma'arif Merauke"
+  namaSekolah       String?
+  tempatLahir       String?
+  tanggalLahir      String?
+  hobi              String?
+  citaCita          String?
   kebutuhanMendesak String   // e.g. "Sepatu Sekolah & Kitab Iqro"
   statusVerifikasi  String   @default("Menunggu Survei") // "Terverifikasi" | "Menunggu Survei" | "Perlu Pembaruan"
   tanggalMasuk      String

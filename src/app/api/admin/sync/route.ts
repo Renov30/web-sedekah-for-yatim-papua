@@ -47,7 +47,14 @@ async function getFullDatabaseSnapshot() {
     pjAvNama: o.pjAvNama ?? undefined,
     tempatTinggal: o.tempatTinggal,
     wali: o.wali,
+    pekerjaanWali: o.pekerjaanWali ?? undefined,
+    noHpWali: o.noHpWali ?? undefined,
     jenjangPendidikan: o.jenjangPendidikan,
+    namaSekolah: o.namaSekolah ?? undefined,
+    tempatLahir: o.tempatLahir ?? undefined,
+    tanggalLahir: o.tanggalLahir ?? undefined,
+    hobi: o.hobi ?? undefined,
+    citaCita: o.citaCita ?? undefined,
     kebutuhanMendesak: o.kebutuhanMendesak,
     statusVerifikasi: o.statusVerifikasi as
       | "Terverifikasi"
@@ -430,9 +437,51 @@ export async function POST(request: NextRequest) {
                     : undefined,
                 wali:
                   p.wali !== undefined ? String(p.wali).trim() : undefined,
+                pekerjaanWali:
+                  p.pekerjaanWali !== undefined
+                    ? p.pekerjaanWali
+                      ? String(p.pekerjaanWali).trim()
+                      : null
+                    : undefined,
+                noHpWali:
+                  p.noHpWali !== undefined
+                    ? p.noHpWali
+                      ? String(p.noHpWali).trim()
+                      : null
+                    : undefined,
                 jenjangPendidikan:
                   p.jenjangPendidikan !== undefined
                     ? String(p.jenjangPendidikan).trim()
+                    : undefined,
+                namaSekolah:
+                  p.namaSekolah !== undefined
+                    ? p.namaSekolah
+                      ? String(p.namaSekolah).trim()
+                      : null
+                    : undefined,
+                tempatLahir:
+                  p.tempatLahir !== undefined
+                    ? p.tempatLahir
+                      ? String(p.tempatLahir).trim()
+                      : null
+                    : undefined,
+                tanggalLahir:
+                  p.tanggalLahir !== undefined
+                    ? p.tanggalLahir
+                      ? String(p.tanggalLahir).trim()
+                      : null
+                    : undefined,
+                hobi:
+                  p.hobi !== undefined
+                    ? p.hobi
+                      ? String(p.hobi).trim()
+                      : null
+                    : undefined,
+                citaCita:
+                  p.citaCita !== undefined
+                    ? p.citaCita
+                      ? String(p.citaCita).trim()
+                      : null
                     : undefined,
                 kebutuhanMendesak:
                   p.kebutuhanMendesak !== undefined
@@ -471,9 +520,24 @@ export async function POST(request: NextRequest) {
                   p.tempatTinggal || "Asrama SFY Merauke"
                 ).trim(),
                 wali: String(p.wali || "-").trim(),
+                pekerjaanWali: p.pekerjaanWali
+                  ? String(p.pekerjaanWali).trim()
+                  : null,
+                noHpWali: p.noHpWali ? String(p.noHpWali).trim() : null,
                 jenjangPendidikan: String(
                   p.jenjangPendidikan || "SD"
                 ).trim(),
+                namaSekolah: p.namaSekolah
+                  ? String(p.namaSekolah).trim()
+                  : null,
+                tempatLahir: p.tempatLahir
+                  ? String(p.tempatLahir).trim()
+                  : null,
+                tanggalLahir: p.tanggalLahir
+                  ? String(p.tanggalLahir).trim()
+                  : null,
+                hobi: p.hobi ? String(p.hobi).trim() : null,
+                citaCita: p.citaCita ? String(p.citaCita).trim() : null,
                 kebutuhanMendesak: String(
                   p.kebutuhanMendesak || "Perlengkapan Sekolah"
                 ).trim(),

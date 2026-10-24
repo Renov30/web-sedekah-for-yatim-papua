@@ -246,6 +246,8 @@ export const initialKampungs: KampungRecord[] = [
   },
 ];
 
+let pendingWilayahSave: Promise<void> | null = null;
+
 export function getStoredDistriks(): DistrikRecord[] {
   if (typeof window === "undefined") {
     return initialDistriks;
@@ -257,7 +259,7 @@ export function getStoredDistriks(): DistrikRecord[] {
       return initialDistriks;
     }
     const parsed = JSON.parse(raw) as DistrikRecord[];
-    if (!parsed || parsed.length === 0) {
+    if (!Array.isArray(parsed)) {
       localStorage.setItem(STORAGE_KEY_DISTRIK, JSON.stringify(initialDistriks));
       return initialDistriks;
     }
@@ -270,13 +272,18 @@ export function getStoredDistriks(): DistrikRecord[] {
 export function saveStoredDistriks(list: DistrikRecord[]): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY_DISTRIK, JSON.stringify(list));
-  fetch("/api/admin/wilayah", {
+  pendingWilayahSave = fetch("/api/admin/wilayah", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ distriks: list }),
-  }).catch((err) =>
-    console.error("Gagal sinkronisasi distrik ke database:", err)
-  );
+  })
+    .then(() => undefined)
+    .catch((err) => {
+      console.error("Gagal sinkronisasi distrik ke database:", err);
+    })
+    .finally(() => {
+      pendingWilayahSave = null;
+    });
 }
 
 export async function fetchWilayahFromApi(): Promise<{
@@ -284,6 +291,9 @@ export async function fetchWilayahFromApi(): Promise<{
   kampungs: KampungRecord[];
 }> {
   try {
+    if (pendingWilayahSave) {
+      await pendingWilayahSave;
+    }
     const res = await fetch("/api/admin/wilayah", { cache: "no-store" });
     if (!res.ok) {
       return {
@@ -332,7 +342,7 @@ export function getStoredKampungs(): KampungRecord[] {
       return initialKampungs;
     }
     const parsed = JSON.parse(raw) as KampungRecord[];
-    if (!parsed || parsed.length === 0) {
+    if (!Array.isArray(parsed)) {
       localStorage.setItem(STORAGE_KEY_KAMPUNG, JSON.stringify(initialKampungs));
       return initialKampungs;
     }
@@ -345,13 +355,18 @@ export function getStoredKampungs(): KampungRecord[] {
 export function saveStoredKampungs(list: KampungRecord[]): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY_KAMPUNG, JSON.stringify(list));
-  fetch("/api/admin/wilayah", {
+  pendingWilayahSave = fetch("/api/admin/wilayah", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ kampungs: list }),
-  }).catch((err) =>
-    console.error("Gagal sinkronisasi kampung ke database:", err)
-  );
+  })
+    .then(() => undefined)
+    .catch((err) => {
+      console.error("Gagal sinkronisasi kampung ke database:", err);
+    })
+    .finally(() => {
+      pendingWilayahSave = null;
+    });
 }
 
 export function addDistrik(
