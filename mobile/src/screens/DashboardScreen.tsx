@@ -62,6 +62,22 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
     [activeOrphans]
   );
 
+  const deletedAvNames = useMemo(
+    () =>
+      new Set(
+        avs.filter((a) => a.isDeleted).map((a) => a.nama.toLowerCase())
+      ),
+    [avs]
+  );
+
+  const deletedKampungNames = useMemo(
+    () =>
+      new Set(
+        kampungs.filter((k) => k.isDeleted).map((k) => k.nama.toLowerCase())
+      ),
+    [kampungs]
+  );
+
   const regionalDistribution = useMemo(() => {
     const map: Record<
       string,
@@ -86,11 +102,30 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
         };
       }
       map[key].count += 1;
-      if (o.kampung) map[key].kampungs.add(o.kampung);
-      if (o.pjAvNama) map[key].avs.add(o.pjAvNama);
+      if (o.kampung && !deletedKampungNames.has(o.kampung.toLowerCase())) {
+        map[key].kampungs.add(o.kampung);
+      }
+      if (
+        o.pjAvNama &&
+        o.pjAvNama !== "Belum ditentukan" &&
+        !deletedAvNames.has(o.pjAvNama.toLowerCase())
+      ) {
+        map[key].avs.add(o.pjAvNama);
+      }
     });
 
     return Object.values(map).sort((a, b) => b.count - a.count);
+  }, [activeOrphans, deletedKampungNames, deletedAvNames]);
+
+  const demoStats = useMemo(() => {
+    return {
+      yatim: activeOrphans.filter((o) => o.status === "Yatim").length,
+      piatu: activeOrphans.filter((o) => o.status === "Piatu").length,
+      yatimPiatu: activeOrphans.filter((o) => o.status === "Yatim Piatu")
+        .length,
+      santunanAktif: activeOrphans.filter((o) => o.usia < 15).length,
+      batasUsia: activeOrphans.filter((o) => o.usia >= 15).length,
+    };
   }, [activeOrphans]);
 
   return (
@@ -294,8 +329,14 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
 
               <Text style={styles.surveyName}>{item.namaLengkap}</Text>
               <Text style={styles.surveyMeta}>
-                {item.kampung || "-"} • {item.asalDaerah} (PJ:{" "}
-                {item.pjAvNama || "Belum ada"})
+                {item.kampung && !deletedKampungNames.has(item.kampung.toLowerCase())
+                  ? item.kampung
+                  : "-"}{" "}
+                • {item.asalDaerah} (PJ:{" "}
+                {item.pjAvNama && !deletedAvNames.has(item.pjAvNama.toLowerCase())
+                  ? item.pjAvNama
+                  : "Belum ada"}
+                )
               </Text>
               <Text style={styles.surveyNeed}>
                 Kebutuhan: {item.kebutuhanMendesak}
@@ -369,6 +410,42 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             </View>
           );
         })}
+      </View>
+
+      {/* Demographics Widget (Non-deleted Orphans Only) */}
+      <View style={styles.sectionCard}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionHeaderTextCol}>
+            <Text style={styles.sectionTitle}>Demografi Santri Aktif</Text>
+            <Text style={styles.sectionSub}>
+              Komposisi status yatim & batas usia santunan
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.demoGrid}>
+          <View style={[styles.demoBox, { backgroundColor: "#faf5ff", borderColor: "#f3e8ff" }]}>
+            <Text style={styles.demoLabel}>Yatim</Text>
+            <Text style={[styles.demoValue, { color: "#5E2276" }]}>{demoStats.yatim}</Text>
+          </View>
+          <View style={[styles.demoBox, { backgroundColor: "#fffbeb", borderColor: "#fef3c7" }]}>
+            <Text style={styles.demoLabel}>Piatu</Text>
+            <Text style={[styles.demoValue, { color: "#b45309" }]}>{demoStats.piatu}</Text>
+          </View>
+          <View style={[styles.demoBox, { backgroundColor: "#fff1f2", borderColor: "#ffe4e6" }]}>
+            <Text style={styles.demoLabel}>Yatim Piatu</Text>
+            <Text style={[styles.demoValue, { color: "#be123c" }]}>{demoStats.yatimPiatu}</Text>
+          </View>
+        </View>
+
+        <View style={styles.demoFooter}>
+          <Text style={styles.demoFooterGreen}>
+            Santunan (&lt;15 th): {demoStats.santunanAktif}
+          </Text>
+          <Text style={styles.demoFooterRose}>
+            Batas Usia (≥15 th): {demoStats.batasUsia}
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );
