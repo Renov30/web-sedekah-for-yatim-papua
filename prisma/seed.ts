@@ -75,11 +75,13 @@ async function main() {
         status: u.status,
         wilayahTugas: u.wilayahTugas,
         terakhirLogin: u.terakhirLogin,
+        passwordHash: "AdminSFY2025!",
       },
       create: {
         id: u.id,
         nama: u.nama,
         email: u.email,
+        passwordHash: "AdminSFY2025!",
         roleId: u.roleId,
         status: u.status,
         wilayahTugas: u.wilayahTugas,
