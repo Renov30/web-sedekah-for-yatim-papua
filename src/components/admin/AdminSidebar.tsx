@@ -7,6 +7,7 @@ import Image from "next/image";
 import {
   LayoutDashboard,
   GraduationCap,
+  MapPinHouse,
   HeartHandshake,
   Users2,
   Wallet,
@@ -38,6 +39,11 @@ export const adminNavItems = [
     title: "Pendataan Anak Yatim",
     href: "/admin/anak-yatim",
     icon: GraduationCap,
+  },
+  {
+    title: "Pendataan AV (Kordinator)",
+    href: "/admin/av",
+    icon: MapPinHouse,
   },
   {
     title: "Pendataan Relawan",
@@ -140,7 +146,7 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
             Menu Operasional
           </div>
 
-          {adminNavItems.slice(0, 5).map((item) => {
+          {adminNavItems.slice(0, 6).map((item) => {
             const isActive =
               item.href === "/admin"
                 ? pathname === "/admin"
@@ -172,7 +178,7 @@ export function AdminSidebar({ onCloseMobile }: AdminSidebarProps) {
             Hak Akses & Pengaturan
           </div>
 
-          {adminNavItems.slice(5).map((item) => {
+          {adminNavItems.slice(6).map((item) => {
             const isActive = pathname.startsWith(item.href);
             const Icon = item.icon;
 

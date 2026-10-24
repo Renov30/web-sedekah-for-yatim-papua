@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import {
   GraduationCap,
+  MapPinHouse,
   HeartHandshake,
   Users2,
   Wallet,
@@ -19,6 +20,7 @@ import {
 } from "lucide-react";
 import {
   initialOrphans,
+  initialAVs,
   initialVolunteers,
   initialDonors,
   initialFinances,
@@ -65,6 +67,13 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="flex items-center gap-2.5">
+          <Link
+            href="/admin/av"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-purple-50 text-[#823296] border border-[#823296]/20 hover:bg-purple-100 transition-colors shadow-2xs"
+          >
+            <MapPinHouse className="w-4 h-4" />
+            <span>Koordinator AV ({initialAVs.length})</span>
+          </Link>
           <Link
             href="/admin/anak-yatim"
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882] transition-colors shadow-2xs"

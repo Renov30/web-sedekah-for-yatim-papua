@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import {
   initialOrphans,
+  initialAVs,
   initialVolunteers,
   initialDonors,
   initialFinances,
@@ -87,7 +88,38 @@ async function main() {
     });
   }
 
-  // 4. Orphans
+  // 4. Area Volunteers (AV - Koordinator Kampung)
+  console.log("➡️ Seeding Koordinator Kampung (AV)...");
+  for (const av of initialAVs) {
+    await prisma.areaVolunteer.upsert({
+      where: { id: av.id },
+      update: {
+        nama: av.nama,
+        noHp: av.noHp,
+        kampung: av.kampung,
+        distrik: av.distrik,
+        kabupaten: av.kabupaten,
+        alamat: av.alamat,
+        status: av.status,
+        catatanWilayah: av.catatanWilayah,
+        tanggalBergabung: av.tanggalBergabung,
+      },
+      create: {
+        id: av.id,
+        nama: av.nama,
+        noHp: av.noHp,
+        kampung: av.kampung,
+        distrik: av.distrik,
+        kabupaten: av.kabupaten,
+        alamat: av.alamat,
+        status: av.status,
+        catatanWilayah: av.catatanWilayah,
+        tanggalBergabung: av.tanggalBergabung,
+      },
+    });
+  }
+
+  // 5. Orphans
   console.log("➡️ Seeding Anak Yatim...");
   for (const o of initialOrphans) {
     await prisma.orphan.upsert({
@@ -100,6 +132,9 @@ async function main() {
         status: o.status,
         asalDaerah: o.asalDaerah,
         kabupaten: o.kabupaten,
+        kampung: o.kampung,
+        pjAvId: o.pjAvId,
+        pjAvNama: o.pjAvNama,
         tempatTinggal: o.tempatTinggal,
         wali: o.wali,
         jenjangPendidikan: o.jenjangPendidikan,
@@ -116,6 +151,9 @@ async function main() {
         status: o.status,
         asalDaerah: o.asalDaerah,
         kabupaten: o.kabupaten,
+        kampung: o.kampung,
+        pjAvId: o.pjAvId,
+        pjAvNama: o.pjAvNama,
         tempatTinggal: o.tempatTinggal,
         wali: o.wali,
         jenjangPendidikan: o.jenjangPendidikan,

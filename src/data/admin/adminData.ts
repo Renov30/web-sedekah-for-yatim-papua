@@ -7,12 +7,29 @@ export interface OrphanRecord {
   status: "Yatim" | "Piatu" | "Yatim Piatu";
   asalDaerah: string;
   kabupaten: string;
+  kampung?: string;
+  pjAvId?: string;
+  pjAvNama?: string;
   tempatTinggal: string;
   wali: string;
   jenjangPendidikan: string;
   kebutuhanMendesak: string;
   statusVerifikasi: "Terverifikasi" | "Menunggu Survei" | "Perlu Pembaruan";
   tanggalMasuk: string;
+}
+
+export interface AVRecord {
+  id: string;
+  nama: string;
+  noHp: string;
+  kampung: string;
+  distrik: string;
+  kabupaten: string;
+  alamat: string;
+  anakDampingan: string[];
+  status: "Aktif" | "Non-aktif" | "Menunggu Verifikasi";
+  tanggalBergabung: string;
+  catatanWilayah?: string;
 }
 
 export interface VolunteerRecord {
@@ -94,6 +111,87 @@ export interface RolePermissionsMap {
   };
 }
 
+export const initialAVs: AVRecord[] = [
+  {
+    id: "AV-001",
+    nama: "Yohanes Gebze",
+    noHp: "0812-4890-1234",
+    kampung: "Kampung Wasur",
+    distrik: "Distrik Merauke",
+    kabupaten: "Kab. Merauke",
+    alamat: "Jl. Poros Trans Irian, RT 02 / RW 01, Kampung Wasur",
+    anakDampingan: ["Muhammad Fikri Gebze", "Nur Khadijah Samkakai"],
+    status: "Aktif",
+    tanggalBergabung: "10 Januari 2023",
+    catatanWilayah: "Koordinator posko dampingan anak yatim dan penyaluran sembako di kawasan Wasur.",
+  },
+  {
+    id: "AV-002",
+    nama: "Petrus Mahuze",
+    noHp: "0821-9765-4321",
+    kampung: "Kampung Urumb",
+    distrik: "Distrik Semangga",
+    kabupaten: "Kab. Merauke",
+    alamat: "Jalur 4 Barat, RT 05, Kampung Urumb",
+    anakDampingan: ["Aisyah Maryam Mahuze"],
+    status: "Aktif",
+    tanggalBergabung: "14 Februari 2023",
+    catatanWilayah: "Mendampingi anak-anak santri di kawasan pesisir Semangga dan pendataan sekolah.",
+  },
+  {
+    id: "AV-003",
+    nama: "Elisabeth Kaize",
+    noHp: "0813-4411-9988",
+    kampung: "Kampung Kumbe",
+    distrik: "Distrik Malind",
+    kabupaten: "Kab. Merauke",
+    alamat: "Dekat Dermaga Kumbe, RT 01, Kampung Kumbe",
+    anakDampingan: ["Rizky Bilal Kaize", "Zulfa Safira Gebze"],
+    status: "Aktif",
+    tanggalBergabung: "05 Mei 2023",
+    catatanWilayah: "Pusat informasi anak yatim dhuafa dan penyambung komunikasi relawan di Distrik Malind.",
+  },
+  {
+    id: "AV-004",
+    nama: "Markus Samkakai",
+    noHp: "0852-5400-3321",
+    kampung: "Kampung Wendu",
+    distrik: "Distrik Semangga",
+    kabupaten: "Kab. Merauke",
+    alamat: "Jl. Pantai Wendu, RT 03, Kampung Wendu",
+    anakDampingan: ["Fatimah Zahra Ndiken"],
+    status: "Aktif",
+    tanggalBergabung: "20 Agustus 2023",
+    catatanWilayah: "Koordinator lapangan kegiatan bimbingan belajar dan gizi anak di Wendu.",
+  },
+  {
+    id: "AV-005",
+    nama: "Theresia Balagaize",
+    noHp: "0822-3810-7766",
+    kampung: "Kampung Sota",
+    distrik: "Distrik Sota",
+    kabupaten: "Kab. Merauke",
+    alamat: "Kawasan Perbatasan RI-PNG, RT 01, Kampung Sota",
+    anakDampingan: [],
+    status: "Aktif",
+    tanggalBergabung: "12 November 2023",
+    catatanWilayah: "Penanggung jawab koordinasi anak yatim muslim di wilayah perbatasan Sota.",
+  },
+  {
+    id: "AV-006",
+    nama: "Dominggus Ndiken",
+    noHp: "0812-4099-8877",
+    kampung: "Kampung Nasem",
+    distrik: "Distrik Merauke",
+    kabupaten: "Kab. Merauke",
+    alamat: "Jalur Pesisir Nasem, RT 02, Kampung Nasem",
+    anakDampingan: [],
+    status: "Menunggu Verifikasi",
+    tanggalBergabung: "10 Januari 2025",
+    catatanWilayah: "Calon koordinator kampung baru untuk wilayah pesisir Distrik Merauke.",
+  },
+];
+
 export const initialOrphans: OrphanRecord[] = [
   {
     id: "YTM-001",
@@ -104,6 +202,9 @@ export const initialOrphans: OrphanRecord[] = [
     status: "Yatim",
     asalDaerah: "Distrik Merauke",
     kabupaten: "Kab. Merauke",
+    kampung: "Kampung Wasur",
+    pjAvId: "AV-001",
+    pjAvNama: "Yohanes Gebze",
     tempatTinggal: "Asrama SFY Merauke",
     wali: "Ustadz Harun (Pengasuh Asrama)",
     jenjangPendidikan: "SD Kelas 5 MI Al-Ma'arif Merauke",
@@ -120,6 +221,9 @@ export const initialOrphans: OrphanRecord[] = [
     status: "Yatim Piatu",
     asalDaerah: "Distrik Tanah Miring",
     kabupaten: "Kab. Merauke",
+    kampung: "Kampung Urumb",
+    pjAvId: "AV-002",
+    pjAvNama: "Petrus Mahuze",
     tempatTinggal: "Keluarga Asuh Mama Fatima",
     wali: "Fatima Mahuze (Bibi)",
     jenjangPendidikan: "SD Kelas 3 SD Inpres Tanah Miring",
@@ -136,6 +240,9 @@ export const initialOrphans: OrphanRecord[] = [
     status: "Yatim",
     asalDaerah: "Distrik Kurik",
     kabupaten: "Kab. Merauke",
+    kampung: "Kampung Kumbe",
+    pjAvId: "AV-003",
+    pjAvNama: "Elisabeth Kaize",
     tempatTinggal: "Pesantren Hidayatullah Kurik",
     wali: "Keluarga Asuh Kurik",
     jenjangPendidikan: "MTs Kelas 2 Kurik Merauke",
@@ -152,6 +259,9 @@ export const initialOrphans: OrphanRecord[] = [
     status: "Yatim",
     asalDaerah: "Distrik Semangga",
     kabupaten: "Kab. Merauke",
+    kampung: "Kampung Wendu",
+    pjAvId: "AV-004",
+    pjAvNama: "Markus Samkakai",
     tempatTinggal: "Keluarga Asuh Semangga",
     wali: "Siti Aminah (Ibu)",
     jenjangPendidikan: "SD Kelas 1 MI Semangga",
@@ -168,6 +278,9 @@ export const initialOrphans: OrphanRecord[] = [
     status: "Piatu",
     asalDaerah: "Distrik Tanah Merah",
     kabupaten: "Kab. Boven Digoel",
+    kampung: "Kampung Tanah Merah",
+    pjAvId: "AV-001",
+    pjAvNama: "Yohanes Gebze",
     tempatTinggal: "Keluarga Asuh Tanah Merah",
     wali: "Yahya Basik-Basik (Ayah)",
     jenjangPendidikan: "SMP Kelas 1 SMP Negeri Tanah Merah",
@@ -184,6 +297,9 @@ export const initialOrphans: OrphanRecord[] = [
     status: "Yatim Piatu",
     asalDaerah: "Distrik Kepi",
     kabupaten: "Kab. Mappi",
+    kampung: "Kampung Wasur",
+    pjAvId: "AV-001",
+    pjAvNama: "Yohanes Gebze",
     tempatTinggal: "Asrama SFY Merauke",
     wali: "Ustadzah Halimah (Pendamping)",
     jenjangPendidikan: "SD Kelas 6 SD Yapis Merauke",
@@ -200,6 +316,9 @@ export const initialOrphans: OrphanRecord[] = [
     status: "Yatim",
     asalDaerah: "Distrik Agats",
     kabupaten: "Kab. Asmat",
+    kampung: "Kampung Agats",
+    pjAvId: "AV-005",
+    pjAvNama: "Theresia Balagaize",
     tempatTinggal: "Keluarga Asuh Agats",
     wali: "Maimunah (Nenek)",
     jenjangPendidikan: "SD Kelas 2 MI Agats",
@@ -216,6 +335,9 @@ export const initialOrphans: OrphanRecord[] = [
     status: "Yatim",
     asalDaerah: "Distrik Jagebob",
     kabupaten: "Kab. Merauke",
+    kampung: "Kampung Kumbe",
+    pjAvId: "AV-003",
+    pjAvNama: "Elisabeth Kaize",
     tempatTinggal: "Keluarga Asuh Jagebob",
     wali: "Khadijah Gebze (Ibu)",
     jenjangPendidikan: "SD Kelas 4 SD Negeri Jagebob",
@@ -565,6 +687,7 @@ export const initialRoles: RoleDefinition[] = [
 
 export const moduleList = [
   { id: "anak-yatim", name: "Pendataan Anak Yatim", desc: "Data santri yatim/piatu, profil keluarga, dan riwayat pendidikan" },
+  { id: "av", name: "Pendataan AV (Koordinator Lapangan Kampung)", desc: "Database koordinator lapangan kampung, penanggung jawab (PJ) santri yatim, dan informasi posko" },
   { id: "relawan", name: "Pendataan Relawan", desc: "Database anggota relawan aktif, keahlian, dan divisi tugas" },
   { id: "donatur", name: "Pendataan Donatur", desc: "Database donatur perorangan, lembaga, dan riwayat komitmen" },
   { id: "keuangan", name: "Manajemen Keuangan", desc: "Arus kas masuk-keluar, pencatatan kuitansi, dan neraca sedekah" },
@@ -576,6 +699,7 @@ export const moduleList = [
 export const initialPermissions: RolePermissionsMap = {
   super_admin: {
     "anak-yatim": { create: true, read: true, update: true, delete: true },
+    av: { create: true, read: true, update: true, delete: true },
     relawan: { create: true, read: true, update: true, delete: true },
     donatur: { create: true, read: true, update: true, delete: true },
     keuangan: { create: true, read: true, update: true, delete: true },
@@ -585,6 +709,7 @@ export const initialPermissions: RolePermissionsMap = {
   },
   bendahara: {
     "anak-yatim": { create: false, read: true, update: false, delete: false },
+    av: { create: false, read: true, update: false, delete: false },
     relawan: { create: false, read: true, update: false, delete: false },
     donatur: { create: true, read: true, update: true, delete: false },
     keuangan: { create: true, read: true, update: true, delete: true },
@@ -594,6 +719,7 @@ export const initialPermissions: RolePermissionsMap = {
   },
   koordinator_relawan: {
     "anak-yatim": { create: true, read: true, update: true, delete: false },
+    av: { create: true, read: true, update: true, delete: true },
     relawan: { create: true, read: true, update: true, delete: true },
     donatur: { create: false, read: true, update: false, delete: false },
     keuangan: { create: false, read: true, update: false, delete: false },
@@ -603,6 +729,7 @@ export const initialPermissions: RolePermissionsMap = {
   },
   staf_lapangan: {
     "anak-yatim": { create: true, read: true, update: true, delete: false },
+    av: { create: true, read: true, update: true, delete: false },
     relawan: { create: false, read: true, update: false, delete: false },
     donatur: { create: false, read: false, update: false, delete: false },
     keuangan: { create: false, read: false, update: false, delete: false },
@@ -612,6 +739,7 @@ export const initialPermissions: RolePermissionsMap = {
   },
   auditor: {
     "anak-yatim": { create: false, read: true, update: false, delete: false },
+    av: { create: false, read: true, update: false, delete: false },
     relawan: { create: false, read: true, update: false, delete: false },
     donatur: { create: false, read: true, update: false, delete: false },
     keuangan: { create: false, read: true, update: false, delete: false },

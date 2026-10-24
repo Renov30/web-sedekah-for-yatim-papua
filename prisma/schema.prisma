@@ -62,7 +62,29 @@ model User {
 }
 
 // ==========================================
-// 3. PENDATAAN SANTRI & ANAK YATIM PAPUA
+// 3. PENDATAAN KOORDINATOR KAMPUNG (AV)
+// ==========================================
+model AreaVolunteer {
+  id               String   @id // e.g. "AV-001"
+  nama             String
+  noHp             String
+  kampung          String
+  distrik          String
+  kabupaten        String
+  alamat           String
+  catatanWilayah   String?  @db.Text
+  status           String   @default("Aktif") // "Aktif" | "Non-aktif" | "Menunggu Verifikasi"
+  tanggalBergabung String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  orphans          Orphan[]
+
+  @@map("area_volunteers")
+}
+
+// ==========================================
+// 4. PENDATAAN SANTRI & ANAK YATIM PAPUA
 // ==========================================
 model Orphan {
   id                String   @id // e.g. "YTM-001"
@@ -71,16 +93,21 @@ model Orphan {
   gender            String   // "L" | "P"
   usia              Int
   status            String   // "Yatim" | "Piatu" | "Yatim Piatu"
-  asalDaerah        String   // Distrik (e.g. "Distrik Sentani")
-  kabupaten         String   // Kabupaten (e.g. "Kab. Jayapura")
-  tempatTinggal     String   // e.g. "Asrama SFY Sentani"
+  asalDaerah        String   // Distrik (e.g. "Distrik Merauke")
+  kabupaten         String   // Kabupaten (e.g. "Kab. Merauke")
+  kampung           String?
+  pjAvId            String?
+  pjAvNama          String?
+  tempatTinggal     String   // e.g. "Asrama SFY Merauke"
   wali              String   // e.g. "Ustadz Harun (Pengasuh)"
-  jenjangPendidikan String   // e.g. "SD Kelas 5 MI Nurul Huda"
+  jenjangPendidikan String   // e.g. "SD Kelas 5 MI Al-Ma'arif Merauke"
   kebutuhanMendesak String   // e.g. "Sepatu Sekolah & Kitab Iqro"
   statusVerifikasi  String   @default("Menunggu Survei") // "Terverifikasi" | "Menunggu Survei" | "Perlu Pembaruan"
   tanggalMasuk      String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+
+  pjAv              AreaVolunteer? @relation(fields: [pjAvId], references: [id])
 
   @@map("orphans")
 }

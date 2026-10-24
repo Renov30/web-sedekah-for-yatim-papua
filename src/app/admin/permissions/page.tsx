@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   Save,
   RotateCcw,
-  Info,
 } from "lucide-react";
 import {
   initialRoles,
@@ -320,17 +319,6 @@ function PermissionsContent() {
               })}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* Security Note Box */}
-      <div className="p-4 bg-purple-50/60 rounded-xl border border-purple-100 flex items-start gap-3">
-        <Info className="w-4 h-4 text-[#823296] shrink-0 mt-0.5" />
-        <div className="text-xs text-stone-600 leading-relaxed">
-          <strong className="text-stone-900 font-semibold">
-            Prinsip Amanah & Keamanan Data (Least Privilege):
-          </strong>{" "}
-          Perubahan pada hak akses akan langsung berdampak pada menu navigasi dan tombol aksi staf ketika login berikutnya. Batasi hak <code>Delete</code> hanya untuk Super Admin guna melindungi integritas pencatatan sedekah dan dokumen anak yatim.
         </div>
       </div>
     </div>
