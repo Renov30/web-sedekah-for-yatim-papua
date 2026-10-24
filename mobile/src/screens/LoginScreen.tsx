@@ -14,7 +14,10 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useData } from "../context/DataContext";
-import { detectDefaultServerUrl } from "../services/syncEngine";
+import {
+  detectDefaultServerUrl,
+  PRODUCTION_SERVER_URL,
+} from "../services/syncEngine";
 
 export const LoginScreen: React.FC = () => {
   const { login, serverUrl, updateServerUrl, isOnline } = useData();
@@ -255,23 +258,25 @@ export const LoginScreen: React.FC = () => {
             <View style={styles.presetRow}>
               <TouchableOpacity
                 style={styles.presetChip}
+                onPress={() => setTempUrl(PRODUCTION_SERVER_URL)}
+              >
+                <Text style={styles.presetChipText}>
+                  Production (sfypapua.org)
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.presetChip}
                 onPress={() => setTempUrl(detectDefaultServerUrl())}
               >
                 <Text style={styles.presetChipText}>
-                  Otomatis ({detectDefaultServerUrl().replace("http://", "")})
+                  Otomatis ({detectDefaultServerUrl().replace(/^https?:\/\//, "")})
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.presetChip}
                 onPress={() => setTempUrl("http://10.0.2.2:3000")}
               >
-                <Text style={styles.presetChipText}>Emulator Android (10.0.2.2)</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.presetChip}
-                onPress={() => setTempUrl("http://localhost:3000")}
-              >
-                <Text style={styles.presetChipText}>Localhost</Text>
+                <Text style={styles.presetChipText}>Emulator (10.0.2.2)</Text>
               </TouchableOpacity>
             </View>
 

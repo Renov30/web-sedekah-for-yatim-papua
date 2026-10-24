@@ -13,7 +13,10 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { DataProvider, useData } from "./src/context/DataContext";
-import { detectDefaultServerUrl } from "./src/services/syncEngine";
+import {
+  detectDefaultServerUrl,
+  PRODUCTION_SERVER_URL,
+} from "./src/services/syncEngine";
 import { LoginScreen } from "./src/screens/LoginScreen";
 import { DashboardScreen } from "./src/screens/DashboardScreen";
 import { OrphansScreen } from "./src/screens/OrphansScreen";
@@ -243,10 +246,18 @@ const MainShell: React.FC = () => {
             <View style={styles.presetRow}>
               <TouchableOpacity
                 style={styles.presetBtn}
+                onPress={() => setTempUrl(PRODUCTION_SERVER_URL)}
+              >
+                <Text style={styles.presetText}>
+                  Production (sfypapua.org)
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.presetBtn}
                 onPress={() => setTempUrl(detectDefaultServerUrl())}
               >
                 <Text style={styles.presetText}>
-                  Otomatis ({detectDefaultServerUrl().replace("http://", "")})
+                  Otomatis ({detectDefaultServerUrl().replace(/^https?:\/\//, "")})
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -576,6 +587,7 @@ const styles = StyleSheet.create({
   },
   presetRow: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
   },
   presetBtn: {

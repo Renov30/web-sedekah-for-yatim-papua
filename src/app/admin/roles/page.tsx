@@ -12,21 +12,30 @@ import {
   AlertCircle,
   X,
   ArrowRight,
+  CheckSquare,
+  Shield,
 } from "lucide-react";
 import { initialRoles, RoleDefinition } from "@/data/admin/adminData";
 import {
   getStoredRoles,
   saveStoredRoles,
 } from "@/lib/adminDataStore";
+import { getStoredUsers, UserWithAuth } from "@/lib/auth";
 
 export default function RolesAdminPage() {
   const [roles, setRoles] = useState<RoleDefinition[]>(initialRoles);
+  const [users, setUsers] = useState<UserWithAuth[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [viewTrash, setViewTrash] = useState(false);
   const [softDeleteTarget, setSoftDeleteTarget] =
     useState<RoleDefinition | null>(null);
   const [permanentDeleteTarget, setPermanentDeleteTarget] =
     useState<RoleDefinition | null>(null);
+
+  // Bulk Selection State
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkSoftDeleteModalOpen, setBulkSoftDeleteModalOpen] = useState(false);
+  const [bulkPermanentDeleteModalOpen, setBulkPermanentDeleteModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     nama: "",
@@ -43,12 +52,18 @@ export default function RolesAdminPage() {
   useEffect(() => {
     queueMicrotask(() => {
       setRoles(getStoredRoles());
+      setUsers(getStoredUsers());
     });
   }, []);
 
   const activeRoles = roles.filter((r) => !r.isDeleted);
   const deletedRoles = roles.filter((r) => r.isDeleted);
   const displayedRoles = viewTrash ? deletedRoles : activeRoles;
+
+  const getActiveUserCountForRole = (roleId: string, fallbackCount: number) => {
+    if (users.length === 0) return fallbackCount;
+    return users.filter((u) => !u.isDeleted && u.roleId === roleId).length;
+  };
 
   const handleSoftDelete = (role: RoleDefinition) => {
     if (role.id === "super_admin") return;
@@ -78,6 +93,73 @@ export default function RolesAdminPage() {
     setRoles(updated);
     saveStoredRoles(updated);
     setPermanentDeleteTarget(null);
+  };
+
+  const selectableRoles = displayedRoles.filter((r) => r.id !== "super_admin");
+  const isAllSelected =
+    selectableRoles.length > 0 &&
+    selectableRoles.every((r) => selectedIds.includes(r.id));
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(selectableRoles.map((r) => r.id));
+    }
+  };
+
+  const toggleSelectRow = (id: string) => {
+    if (id === "super_admin") return;
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkSoftDelete = () => {
+    const now = new Date().toISOString();
+    const deletableIds = selectedIds.filter((id) => id !== "super_admin");
+
+    const updated = roles.map((r) => {
+      if (deletableIds.includes(r.id)) {
+        return {
+          ...r,
+          isDeleted: true,
+          deletedAt: now,
+        };
+      }
+      return r;
+    });
+
+    setRoles(updated);
+    saveStoredRoles(updated);
+    setSelectedIds([]);
+    setBulkSoftDeleteModalOpen(false);
+  };
+
+  const handleBulkRestore = () => {
+    const updated = roles.map((r) => {
+      if (selectedIds.includes(r.id)) {
+        return {
+          ...r,
+          isDeleted: false,
+          deletedAt: undefined,
+        };
+      }
+      return r;
+    });
+
+    setRoles(updated);
+    saveStoredRoles(updated);
+    setSelectedIds([]);
+  };
+
+  const handleBulkPermanentDelete = () => {
+    const deletableIds = selectedIds.filter((id) => id !== "super_admin");
+    const updated = roles.filter((r) => !deletableIds.includes(r.id));
+    setRoles(updated);
+    saveStoredRoles(updated);
+    setSelectedIds([]);
+    setBulkPermanentDeleteModalOpen(false);
   };
 
   const handleAddSubmit = (e: React.FormEvent) => {
@@ -160,7 +242,10 @@ export default function RolesAdminPage() {
         <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit">
           <button
             type="button"
-            onClick={() => setViewTrash(false)}
+            onClick={() => {
+              setViewTrash(false);
+              setSelectedIds([]);
+            }}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               !viewTrash
                 ? "bg-white text-stone-900 shadow-2xs"
@@ -171,7 +256,10 @@ export default function RolesAdminPage() {
           </button>
           <button
             type="button"
-            onClick={() => setViewTrash(true)}
+            onClick={() => {
+              setViewTrash(true);
+              setSelectedIds([]);
+            }}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               viewTrash
                 ? "bg-stone-900 text-white shadow-2xs"
@@ -187,7 +275,66 @@ export default function RolesAdminPage() {
             Menampilkan data role/jabatan yang dihapus sementara (Soft Delete).
           </span>
         )}
+
+        {selectableRoles.length > 0 && (
+          <button
+            type="button"
+            onClick={toggleSelectAll}
+            className="px-3 py-1.5 rounded-xl border border-stone-200 text-stone-600 hover:text-stone-900 bg-white hover:bg-stone-50 text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow-2xs self-start sm:self-auto"
+          >
+            <CheckSquare className="w-3.5 h-3.5 text-purple-600" />
+            <span>{isAllSelected ? "Batalkan Semua Pilihan" : `Pilih Semua (${selectableRoles.length})`}</span>
+          </button>
+        )}
       </div>
+
+      {/* Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs animate-in fade-in duration-150">
+          <div className="flex items-center gap-2 text-red-900 font-semibold">
+            <CheckSquare className="w-4 h-4 text-red-600" />
+            <span>{selectedIds.length} role jabatan terpilih</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedIds([])}
+              className="px-3 py-1.5 rounded-xl border border-red-200 text-stone-700 bg-white hover:bg-stone-50 font-semibold cursor-pointer"
+            >
+              Batal Pilih
+            </button>
+            {viewTrash ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleBulkRestore}
+                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Pulihkan ({selectedIds.length})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBulkPermanentDeleteModalOpen(true)}
+                  className="px-3.5 py-1.5 rounded-xl bg-red-700 hover:bg-red-800 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Hapus Permanen ({selectedIds.length})</span>
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setBulkSoftDeleteModalOpen(true)}
+                className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Hapus {selectedIds.length} Role Terpilih</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Role Grid Cards */}
       {displayedRoles.length === 0 ? (
@@ -201,16 +348,35 @@ export default function RolesAdminPage() {
           {displayedRoles.map((role) => (
             <div
               key={role.id}
-              className="bg-white rounded-2xl border border-stone-200/80 p-5 shadow-2xs flex flex-col justify-between hover:border-[#823296]/30 transition-colors"
+              className={`bg-white rounded-2xl border p-5 shadow-2xs flex flex-col justify-between transition-colors ${
+                selectedIds.includes(role.id)
+                  ? "border-purple-400 bg-purple-50/20"
+                  : "border-stone-200/80 hover:border-[#823296]/30"
+              }`}
             >
               <div>
                 <div className="flex items-center justify-between gap-2">
-                  <h2 className="text-base font-bold text-stone-900">
-                    {role.nama}
-                  </h2>
+                  <div className="flex items-center gap-2">
+                    {role.id !== "super_admin" ? (
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(role.id)}
+                        onChange={() => toggleSelectRow(role.id)}
+                        className="w-4 h-4 rounded border-stone-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                        title="Pilih role"
+                      />
+                    ) : (
+                      <span title="Role Super Admin dilindungi sistem">
+                        <Shield className="w-3.5 h-3.5 text-stone-300" />
+                      </span>
+                    )}
+                    <h2 className="text-base font-bold text-stone-900">
+                      {role.nama}
+                    </h2>
+                  </div>
                   <span className="flex items-center gap-1 text-xs text-stone-500 font-medium">
                     <Users className="w-3.5 h-3.5" />
-                    <span>{role.userCount} User</span>
+                    <span>{getActiveUserCountForRole(role.id, role.userCount)} User</span>
                   </span>
                 </div>
 
@@ -489,6 +655,73 @@ export default function RolesAdminPage() {
                 className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
               >
                 Hapus Permanen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal Konfirmasi Hapus Sekaligus Banyak (Bulk Soft Delete) */}
+      {bulkSoftDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              <span>Hapus {selectedIds.length} Role Jabatan Sekaligus</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin memindahkan <strong>{selectedIds.length} role jabatan</strong> yang dipilih ke Kotak Sampah?
+            </p>
+            <p className="text-[11px] text-stone-500 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+              Role yang dihapus sementara dapat dipulihkan sewaktu-waktu melalui tab <strong>Kotak Sampah</strong>.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setBulkSoftDeleteModalOpen(false)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkSoftDelete}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+              >
+                Pindahkan {selectedIds.length} Role
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Permanen Sekaligus (Bulk Permanent Delete) */}
+      {bulkPermanentDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-700 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              <span>Hapus Permanen {selectedIds.length} Role</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus <strong>{selectedIds.length} role jabatan</strong> yang dipilih secara permanen?
+            </p>
+            <p className="text-[11px] text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+              Tindakan ini tidak dapat dibatalkan. Riwayat role ini akan dihapus sepenuhnya dari database lokal.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setBulkPermanentDeleteModalOpen(false)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkPermanentDelete}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
+              >
+                Hapus Permanen ({selectedIds.length})
               </button>
             </div>
           </div>

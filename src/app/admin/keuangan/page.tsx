@@ -15,6 +15,7 @@ import {
   Clock,
   FileText,
   X,
+  CheckSquare,
 } from "lucide-react";
 import {
   initialFinances,
@@ -68,6 +69,11 @@ export default function KeuanganAdminPage() {
   const [viewTrash, setViewTrash] = useState(false);
   const [softDeleteTarget, setSoftDeleteTarget] = useState<FinanceTransaction | null>(null);
   const [permanentDeleteTarget, setPermanentDeleteTarget] = useState<FinanceTransaction | null>(null);
+
+  // Bulk Selection State
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkSoftDeleteModalOpen, setBulkSoftDeleteModalOpen] = useState(false);
+  const [bulkPermanentDeleteModalOpen, setBulkPermanentDeleteModalOpen] = useState(false);
 
   const activeTransactions = transactions.filter((t) => !t.isDeleted);
   const deletedTransactions = transactions.filter((t) => !!t.isDeleted);
@@ -254,6 +260,75 @@ export default function KeuanganAdminPage() {
     setPermanentDeleteTarget(null);
   };
 
+  const isAllSelected =
+    filteredTransactions.length > 0 &&
+    filteredTransactions.every((item) => selectedIds.includes(item.id));
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredTransactions.map((item) => item.id));
+    }
+  };
+
+  const toggleSelectRow = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkSoftDelete = () => {
+    const now = new Intl.DateTimeFormat("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date());
+
+    const updated = transactions.map((t) => {
+      if (selectedIds.includes(t.id)) {
+        return {
+          ...t,
+          isDeleted: true,
+          deletedAt: now,
+        };
+      }
+      return t;
+    });
+
+    setTransactions(updated);
+    saveStoredFinances(updated);
+    setSelectedIds([]);
+    setBulkSoftDeleteModalOpen(false);
+  };
+
+  const handleBulkRestore = () => {
+    const updated = transactions.map((t) => {
+      if (selectedIds.includes(t.id)) {
+        return {
+          ...t,
+          isDeleted: false,
+          deletedAt: undefined,
+        };
+      }
+      return t;
+    });
+
+    setTransactions(updated);
+    saveStoredFinances(updated);
+    setSelectedIds([]);
+  };
+
+  const handleBulkPermanentDelete = () => {
+    const updated = transactions.filter((t) => !selectedIds.includes(t.id));
+    setTransactions(updated);
+    saveStoredFinances(updated);
+    setSelectedIds([]);
+    setBulkPermanentDeleteModalOpen(false);
+  };
+
   const handleExportCSV = () => {
     const headers = [
       "No Referensi",
@@ -351,7 +426,7 @@ export default function KeuanganAdminPage() {
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
             <span>Transaksi Masuk</span>
-            <span>{transactions.filter((t) => t.jenis === "Pemasukan").length} Transaksi</span>
+            <span>{activeTransactions.filter((t) => t.jenis === "Pemasukan").length} Transaksi</span>
           </div>
         </div>
 
@@ -364,7 +439,7 @@ export default function KeuanganAdminPage() {
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
             <span>Pos Program Dakwah</span>
-            <span>{transactions.filter((t) => t.jenis === "Pengeluaran").length} Penyaluran</span>
+            <span>{activeTransactions.filter((t) => t.jenis === "Pengeluaran").length} Penyaluran</span>
           </div>
         </div>
 
@@ -373,7 +448,7 @@ export default function KeuanganAdminPage() {
             Review Bendahara
           </p>
           <p className="text-2xl font-extrabold text-amber-600 my-2">
-            {transactions.filter((t) => t.status === "Review").length}{" "}
+            {activeTransactions.filter((t) => t.status === "Review").length}{" "}
             <span className="text-xs font-medium text-stone-500 font-sans">Nota</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
@@ -424,7 +499,10 @@ export default function KeuanganAdminPage() {
         <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit">
           <button
             type="button"
-            onClick={() => setViewTrash(false)}
+            onClick={() => {
+              setViewTrash(false);
+              setSelectedIds([]);
+            }}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               !viewTrash
                 ? "bg-white text-stone-900 shadow-2xs"
@@ -435,7 +513,10 @@ export default function KeuanganAdminPage() {
           </button>
           <button
             type="button"
-            onClick={() => setViewTrash(true)}
+            onClick={() => {
+              setViewTrash(true);
+              setSelectedIds([]);
+            }}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               viewTrash
                 ? "bg-stone-900 text-white shadow-2xs"
@@ -453,12 +534,69 @@ export default function KeuanganAdminPage() {
         )}
       </div>
 
+      {/* Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs animate-in fade-in duration-150">
+          <div className="flex items-center gap-2 text-red-900 font-semibold">
+            <CheckSquare className="w-4 h-4 text-red-600" />
+            <span>{selectedIds.length} transaksi kas terpilih</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedIds([])}
+              className="px-3 py-1.5 rounded-xl border border-red-200 text-stone-700 bg-white hover:bg-stone-50 font-semibold cursor-pointer"
+            >
+              Batal Pilih
+            </button>
+            {viewTrash ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleBulkRestore}
+                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Pulihkan ({selectedIds.length})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBulkPermanentDeleteModalOpen(true)}
+                  className="px-3.5 py-1.5 rounded-xl bg-red-700 hover:bg-red-800 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Hapus Permanen ({selectedIds.length})</span>
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setBulkSoftDeleteModalOpen(true)}
+                className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Hapus {selectedIds.length} Transaksi Terpilih</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Transactions Table */}
       <div className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
+                <th className="py-3.5 px-3 w-10 text-center">
+                  <input
+                    type="checkbox"
+                    checked={isAllSelected}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 rounded border-stone-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                    title={isAllSelected ? "Batalkan semua" : "Pilih semua"}
+                  />
+                </th>
                 <th className="py-3.5 px-4 w-[13%] min-w-[110px]">Tanggal</th>
                 <th className="py-3.5 px-3 w-[12%] min-w-[110px]">Jenis Kas</th>
                 <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Pos Alokasi</th>
@@ -473,7 +611,7 @@ export default function KeuanganAdminPage() {
               {filteredTransactions.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={9}
                     className="py-10 text-center text-stone-500 text-sm"
                   >
                     Tidak ditemukan riwayat mutasi kas yang sesuai filter.
@@ -483,8 +621,18 @@ export default function KeuanganAdminPage() {
                 filteredTransactions.map((trx) => (
                   <tr
                     key={trx.id}
-                    className="hover:bg-purple-50/20 transition-colors"
+                    className={`hover:bg-purple-50/20 transition-colors ${
+                      selectedIds.includes(trx.id) ? "bg-purple-50/40" : ""
+                    }`}
                   >
+                    <td className="py-3.5 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(trx.id)}
+                        onChange={() => toggleSelectRow(trx.id)}
+                        className="w-4 h-4 rounded border-stone-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                      />
+                    </td>
                     <td className="py-3.5 px-4 whitespace-nowrap">
                       <span className="text-xs font-semibold text-stone-800">
                         {trx.tanggal}
@@ -1153,6 +1301,73 @@ export default function KeuanganAdminPage() {
                 className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
               >
                 Hapus Permanen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal Konfirmasi Hapus Sekaligus Banyak (Bulk Soft Delete) */}
+      {bulkSoftDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              <span>Hapus {selectedIds.length} Transaksi Sekaligus</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin memindahkan <strong>{selectedIds.length} transaksi kas</strong> yang dipilih ke Kotak Sampah?
+            </p>
+            <p className="text-[11px] text-stone-500 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+              Data tidak akan dihapus permanen dan dapat dipulihkan sewaktu-waktu melalui tab <strong>Kotak Sampah</strong>.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setBulkSoftDeleteModalOpen(false)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkSoftDelete}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+              >
+                Pindahkan {selectedIds.length} Transaksi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Permanen Sekaligus (Bulk Permanent Delete) */}
+      {bulkPermanentDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-700 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              <span>Hapus Permanen {selectedIds.length} Transaksi</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus <strong>{selectedIds.length} catatan mutasi kas</strong> yang dipilih secara permanen?
+            </p>
+            <p className="text-[11px] text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+              Tindakan ini tidak dapat dibatalkan. Riwayat transaksi ini akan dihapus sepenuhnya dari buku kas lokal.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setBulkPermanentDeleteModalOpen(false)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkPermanentDelete}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
+              >
+                Hapus Permanen ({selectedIds.length})
               </button>
             </div>
           </div>

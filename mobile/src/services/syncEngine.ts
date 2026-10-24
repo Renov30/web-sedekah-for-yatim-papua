@@ -48,13 +48,20 @@ const DEFAULT_OFFLINE_CREDENTIAL: CachedCredential = {
   },
 };
 
+export const PRODUCTION_SERVER_URL = "https://sfypapua.org";
+
 export function detectDefaultServerUrl(): string {
-  // If running on web in browser
+  // 1. Check EXPO_PUBLIC_API_URL environment variable (used in Production APK build)
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL.replace(/\/+$/, "");
+  }
+
+  // 2. If running on web in browser
   if (Platform.OS === "web") {
     return "http://localhost:3000";
   }
 
-  // Try to detect LAN IP from Expo hostUri (e.g. "192.168.1.15:8081")
+  // 3. Try to detect LAN IP from Expo hostUri during development (e.g. "192.168.1.15:8081")
   const hostUri = Constants.expoConfig?.hostUri;
   if (hostUri) {
     const host = hostUri.split(":")[0];
@@ -63,12 +70,8 @@ export function detectDefaultServerUrl(): string {
     }
   }
 
-  // Fallback for Android Emulator (10.0.2.2 maps to host localhost) or detected LAN IP
-  if (Platform.OS === "android") {
-    return "http://192.168.1.15:3000";
-  }
-
-  return "http://localhost:3000";
+  // 4. Fallback in standalone production APK when not running inside Expo Go dev server
+  return PRODUCTION_SERVER_URL;
 }
 
 export async function getServerUrl(): Promise<string> {

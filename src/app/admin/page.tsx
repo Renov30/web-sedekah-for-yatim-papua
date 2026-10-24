@@ -18,10 +18,12 @@ import {
   initialFinances,
   OrphanRecord,
   AVRecord,
+  FinanceTransaction,
 } from "@/data/admin/adminData";
 import {
   getStoredOrphans,
   getStoredAVs,
+  getStoredFinances,
   fetchOrphansFromApi,
   fetchAVsFromApi,
 } from "@/lib/adminDataStore";
@@ -38,6 +40,7 @@ export default function AdminDashboardPage() {
   const [avList, setAvList] = useState<AVRecord[]>(initialAVs);
   const [distriksList, setDistriksList] = useState<DistrikRecord[]>([]);
   const [kampungsList, setKampungsList] = useState<KampungRecord[]>([]);
+  const [finances, setFinances] = useState<FinanceTransaction[]>(initialFinances);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -45,6 +48,7 @@ export default function AdminDashboardPage() {
       setAvList(getStoredAVs());
       setDistriksList(getStoredDistriks());
       setKampungsList(getStoredKampungs());
+      setFinances(getStoredFinances());
     });
     fetchOrphansFromApi().then(setOrphans);
     fetchAVsFromApi().then(setAvList);
@@ -54,39 +58,81 @@ export default function AdminDashboardPage() {
     });
   }, []);
 
-  // 1. Santri Metrics
-  const totalOrphans = orphans.length;
-  const verifiedOrphans = orphans.filter(
+  // Only include non-deleted data in all dashboard widgets and calculations
+  const activeOrphans = useMemo(
+    () => orphans.filter((o) => !o.isDeleted),
+    [orphans]
+  );
+  const activeAVList = useMemo(
+    () => avList.filter((a) => !a.isDeleted),
+    [avList]
+  );
+  const activeDistriks = useMemo(
+    () => distriksList.filter((d) => !d.isDeleted),
+    [distriksList]
+  );
+  const activeKampungs = useMemo(
+    () => kampungsList.filter((k) => !k.isDeleted),
+    [kampungsList]
+  );
+  const activeFinances = useMemo(
+    () => finances.filter((f) => !f.isDeleted),
+    [finances]
+  );
+
+  // 1. Santri Metrics (only non-deleted)
+  const totalOrphans = activeOrphans.length;
+  const verifiedOrphans = activeOrphans.filter(
     (o) => o.statusVerifikasi === "Terverifikasi"
   ).length;
   const actionableOrphans = useMemo(() => {
-    return orphans.filter(
-      (o) => o.statusVerifikasi === "Menunggu Survei" || o.statusVerifikasi === "Perlu Pembaruan"
+    return activeOrphans.filter(
+      (o) =>
+        o.statusVerifikasi === "Menunggu Survei" ||
+        o.statusVerifikasi === "Perlu Pembaruan"
     );
-  }, [orphans]);
+  }, [activeOrphans]);
 
-  // 2. AV Metrics
-  const totalAVs = avList.length;
-  const activeAVs = avList.filter((a) => a.status === "Aktif").length;
+  // 2. AV Metrics (only non-deleted)
+  const totalAVs = activeAVList.length;
+  const activeAVs = activeAVList.filter((a) => a.status === "Aktif").length;
   const coveredKampungsFromAV = useMemo(() => {
-    return new Set(avList.map((a) => a.kampung.toLowerCase())).size;
-  }, [avList]);
+    const deletedKampungNames = new Set(
+      kampungsList
+        .filter((k) => k.isDeleted)
+        .map((k) => k.nama.toLowerCase())
+    );
+    return new Set(
+      activeAVList
+        .map((a) => a.kampung.toLowerCase())
+        .filter((k) => Boolean(k) && !deletedKampungNames.has(k))
+    ).size;
+  }, [activeAVList, kampungsList]);
 
-  // 3. Wilayah Metrics
-  const totalDistrikCount = distriksList.length || 15;
-  const totalKampungCount = kampungsList.length || 24;
+  // 3. Wilayah Metrics (only non-deleted)
+  const totalDistrikCount = activeDistriks.length;
+  const totalKampungCount = activeKampungs.length;
 
-  // 4. Kas Metrics
-  const totalIncome = initialFinances
+  // 4. Kas Metrics (only non-deleted)
+  const totalIncome = activeFinances
     .filter((f) => f.jenis === "Pemasukan")
     .reduce((sum, f) => sum + f.jumlah, 0);
-  const totalExpense = initialFinances
+  const totalExpense = activeFinances
     .filter((f) => f.jenis === "Pengeluaran")
     .reduce((sum, f) => sum + f.jumlah, 0);
   const cashBalance = 175000000 + (totalIncome - totalExpense);
 
-  // 5. Dynamic Regional Distribution (Calculated purely from current orphans)
+  // 5. Dynamic Regional Distribution (Calculated purely from non-deleted orphans)
   const regionalDistribution = useMemo(() => {
+    const deletedKampungNames = new Set(
+      kampungsList
+        .filter((k) => k.isDeleted)
+        .map((k) => k.nama.toLowerCase())
+    );
+    const deletedAvNames = new Set(
+      avList.filter((a) => a.isDeleted).map((a) => a.nama.toLowerCase())
+    );
+
     const map: Record<
       string,
       {
@@ -98,7 +144,7 @@ export default function AdminDashboardPage() {
       }
     > = {};
 
-    orphans.forEach((o) => {
+    activeOrphans.forEach((o) => {
       const distrikKey = o.asalDaerah || "Belum Ditentukan";
       if (!map[distrikKey]) {
         map[distrikKey] = {
@@ -110,10 +156,14 @@ export default function AdminDashboardPage() {
         };
       }
       map[distrikKey].count += 1;
-      if (o.kampung) {
+      if (o.kampung && !deletedKampungNames.has(o.kampung.toLowerCase())) {
         map[distrikKey].kampungs.add(o.kampung);
       }
-      if (o.pjAvNama && o.pjAvNama !== "Belum ditentukan") {
+      if (
+        o.pjAvNama &&
+        o.pjAvNama !== "Belum ditentukan" &&
+        !deletedAvNames.has(o.pjAvNama.toLowerCase())
+      ) {
         map[distrikKey].avNames.add(o.pjAvNama);
       }
     });
@@ -126,22 +176,33 @@ export default function AdminDashboardPage() {
         kampungCount: item.kampungs.size,
         kampungList: Array.from(item.kampungs).slice(0, 3).join(", "),
         avList: Array.from(item.avNames).join(", "),
-        percentage: totalOrphans > 0 ? Math.round((item.count / totalOrphans) * 100) : 0,
+        percentage:
+          totalOrphans > 0 ? Math.round((item.count / totalOrphans) * 100) : 0,
       }))
       .sort((a, b) => b.count - a.count);
-  }, [orphans, totalOrphans]);
+  }, [activeOrphans, totalOrphans, kampungsList, avList]);
 
-  // 6. Demographics breakdown
+  // 6. Demographics breakdown (only non-deleted orphans)
   const demoStats = useMemo(() => {
-    const yatim = orphans.filter((o) => o.status === "Yatim").length;
-    const piatu = orphans.filter((o) => o.status === "Piatu").length;
-    const yatimPiatu = orphans.filter((o) => o.status === "Yatim Piatu").length;
-    const laki = orphans.filter((o) => o.gender === "L").length;
-    const perempuan = orphans.filter((o) => o.gender === "P").length;
-    const santunanAktif = orphans.filter((o) => o.usia < 15).length;
-    const batasUsia = orphans.filter((o) => o.usia >= 15).length;
-    return { yatim, piatu, yatimPiatu, laki, perempuan, santunanAktif, batasUsia };
-  }, [orphans]);
+    const yatim = activeOrphans.filter((o) => o.status === "Yatim").length;
+    const piatu = activeOrphans.filter((o) => o.status === "Piatu").length;
+    const yatimPiatu = activeOrphans.filter(
+      (o) => o.status === "Yatim Piatu"
+    ).length;
+    const laki = activeOrphans.filter((o) => o.gender === "L").length;
+    const perempuan = activeOrphans.filter((o) => o.gender === "P").length;
+    const santunanAktif = activeOrphans.filter((o) => o.usia < 15).length;
+    const batasUsia = activeOrphans.filter((o) => o.usia >= 15).length;
+    return {
+      yatim,
+      piatu,
+      yatimPiatu,
+      laki,
+      perempuan,
+      santunanAktif,
+      batasUsia,
+    };
+  }, [activeOrphans]);
 
   return (
     <div className="space-y-6">
@@ -197,7 +258,7 @@ export default function AdminDashboardPage() {
           <div className="pt-2.5 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
             <span>{verifiedOrphans} Terverifikasi</span>
             <span className="text-emerald-700 font-medium">
-              {orphans.filter((o) => o.usia < 15).length} Santunan • {orphans.filter((o) => o.usia >= 15).length} Batas Usia
+              {demoStats.santunanAktif} Santunan • {demoStats.batasUsia} Batas Usia
             </span>
           </div>
         </Link>
@@ -411,9 +472,12 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="divide-y divide-stone-100">
-              {avList.slice(0, 4).map((av) => {
-                const assignedCount = orphans.filter(
-                  (o) => o.pjAvNama === av.nama || o.pjAvId === av.id
+              {activeAVList.slice(0, 4).map((av) => {
+                const assignedCount = activeOrphans.filter(
+                  (o) =>
+                    o.pjAvId === av.id ||
+                    (o.pjAvNama &&
+                      o.pjAvNama.toLowerCase() === av.nama.toLowerCase())
                 ).length;
 
                 return (
@@ -515,7 +579,7 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="divide-y divide-stone-100">
-              {initialFinances.slice(0, 4).map((trx) => (
+              {activeFinances.slice(0, 4).map((trx) => (
                 <div
                   key={trx.id}
                   className="flex items-center justify-between py-2.5 gap-2"

@@ -13,6 +13,7 @@ import {
   Trash2,
   RotateCcw,
   Building2,
+  CheckSquare,
 } from "lucide-react";
 import {
   DistrikRecord,
@@ -69,6 +70,11 @@ export default function MasterWilayahAdminPage() {
   const [deletingDistrik, setDeletingDistrik] = useState<DistrikRecord | null>(null);
   const [permanentDeleteTargetDistrik, setPermanentDeleteTargetDistrik] =
     useState<DistrikRecord | null>(null);
+
+  // Bulk Selection State
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkSoftDeleteModalOpen, setBulkSoftDeleteModalOpen] = useState(false);
+  const [bulkPermanentDeleteModalOpen, setBulkPermanentDeleteModalOpen] = useState(false);
   const [distrikForm, setDistrikForm] = useState({
     nama: "",
     kabupaten: "Kab. Merauke",
@@ -327,6 +333,118 @@ export default function MasterWilayahAdminPage() {
     showNotification("success", `Distrik "${permanentDeleteTargetDistrik.nama}" dihapus secara permanen.`);
   };
 
+  const currentList = activeTab === "kampung" ? filteredKampungs : filteredDistriks;
+  const isAllSelected =
+    currentList.length > 0 &&
+    currentList.every((item) => selectedIds.includes(item.id));
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(currentList.map((item) => item.id));
+    }
+  };
+
+  const toggleSelectRow = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkSoftDelete = () => {
+    if (activeTab === "kampung") {
+      for (const id of selectedIds) {
+        softDeleteKampung(id);
+      }
+      refreshData();
+      showNotification(
+        "success",
+        `${selectedIds.length} kampung berhasil dipindahkan ke Kotak Sampah.`
+      );
+    } else {
+      let successCount = 0;
+      let failCount = 0;
+      for (const id of selectedIds) {
+        const res = softDeleteDistrik(id);
+        if (res.success) successCount++;
+        else failCount++;
+      }
+      refreshData();
+      if (failCount > 0) {
+        showNotification(
+          "error",
+          `${successCount} distrik dipindahkan ke Sampah. ${failCount} distrik dilewati karena masih memiliki kampung aktif.`
+        );
+      } else {
+        showNotification(
+          "success",
+          `${successCount} distrik berhasil dipindahkan ke Kotak Sampah.`
+        );
+      }
+    }
+    setSelectedIds([]);
+    setBulkSoftDeleteModalOpen(false);
+  };
+
+  const handleBulkRestore = () => {
+    if (activeTab === "kampung") {
+      for (const id of selectedIds) {
+        restoreKampung(id);
+      }
+      refreshData();
+      showNotification(
+        "success",
+        `${selectedIds.length} kampung berhasil dipulihkan.`
+      );
+    } else {
+      for (const id of selectedIds) {
+        restoreDistrik(id);
+      }
+      refreshData();
+      showNotification(
+        "success",
+        `${selectedIds.length} distrik berhasil dipulihkan.`
+      );
+    }
+    setSelectedIds([]);
+  };
+
+  const handleBulkPermanentDelete = () => {
+    if (activeTab === "kampung") {
+      for (const id of selectedIds) {
+        deleteKampung(id);
+      }
+      refreshData();
+      showNotification(
+        "success",
+        `${selectedIds.length} kampung berhasil dihapus secara permanen.`
+      );
+    } else {
+      let successCount = 0;
+      let failCount = 0;
+      for (const id of selectedIds) {
+        const res = deleteDistrik(id);
+        if (res.success) successCount++;
+        else failCount++;
+      }
+      refreshData();
+      if (failCount > 0) {
+        showNotification(
+          "error",
+          `${successCount} distrik dihapus permanen. ${failCount} distrik dilewati karena masih memiliki kampung terdaftar.`
+        );
+      } else {
+        showNotification(
+          "success",
+          `${successCount} distrik berhasil dihapus secara permanen.`
+        );
+      }
+    }
+    setSelectedIds([]);
+    setBulkPermanentDeleteModalOpen(false);
+  };
+
   // Export CSV
   const handleExportCSV = () => {
     if (activeTab === "kampung") {
@@ -422,8 +540,8 @@ export default function MasterWilayahAdminPage() {
               onClick={() => {
                 setKampungForm({
                   nama: "",
-                  distrikNama: distriks[0]?.nama || "Distrik Merauke",
-                  kabupaten: distriks[0]?.kabupaten || "Kab. Merauke",
+                  distrikNama: activeDistriks[0]?.nama || "Distrik Merauke",
+                  kabupaten: activeDistriks[0]?.kabupaten || "Kab. Merauke",
                   catatan: "",
                 });
                 setIsAddKampungOpen(true);
@@ -514,6 +632,7 @@ export default function MasterWilayahAdminPage() {
           type="button"
           onClick={() => {
             setActiveTab("kampung");
+            setSelectedIds([]);
             setSearchQuery("");
           }}
           className={`inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors cursor-pointer ${
@@ -529,6 +648,7 @@ export default function MasterWilayahAdminPage() {
           type="button"
           onClick={() => {
             setActiveTab("distrik");
+            setSelectedIds([]);
             setSearchQuery("");
           }}
           className={`inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors cursor-pointer ${
@@ -567,7 +687,7 @@ export default function MasterWilayahAdminPage() {
               className="px-3 py-2 rounded-xl text-sm border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700"
             >
               <option value="all">Semua Distrik</option>
-              {distriks.map((d) => (
+              {activeDistriks.map((d) => (
                 <option key={d.id} value={d.nama}>
                   {d.nama}
                 </option>
@@ -595,7 +715,10 @@ export default function MasterWilayahAdminPage() {
         <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit">
           <button
             type="button"
-            onClick={() => setViewTrash(false)}
+            onClick={() => {
+              setViewTrash(false);
+              setSelectedIds([]);
+            }}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               !viewTrash
                 ? "bg-white text-stone-900 shadow-2xs"
@@ -606,7 +729,10 @@ export default function MasterWilayahAdminPage() {
           </button>
           <button
             type="button"
-            onClick={() => setViewTrash(true)}
+            onClick={() => {
+              setViewTrash(true);
+              setSelectedIds([]);
+            }}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               viewTrash
                 ? "bg-stone-900 text-white shadow-2xs"
@@ -626,6 +752,58 @@ export default function MasterWilayahAdminPage() {
         )}
       </div>
 
+      {/* Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs animate-in fade-in duration-150">
+          <div className="flex items-center gap-2 text-red-900 font-semibold">
+            <CheckSquare className="w-4 h-4 text-red-600" />
+            <span>
+              {selectedIds.length} {activeTab === "kampung" ? "kampung" : "distrik"} terpilih
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedIds([])}
+              className="px-3 py-1.5 rounded-xl border border-red-200 text-stone-700 bg-white hover:bg-stone-50 font-semibold cursor-pointer"
+            >
+              Batal Pilih
+            </button>
+            {viewTrash ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleBulkRestore}
+                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Pulihkan ({selectedIds.length})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBulkPermanentDeleteModalOpen(true)}
+                  className="px-3.5 py-1.5 rounded-xl bg-red-700 hover:bg-red-800 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Hapus Permanen ({selectedIds.length})</span>
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setBulkSoftDeleteModalOpen(true)}
+                className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>
+                  Hapus {selectedIds.length} {activeTab === "kampung" ? "Kampung" : "Distrik"} Terpilih
+                </span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Active Tab Content */}
       {activeTab === "kampung" ? (
         // Table: Kampungs
@@ -634,6 +812,15 @@ export default function MasterWilayahAdminPage() {
             <table className="w-full text-left text-sm">
               <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
                 <tr>
+                  <th className="py-3.5 px-3 w-10 text-center">
+                    <input
+                      type="checkbox"
+                      checked={isAllSelected}
+                      onChange={toggleSelectAll}
+                      className="w-4 h-4 rounded border-stone-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                      title={isAllSelected ? "Batalkan semua" : "Pilih semua"}
+                    />
+                  </th>
                   <th className="py-3.5 px-4 w-[28%] min-w-[180px]">Nama Kampung / Desa</th>
                   <th className="py-3.5 px-3 w-[20%] min-w-[150px]">Distrik Induk</th>
                   <th className="py-3.5 px-3 w-[18%] min-w-[130px]">Kabupaten</th>
@@ -647,7 +834,7 @@ export default function MasterWilayahAdminPage() {
                 {filteredKampungs.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={6}
                       className="py-10 text-center text-stone-500 text-sm"
                     >
                       {viewTrash
@@ -659,8 +846,18 @@ export default function MasterWilayahAdminPage() {
                   filteredKampungs.map((k) => (
                     <tr
                       key={k.id}
-                      className="hover:bg-purple-50/20 transition-colors"
+                      className={`hover:bg-purple-50/20 transition-colors ${
+                        selectedIds.includes(k.id) ? "bg-purple-50/40" : ""
+                      }`}
                     >
+                      <td className="py-3.5 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(k.id)}
+                          onChange={() => toggleSelectRow(k.id)}
+                          className="w-4 h-4 rounded border-stone-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                        />
+                      </td>
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2.5">
                           <div className="w-7 h-7 rounded-lg bg-purple-100 text-[#823296] flex items-center justify-center shrink-0">
@@ -744,6 +941,15 @@ export default function MasterWilayahAdminPage() {
             <table className="w-full text-left text-sm">
               <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
                 <tr>
+                  <th className="py-3.5 px-3 w-10 text-center">
+                    <input
+                      type="checkbox"
+                      checked={isAllSelected}
+                      onChange={toggleSelectAll}
+                      className="w-4 h-4 rounded border-stone-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                      title={isAllSelected ? "Batalkan semua" : "Pilih semua"}
+                    />
+                  </th>
                   <th className="py-3.5 px-4 w-[35%] min-w-[200px]">Nama Distrik</th>
                   <th className="py-3.5 px-3 w-[28%] min-w-[170px]">Kabupaten</th>
                   <th className="py-3.5 px-3 w-[27%] min-w-[160px]">
@@ -756,7 +962,7 @@ export default function MasterWilayahAdminPage() {
                 {filteredDistriks.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={4}
+                      colSpan={5}
                       className="py-10 text-center text-stone-500 text-sm"
                     >
                       {viewTrash
@@ -770,8 +976,18 @@ export default function MasterWilayahAdminPage() {
                     return (
                       <tr
                         key={d.id}
-                        className="hover:bg-purple-50/20 transition-colors"
+                        className={`hover:bg-purple-50/20 transition-colors ${
+                          selectedIds.includes(d.id) ? "bg-purple-50/40" : ""
+                        }`}
                       >
+                        <td className="py-3.5 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.includes(d.id)}
+                            onChange={() => toggleSelectRow(d.id)}
+                            className="w-4 h-4 rounded border-stone-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                          />
+                        </td>
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-2.5">
                             <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
@@ -911,7 +1127,7 @@ export default function MasterWilayahAdminPage() {
                 <select
                   value={kampungForm.distrikNama}
                   onChange={(e) => {
-                    const selDistrik = distriks.find((d) => d.nama === e.target.value);
+                    const selDistrik = activeDistriks.find((d) => d.nama === e.target.value);
                     setKampungForm({
                       ...kampungForm,
                       distrikNama: e.target.value,
@@ -920,7 +1136,7 @@ export default function MasterWilayahAdminPage() {
                   }}
                   className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700"
                 >
-                  {distriks.map((d) => (
+                  {activeDistriks.map((d) => (
                     <option key={d.id} value={d.nama}>
                       {d.nama} ({d.kabupaten})
                     </option>
@@ -1017,7 +1233,7 @@ export default function MasterWilayahAdminPage() {
                 <select
                   value={kampungForm.distrikNama}
                   onChange={(e) => {
-                    const selDistrik = distriks.find((d) => d.nama === e.target.value);
+                    const selDistrik = activeDistriks.find((d) => d.nama === e.target.value);
                     setKampungForm({
                       ...kampungForm,
                       distrikNama: e.target.value,
@@ -1026,7 +1242,7 @@ export default function MasterWilayahAdminPage() {
                   }}
                   className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700"
                 >
-                  {distriks.map((d) => (
+                  {activeDistriks.map((d) => (
                     <option key={d.id} value={d.nama}>
                       {d.nama}
                     </option>
@@ -1350,6 +1566,77 @@ export default function MasterWilayahAdminPage() {
                 className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
               >
                 Hapus Permanen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal Konfirmasi Hapus Sekaligus Banyak (Bulk Soft Delete) */}
+      {bulkSoftDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              <span>
+                Hapus {selectedIds.length} {activeTab === "kampung" ? "Kampung" : "Distrik"} Sekaligus
+              </span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin memindahkan <strong>{selectedIds.length} data {activeTab === "kampung" ? "kampung" : "distrik"}</strong> yang dipilih ke Kotak Sampah?
+            </p>
+            <p className="text-[11px] text-stone-500 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+              Data yang dihapus sementara dapat dipulihkan sewaktu-waktu melalui tab <strong>Kotak Sampah</strong>.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setBulkSoftDeleteModalOpen(false)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkSoftDelete}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+              >
+                Pindahkan {selectedIds.length} Data
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Permanen Sekaligus (Bulk Permanent Delete) */}
+      {bulkPermanentDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-700 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              <span>
+                Hapus Permanen {selectedIds.length} {activeTab === "kampung" ? "Kampung" : "Distrik"}
+              </span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus <strong>{selectedIds.length} data {activeTab === "kampung" ? "kampung" : "distrik"}</strong> yang dipilih secara permanen?
+            </p>
+            <p className="text-[11px] text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+              Tindakan ini tidak dapat dibatalkan. Riwayat data wilayah ini akan dihapus sepenuhnya dari database lokal.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setBulkPermanentDeleteModalOpen(false)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkPermanentDelete}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
+              >
+                Hapus Permanen ({selectedIds.length})
               </button>
             </div>
           </div>

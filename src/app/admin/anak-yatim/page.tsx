@@ -17,12 +17,20 @@ import {
   MapPinHouse,
   RotateCcw,
   ExternalLink,
+  CheckSquare,
 } from "lucide-react";
-import { initialOrphans, initialAVs, OrphanRecord } from "@/data/admin/adminData";
+import {
+  initialOrphans,
+  initialAVs,
+  OrphanRecord,
+  AVRecord,
+} from "@/data/admin/adminData";
 import {
   getStoredOrphans,
   saveStoredOrphans,
+  getStoredAVs,
   fetchOrphansFromApi,
+  fetchAVsFromApi,
 } from "@/lib/adminDataStore";
 import {
   getStoredDistriks,
@@ -35,6 +43,7 @@ import {
 
 export default function AnakYatimAdminPage() {
   const [orphans, setOrphans] = useState<OrphanRecord[]>(initialOrphans);
+  const [avList, setAvList] = useState<AVRecord[]>(initialAVs);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterDistrik, setFilterDistrik] = useState("all");
   const [filterKampung, setFilterKampung] = useState("all");
@@ -52,6 +61,11 @@ export default function AnakYatimAdminPage() {
   const [viewTrash, setViewTrash] = useState(false);
   const [softDeleteTarget, setSoftDeleteTarget] = useState<OrphanRecord | null>(null);
   const [permanentDeleteTarget, setPermanentDeleteTarget] = useState<OrphanRecord | null>(null);
+
+  // Bulk Selection State
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkSoftDeleteModalOpen, setBulkSoftDeleteModalOpen] = useState(false);
+  const [bulkPermanentDeleteModalOpen, setBulkPermanentDeleteModalOpen] = useState(false);
 
   // Add Form Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -108,28 +122,59 @@ export default function AnakYatimAdminPage() {
       setDistriksList(getStoredDistriks());
       setKampungsList(getStoredKampungs());
       setOrphans(getStoredOrphans());
+      setAvList(getStoredAVs());
     });
     fetchOrphansFromApi().then(setOrphans);
+    fetchAVsFromApi().then(setAvList);
     fetchWilayahFromApi().then(({ distriks, kampungs }) => {
       setDistriksList(distriks);
       setKampungsList(kampungs);
     });
   }, []);
 
-  // Dynamic filter lists from data + master database
+  const activeOrphans = useMemo(
+    () => orphans.filter((o) => !o.isDeleted),
+    [orphans]
+  );
+  const deletedOrphans = useMemo(
+    () => orphans.filter((o) => !!o.isDeleted),
+    [orphans]
+  );
+  const activeDistriks = useMemo(
+    () => distriksList.filter((d) => !d.isDeleted),
+    [distriksList]
+  );
+  const activeKampungs = useMemo(
+    () => kampungsList.filter((k) => !k.isDeleted),
+    [kampungsList]
+  );
+  const activeAVs = useMemo(
+    () => avList.filter((a) => !a.isDeleted),
+    [avList]
+  );
+
+  // Dynamic filter lists from non-deleted data + master database
   const uniqueDistriks = useMemo(() => {
-    const fromMaster = distriksList.map((d) => d.nama);
-    const fromOrphans = orphans.map((o) => o.asalDaerah).filter(Boolean);
+    const deletedNames = new Set(
+      distriksList.filter((d) => d.isDeleted).map((d) => d.nama.toLowerCase())
+    );
+    const fromMaster = activeDistriks.map((d) => d.nama);
+    const fromOrphans = activeOrphans
+      .map((o) => o.asalDaerah)
+      .filter((d): d is string => Boolean(d) && !deletedNames.has(d.toLowerCase()));
     return Array.from(new Set([...fromMaster, ...fromOrphans])).sort();
-  }, [distriksList, orphans]);
+  }, [activeDistriks, activeOrphans, distriksList]);
 
   const uniqueKampungs = useMemo(() => {
-    const fromMaster = kampungsList.map((k) => k.nama);
-    const fromOrphans = orphans
+    const deletedNames = new Set(
+      kampungsList.filter((k) => k.isDeleted).map((k) => k.nama.toLowerCase())
+    );
+    const fromMaster = activeKampungs.map((k) => k.nama);
+    const fromOrphans = activeOrphans
       .map((o) => o.kampung)
-      .filter((k): k is string => Boolean(k));
+      .filter((k): k is string => Boolean(k) && !deletedNames.has(k.toLowerCase()));
     return Array.from(new Set([...fromMaster, ...fromOrphans])).sort();
-  }, [kampungsList, orphans]);
+  }, [activeKampungs, activeOrphans, kampungsList]);
 
   const isFilterActive =
     searchQuery !== "" ||
@@ -149,9 +194,6 @@ export default function AnakYatimAdminPage() {
     setFilterStatus("all");
     setFilterVerif("all");
   };
-
-  const activeOrphans = orphans.filter((o) => !o.isDeleted);
-  const deletedOrphans = orphans.filter((o) => !!o.isDeleted);
 
   // Filtered List
   const baseList = viewTrash ? deletedOrphans : activeOrphans;
@@ -219,7 +261,7 @@ export default function AnakYatimAdminPage() {
       setKampungsList(getStoredKampungs());
     }
 
-    const matchedAV = initialAVs.find((av) => av.nama === formData.pjAvNama);
+    const matchedAV = activeAVs.find((av) => av.nama === formData.pjAvNama);
 
     const newRecord: OrphanRecord = {
       id: `YTM-00${orphans.length + 1}`,
@@ -331,7 +373,7 @@ export default function AnakYatimAdminPage() {
     e.preventDefault();
     if (!editingOrphan) return;
 
-    const matchedAV = initialAVs.find((av) => av.nama === editFormData.pjAvNama);
+    const matchedAV = activeAVs.find((av) => av.nama === editFormData.pjAvNama);
 
     const updatedList = orphans.map((o) => {
       if (o.id === editingOrphan.id) {
@@ -412,6 +454,75 @@ export default function AnakYatimAdminPage() {
     saveStoredOrphans(updated);
     if (selectedOrphan?.id === id) setSelectedOrphan(null);
     setPermanentDeleteTarget(null);
+  };
+
+  const isAllSelected =
+    filteredOrphans.length > 0 &&
+    filteredOrphans.every((item) => selectedIds.includes(item.id));
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredOrphans.map((item) => item.id));
+    }
+  };
+
+  const toggleSelectRow = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkSoftDelete = () => {
+    const now = new Intl.DateTimeFormat("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date());
+
+    const updated = orphans.map((o) => {
+      if (selectedIds.includes(o.id)) {
+        return {
+          ...o,
+          isDeleted: true,
+          deletedAt: now,
+        };
+      }
+      return o;
+    });
+
+    setOrphans(updated);
+    saveStoredOrphans(updated);
+    setSelectedIds([]);
+    setBulkSoftDeleteModalOpen(false);
+  };
+
+  const handleBulkRestore = () => {
+    const updated = orphans.map((o) => {
+      if (selectedIds.includes(o.id)) {
+        return {
+          ...o,
+          isDeleted: false,
+          deletedAt: undefined,
+        };
+      }
+      return o;
+    });
+
+    setOrphans(updated);
+    saveStoredOrphans(updated);
+    setSelectedIds([]);
+  };
+
+  const handleBulkPermanentDelete = () => {
+    const updated = orphans.filter((o) => !selectedIds.includes(o.id));
+    setOrphans(updated);
+    saveStoredOrphans(updated);
+    setSelectedIds([]);
+    setBulkPermanentDeleteModalOpen(false);
   };
 
   const handleExportCSV = () => {
@@ -703,7 +814,7 @@ export default function AnakYatimAdminPage() {
         {/* Filter Results Summary */}
         <div className="flex items-center justify-between text-xs text-stone-500 pt-1">
           <span>
-            Menampilkan <strong>{filteredOrphans.length}</strong> dari <strong>{orphans.length}</strong> santri yatim
+            Menampilkan <strong>{filteredOrphans.length}</strong> dari <strong>{baseList.length}</strong> santri yatim
           </span>
           {isFilterActive && (
             <span className="text-[11px] text-[#823296] font-medium">
@@ -718,7 +829,10 @@ export default function AnakYatimAdminPage() {
         <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-xl w-fit">
           <button
             type="button"
-            onClick={() => setViewTrash(false)}
+            onClick={() => {
+              setViewTrash(false);
+              setSelectedIds([]);
+            }}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               !viewTrash
                 ? "bg-white text-stone-900 shadow-2xs"
@@ -729,7 +843,10 @@ export default function AnakYatimAdminPage() {
           </button>
           <button
             type="button"
-            onClick={() => setViewTrash(true)}
+            onClick={() => {
+              setViewTrash(true);
+              setSelectedIds([]);
+            }}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
               viewTrash
                 ? "bg-stone-900 text-white shadow-2xs"
@@ -747,12 +864,69 @@ export default function AnakYatimAdminPage() {
         )}
       </div>
 
+      {/* Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs animate-in fade-in duration-150">
+          <div className="flex items-center gap-2 text-red-900 font-semibold">
+            <CheckSquare className="w-4 h-4 text-red-600" />
+            <span>{selectedIds.length} data santri terpilih</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedIds([])}
+              className="px-3 py-1.5 rounded-xl border border-red-200 text-stone-700 bg-white hover:bg-stone-50 font-semibold cursor-pointer"
+            >
+              Batal Pilih
+            </button>
+            {viewTrash ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleBulkRestore}
+                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Pulihkan ({selectedIds.length})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBulkPermanentDeleteModalOpen(true)}
+                  className="px-3.5 py-1.5 rounded-xl bg-red-700 hover:bg-red-800 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Hapus Permanen ({selectedIds.length})</span>
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setBulkSoftDeleteModalOpen(true)}
+                className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Hapus {selectedIds.length} Data Terpilih</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Main Data Table */}
       <div className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
+                <th className="py-3.5 px-3 w-10 text-center">
+                  <input
+                    type="checkbox"
+                    checked={isAllSelected}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 rounded border-stone-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                    title={isAllSelected ? "Batalkan semua" : "Pilih semua"}
+                  />
+                </th>
                 <th className="py-3.5 px-4 w-[16%] min-w-[150px]">Nama Santri</th>
                 <th className="py-3.5 px-3 w-[14%] min-w-[130px]">Usia & Santunan</th>
                 <th className="py-3.5 px-3 w-[10%] min-w-[95px]">Status</th>
@@ -768,7 +942,7 @@ export default function AnakYatimAdminPage() {
               {filteredOrphans.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={10}
                     className="py-10 text-center text-stone-500 text-sm"
                   >
                     Tidak ditemukan data anak yatim yang sesuai kriteria pencarian.
@@ -778,8 +952,18 @@ export default function AnakYatimAdminPage() {
                 filteredOrphans.map((orphan) => (
                   <tr
                     key={orphan.id}
-                    className="hover:bg-purple-50/20 transition-colors"
+                    className={`hover:bg-purple-50/20 transition-colors ${
+                      selectedIds.includes(orphan.id) ? "bg-purple-50/40" : ""
+                    }`}
                   >
+                    <td className="py-3.5 px-3 text-center" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(orphan.id)}
+                        onChange={() => toggleSelectRow(orphan.id)}
+                        className="w-4 h-4 rounded border-stone-300 text-purple-600 focus:ring-purple-500 cursor-pointer"
+                      />
+                    </td>
                     <td className="py-3.5 px-4">
                       <span className="font-semibold text-stone-900 block">
                         {orphan.namaLengkap}
@@ -1412,7 +1596,7 @@ export default function AnakYatimAdminPage() {
                     className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white"
                   >
                     <option value="">-- Pilih Koordinator AV --</option>
-                    {initialAVs.map((av) => (
+                    {activeAVs.map((av) => (
                       <option key={av.id} value={av.nama}>
                         {av.nama} ({av.kampung})
                       </option>
@@ -1729,7 +1913,7 @@ export default function AnakYatimAdminPage() {
                     className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white"
                   >
                     <option value="">-- Pilih Koordinator AV --</option>
-                    {initialAVs.map((av) => (
+                    {activeAVs.map((av) => (
                       <option key={av.id} value={av.nama}>
                         {av.nama} ({av.kampung})
                       </option>
@@ -1910,6 +2094,73 @@ export default function AnakYatimAdminPage() {
                 className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
               >
                 Hapus Permanen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal Konfirmasi Hapus Sekaligus Banyak (Bulk Soft Delete) */}
+      {bulkSoftDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-600 flex items-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              <span>Hapus {selectedIds.length} Data Santri Sekaligus</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin memindahkan <strong>{selectedIds.length} data santri</strong> yang dipilih ke Kotak Sampah?
+            </p>
+            <p className="text-[11px] text-stone-500 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+              Data tidak akan dihapus permanen dan dapat dipulihkan sewaktu-waktu melalui tab <strong>Kotak Sampah</strong>.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setBulkSoftDeleteModalOpen(false)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkSoftDelete}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+              >
+                Pindahkan {selectedIds.length} Data
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Konfirmasi Hapus Permanen Sekaligus (Bulk Permanent Delete) */}
+      {bulkPermanentDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl border border-stone-200 space-y-4 text-xs">
+            <h3 className="text-base font-bold text-red-700 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              <span>Hapus Permanen {selectedIds.length} Data</span>
+            </h3>
+            <p className="text-stone-600 leading-relaxed">
+              Apakah Anda yakin ingin menghapus <strong>{selectedIds.length} data santri</strong> yang dipilih secara permanen?
+            </p>
+            <p className="text-[11px] text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200">
+              Tindakan ini tidak dapat dibatalkan. Riwayat data santri ini akan dihapus sepenuhnya dari database.
+            </p>
+            <div className="pt-2 flex justify-end gap-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setBulkPermanentDeleteModalOpen(false)}
+                className="px-4 py-2 rounded-xl font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkPermanentDelete}
+                className="px-4 py-2 rounded-xl font-semibold bg-red-700 text-white hover:bg-red-800 cursor-pointer"
+              >
+                Hapus Permanen ({selectedIds.length})
               </button>
             </div>
           </div>
