@@ -642,7 +642,7 @@ export const initialRoles: RoleDefinition[] = [
 
 export const moduleList = [
   { id: "anak-yatim", name: "Pendataan Anak Yatim", desc: "Data santri yatim/piatu, profil keluarga, dan riwayat pendidikan" },
-  { id: "av", name: "Pendataan AV (Koordinator Lapangan Kampung)", desc: "Database koordinator lapangan kampung, penanggung jawab (PJ) santri yatim, dan informasi posko" },
+  { id: "av", name: "Pendataan AV", desc: "Database koordinator lapangan kampung, penanggung jawab (PJ) santri yatim, dan informasi posko" },
   { id: "relawan", name: "Pendataan Relawan", desc: "Database anggota relawan aktif, keahlian, dan divisi tugas" },
   { id: "donatur", name: "Pendataan Donatur", desc: "Database donatur perorangan, lembaga, dan riwayat komitmen" },
   { id: "keuangan", name: "Manajemen Keuangan", desc: "Arus kas masuk-keluar, pencatatan kuitansi, dan neraca sedekah" },

@@ -45,7 +45,7 @@ export const adminNavItems = [
     icon: GraduationCap,
   },
   {
-    title: "Pendataan AV (Kordinator)",
+    title: "Pendataan AV",
     href: "/admin/av",
     icon: MapPinHouse,
   },
