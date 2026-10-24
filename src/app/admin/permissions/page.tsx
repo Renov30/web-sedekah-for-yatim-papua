@@ -227,17 +227,17 @@ function PermissionsContent() {
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
-                <th className="py-3 px-4 w-1/3">Modul Aplikasi</th>
-                <th className="py-3 px-3 text-center">
+                <th className="py-3 px-4 w-[36%] min-w-[200px]">Modul Aplikasi</th>
+                <th className="py-3 px-3 w-[16%] text-center">
                   <span className="inline-block">Read (Lihat)</span>
                 </th>
-                <th className="py-3 px-3 text-center">
+                <th className="py-3 px-3 w-[16%] text-center">
                   <span className="inline-block">Create (Tambah)</span>
                 </th>
-                <th className="py-3 px-3 text-center">
+                <th className="py-3 px-3 w-[16%] text-center">
                   <span className="inline-block">Update (Ubah)</span>
                 </th>
-                <th className="py-3 px-3 text-center">
+                <th className="py-3 px-3 w-[16%] text-center">
                   <span className="inline-block">Delete (Hapus)</span>
                 </th>
               </tr>

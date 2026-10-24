@@ -358,14 +358,14 @@ export default function AVAdminPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4">Nama Koordinator & ID</th>
-                <th className="py-3.5 px-3">Kontak WA</th>
-                <th className="py-3.5 px-3">Kampung & Distrik</th>
-                <th className="py-3.5 px-3">Alamat Lengkap Posko</th>
-                <th className="py-3.5 px-3">Anak Asuh (PJ)</th>
-                <th className="py-3.5 px-3">Tgl Bergabung</th>
-                <th className="py-3.5 px-3 text-center">Status</th>
-                <th className="py-3.5 px-4 text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[20%] min-w-[160px]">Nama Koordinator</th>
+                <th className="py-3.5 px-3 w-[15%] min-w-[130px]">Kontak WA</th>
+                <th className="py-3.5 px-3 w-[18%] min-w-[150px]">Kampung & Distrik</th>
+                <th className="py-3.5 px-3 w-[20%] min-w-[160px]">Alamat Lengkap Posko</th>
+                <th className="py-3.5 px-3 w-[11%] min-w-[100px]">Anak Asuh (PJ)</th>
+                <th className="py-3.5 px-3 w-[11%] min-w-[105px]">Tgl Bergabung</th>
+                <th className="py-3.5 px-3 w-[9%] min-w-[85px] text-center">Status</th>
+                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -385,14 +385,9 @@ export default function AVAdminPage() {
                     className="hover:bg-purple-50/20 transition-colors"
                   >
                     <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-[11px] font-semibold text-[#823296] bg-purple-50 px-1.5 py-0.5 rounded shrink-0">
-                          {av.id}
-                        </span>
-                        <span className="font-semibold text-stone-900">
-                          {av.nama}
-                        </span>
-                      </div>
+                      <span className="font-semibold text-stone-900 block">
+                        {av.nama}
+                      </span>
                     </td>
                     <td className="py-3.5 px-3 whitespace-nowrap">
                       <a

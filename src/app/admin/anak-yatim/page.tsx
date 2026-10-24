@@ -134,14 +134,18 @@ export default function AnakYatimAdminPage() {
       filterGender === "all" || item.gender === filterGender;
 
     let matchesUsia = true;
-    if (filterUsia === "balita") {
+    if (filterUsia === "santunan_aktif") {
+      matchesUsia = item.usia < 15;
+    } else if (filterUsia === "batas_usia") {
+      matchesUsia = item.usia >= 15;
+    } else if (filterUsia === "balita") {
       matchesUsia = item.usia < 7;
     } else if (filterUsia === "sd") {
       matchesUsia = item.usia >= 7 && item.usia <= 12;
     } else if (filterUsia === "smp") {
-      matchesUsia = item.usia >= 13 && item.usia <= 15;
+      matchesUsia = item.usia >= 13 && item.usia <= 14;
     } else if (filterUsia === "sma") {
-      matchesUsia = item.usia >= 16 && item.usia <= 18;
+      matchesUsia = item.usia >= 15 && item.usia <= 18;
     } else if (filterUsia === "dewasa") {
       matchesUsia = item.usia > 18;
     }
@@ -268,6 +272,7 @@ export default function AnakYatimAdminPage() {
       "Nama Lengkap",
       "Gender",
       "Usia",
+      "Status Santunan",
       "Status",
       "Distrik",
       "Kabupaten",
@@ -283,6 +288,7 @@ export default function AnakYatimAdminPage() {
       `"${o.namaLengkap}"`,
       o.gender,
       o.usia,
+      o.usia >= 15 ? '"Non-Santunan (Batas Usia ≥15 th)"' : '"Penerima Santunan (<15 th)"',
       o.status,
       `"${o.asalDaerah}"`,
       `"${o.kabupaten}"`,
@@ -372,16 +378,16 @@ export default function AnakYatimAdminPage() {
 
         <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
           <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-            Tempat Tinggal
+            Kelayakan Santunan (&lt;15 Th)
           </p>
-          <p className="text-2xl font-extrabold text-stone-900 my-2">
-            {orphans.filter((o) => o.tempatTinggal.includes("Asrama")).length}{" "}
-            <span className="text-xs font-medium text-stone-500 font-sans">di Asrama</span>
+          <p className="text-2xl font-extrabold text-emerald-700 my-2">
+            {orphans.filter((o) => o.usia < 15).length}{" "}
+            <span className="text-xs font-medium text-stone-500 font-sans">Santunan Aktif</span>
           </p>
           <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
-            <span>Bersama Keluarga</span>
-            <span className="font-semibold text-stone-700">
-              {orphans.filter((o) => !o.tempatTinggal.includes("Asrama")).length} Anak
+            <span>Batas Usia (≥15 th)</span>
+            <span className="font-semibold text-rose-600">
+              {orphans.filter((o) => o.usia >= 15).length} Non-Santunan
             </span>
           </div>
         </div>
@@ -477,7 +483,7 @@ export default function AnakYatimAdminPage() {
           {/* Filter Usia */}
           <div>
             <label className="block text-[11px] font-medium text-stone-500 mb-1">
-              Rentang Usia
+              Rentang Usia & Santunan
             </label>
             <select
               value={filterUsia}
@@ -485,10 +491,12 @@ export default function AnakYatimAdminPage() {
               className="w-full px-2.5 py-1.5 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700 truncate"
             >
               <option value="all">Semua Usia</option>
+              <option value="santunan_aktif">&lt; 15 th (Penerima Santunan)</option>
+              <option value="batas_usia">≥ 15 th (Batas Usia / Non-Santunan)</option>
               <option value="balita">&lt; 7 th (Balita/PAUD)</option>
               <option value="sd">7 - 12 th (Usia SD)</option>
-              <option value="smp">13 - 15 th (Usia SMP)</option>
-              <option value="sma">16 - 18 th (Usia SMA)</option>
+              <option value="smp">13 - 14 th (Usia SMP)</option>
+              <option value="sma">15 - 18 th (Usia SMA)</option>
               <option value="dewasa">&gt; 18 th</option>
             </select>
           </div>
@@ -563,15 +571,15 @@ export default function AnakYatimAdminPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4">ID & Nama Lengkap</th>
-                <th className="py-3.5 px-3">Usia/JK</th>
-                <th className="py-3.5 px-3">Status</th>
-                <th className="py-3.5 px-3">Domisili Papua</th>
-                <th className="py-3.5 px-3">Tempat Tinggal</th>
-                <th className="py-3.5 px-3">Pendidikan</th>
-                <th className="py-3.5 px-3">Kebutuhan Prioritas</th>
-                <th className="py-3.5 px-3 text-center">Verifikasi</th>
-                <th className="py-3.5 px-4 text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[18%] min-w-[160px]">Nama Santri</th>
+                <th className="py-3.5 px-3 w-[14%] min-w-[130px]">Usia & Santunan</th>
+                <th className="py-3.5 px-3 w-[10%] min-w-[95px]">Status</th>
+                <th className="py-3.5 px-3 w-[15%] min-w-[140px]">Domisili Papua</th>
+                <th className="py-3.5 px-3 w-[15%] min-w-[140px]">Tempat Tinggal</th>
+                <th className="py-3.5 px-3 w-[12%] min-w-[110px]">Pendidikan</th>
+                <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Kebutuhan Prioritas</th>
+                <th className="py-3.5 px-3 w-[10%] min-w-[105px] text-center">Verifikasi</th>
+                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -591,19 +599,31 @@ export default function AnakYatimAdminPage() {
                     className="hover:bg-purple-50/20 transition-colors"
                   >
                     <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-[11px] font-semibold text-[#823296] bg-purple-50 px-1.5 py-0.5 rounded shrink-0">
-                          {orphan.id}
-                        </span>
-                        <span className="font-semibold text-stone-900">
-                          {orphan.namaLengkap}
-                        </span>
-                      </div>
+                      <span className="font-semibold text-stone-900 block">
+                        {orphan.namaLengkap}
+                      </span>
                     </td>
                     <td className="py-3.5 px-3 whitespace-nowrap">
-                      <span className="text-stone-800 text-xs font-medium">
-                        {orphan.usia} th ({orphan.gender === "L" ? "L" : "P"})
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-stone-800 text-xs font-semibold">
+                          {orphan.usia} th ({orphan.gender === "L" ? "L" : "P"})
+                        </span>
+                        {orphan.usia >= 15 ? (
+                          <span
+                            title="Usia 15 tahun ke atas: Melewati batas usia santunan SFY"
+                            className="inline-flex items-center w-fit px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"
+                          >
+                            ≥15 th • Non-Santunan
+                          </span>
+                        ) : (
+                          <span
+                            title="Memenuhi syarat batas usia santunan SFY (< 15 tahun)"
+                            className="inline-flex items-center w-fit px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700"
+                          >
+                            Santunan Aktif
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-3.5 px-3">
                       <span
@@ -732,6 +752,37 @@ export default function AnakYatimAdminPage() {
                     {selectedOrphan.tanggalMasuk}
                   </p>
                 </div>
+              </div>
+
+              {/* Status Kelayakan Santunan Berdasarkan Batas Usia 15 Tahun */}
+              <div
+                className={`p-3 rounded-xl border ${
+                  selectedOrphan.usia >= 15
+                    ? "bg-rose-50/70 border-rose-200 text-rose-900"
+                    : "bg-emerald-50/70 border-emerald-200 text-emerald-900"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs uppercase tracking-wide">
+                    {selectedOrphan.usia >= 15
+                      ? "Melewati Batas Usia Santunan (≥ 15 Tahun)"
+                      : "Penerima Santunan Aktif (< 15 Tahun)"}
+                  </span>
+                  <span
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      selectedOrphan.usia >= 15
+                        ? "bg-rose-200 text-rose-900"
+                        : "bg-emerald-200 text-emerald-900"
+                    }`}
+                  >
+                    {selectedOrphan.usia >= 15 ? "Non-Santunan" : "Layak Santunan"}
+                  </span>
+                </div>
+                <p className="text-[11px] mt-1 leading-relaxed opacity-90">
+                  {selectedOrphan.usia >= 15
+                    ? `Santri berusia ${selectedOrphan.usia} tahun telah melewati batas maksimal usia santunan yayasan (15 tahun). Sesuai ketentuan, alokasi santunan rutin dihentikan dan dialihkan ke program kemandirian santri.`
+                    : `Santri berusia ${selectedOrphan.usia} tahun memenuhi kualifikasi batas usia santunan SFY (maksimal 14 tahun). Santri berhak menerima alokasi santunan dan perlengkapan rutin yayasan.`}
+                </p>
               </div>
 
               <div className="space-y-1">
@@ -926,6 +977,37 @@ export default function AnakYatimAdminPage() {
                     <option value="Yatim Piatu">Yatim Piatu</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Santunan Status Indicator Banner */}
+              <div
+                className={`p-2.5 rounded-xl border text-xs flex items-center justify-between ${
+                  formData.usia >= 15
+                    ? "bg-rose-50 border-rose-200 text-rose-800"
+                    : "bg-emerald-50 border-emerald-200 text-emerald-800"
+                }`}
+              >
+                <div>
+                  <p className="font-bold text-[11px]">
+                    {formData.usia >= 15
+                      ? `⚠️ Usia ${formData.usia} Tahun: Melewati Batas Usia Santunan (≥15 th)`
+                      : `✓ Usia ${formData.usia} Tahun: Memenuhi Batas Usia Santunan (<15 th)`}
+                  </p>
+                  <p className="text-[10px] text-stone-500 mt-0.5">
+                    {formData.usia >= 15
+                      ? "Santri 15 tahun ke atas tidak lagi dialokasikan santunan rutin yayasan."
+                      : "Santri berhak mendapatkan alokasi paket santunan rutin SFY."}
+                  </p>
+                </div>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                    formData.usia >= 15
+                      ? "bg-rose-100 text-rose-900 border border-rose-300"
+                      : "bg-emerald-100 text-emerald-900 border border-emerald-300"
+                  }`}
+                >
+                  {formData.usia >= 15 ? "Non-Santunan" : "Aktif Santunan"}
+                </span>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

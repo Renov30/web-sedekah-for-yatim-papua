@@ -256,15 +256,15 @@ export default function DonaturAdminPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4">Nama Donatur & ID</th>
-                <th className="py-3.5 px-3">Kategori</th>
-                <th className="py-3.5 px-3">Kontak</th>
-                <th className="py-3.5 px-3">Total Kontribusi</th>
-                <th className="py-3.5 px-3 text-center">Frekuensi</th>
-                <th className="py-3.5 px-3">Fokus Penyaluran</th>
-                <th className="py-3.5 px-3">Status</th>
-                <th className="py-3.5 px-3">Donasi Terakhir</th>
-                <th className="py-3.5 px-4 text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[20%] min-w-[160px]">Nama Donatur</th>
+                <th className="py-3.5 px-3 w-[13%] min-w-[110px]">Kategori</th>
+                <th className="py-3.5 px-3 w-[13%] min-w-[115px]">Kontak</th>
+                <th className="py-3.5 px-3 w-[15%] min-w-[130px]">Total Kontribusi</th>
+                <th className="py-3.5 px-3 w-[9%] min-w-[80px] text-center">Frekuensi</th>
+                <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Fokus Penyaluran</th>
+                <th className="py-3.5 px-3 w-[12%] min-w-[105px]">Status</th>
+                <th className="py-3.5 px-3 w-[11%] min-w-[100px]">Donasi Terakhir</th>
+                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -284,14 +284,9 @@ export default function DonaturAdminPage() {
                     className="hover:bg-purple-50/20 transition-colors"
                   >
                     <td className="py-3.5 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-[11px] font-semibold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded shrink-0">
-                          {d.id}
-                        </span>
-                        <span className="font-semibold text-stone-900">
-                          {d.nama}
-                        </span>
-                      </div>
+                      <span className="font-semibold text-stone-900 block">
+                        {d.nama}
+                      </span>
                     </td>
                     <td className="py-3.5 px-3">
                       <span className="inline-flex items-center gap-1 text-xs text-stone-700 bg-stone-100 px-2 py-0.5 rounded-full">

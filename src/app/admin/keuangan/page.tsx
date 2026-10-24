@@ -295,14 +295,14 @@ export default function KeuanganAdminPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4">No Referensi & Tanggal</th>
-                <th className="py-3.5 px-3">Jenis Kas</th>
-                <th className="py-3.5 px-3">Pos Alokasi</th>
-                <th className="py-3.5 px-3">Rincian Keterangan</th>
-                <th className="py-3.5 px-3 text-right">Nominal (Rp)</th>
-                <th className="py-3.5 px-3">Metode & Petugas</th>
-                <th className="py-3.5 px-3 text-center">Audit</th>
-                <th className="py-3.5 px-4 text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[13%] min-w-[110px]">Tanggal</th>
+                <th className="py-3.5 px-3 w-[12%] min-w-[110px]">Jenis Kas</th>
+                <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Pos Alokasi</th>
+                <th className="py-3.5 px-3 w-[24%] min-w-[190px]">Rincian Keterangan</th>
+                <th className="py-3.5 px-3 w-[14%] min-w-[120px] text-right">Nominal (Rp)</th>
+                <th className="py-3.5 px-3 w-[16%] min-w-[140px]">Metode & Petugas</th>
+                <th className="py-3.5 px-3 w-[9%] min-w-[85px] text-center">Audit</th>
+                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -322,14 +322,9 @@ export default function KeuanganAdminPage() {
                     className="hover:bg-purple-50/20 transition-colors"
                   >
                     <td className="py-3.5 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-[11px] font-semibold text-stone-700 bg-stone-100 px-1.5 py-0.5 rounded">
-                          {trx.noRef}
-                        </span>
-                        <span className="text-xs text-stone-500">
-                          {trx.tanggal}
-                        </span>
-                      </div>
+                      <span className="text-xs font-semibold text-stone-800">
+                        {trx.tanggal}
+                      </span>
                     </td>
                     <td className="py-3.5 px-3">
                       <span

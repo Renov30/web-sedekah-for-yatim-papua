@@ -512,11 +512,11 @@ export default function MasterWilayahAdminPage() {
             <table className="w-full text-left text-sm">
               <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
                 <tr>
-                  <th className="py-3.5 px-4">Nama Kampung / Desa</th>
-                  <th className="py-3.5 px-3">Distrik Induk</th>
-                  <th className="py-3.5 px-3">Kabupaten</th>
-                  <th className="py-3.5 px-3">Catatan / Posko Lapangan</th>
-                  <th className="py-3.5 px-4 text-right">Aksi</th>
+                  <th className="py-3.5 px-4 w-[28%] min-w-[180px]">Nama Kampung / Desa</th>
+                  <th className="py-3.5 px-3 w-[20%] min-w-[150px]">Distrik Induk</th>
+                  <th className="py-3.5 px-3 w-[18%] min-w-[130px]">Kabupaten</th>
+                  <th className="py-3.5 px-3 w-[26%] min-w-[180px]">Catatan / Posko Lapangan</th>
+                  <th className="py-3.5 px-4 w-[8%] min-w-[80px] text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
@@ -596,10 +596,10 @@ export default function MasterWilayahAdminPage() {
             <table className="w-full text-left text-sm">
               <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
                 <tr>
-                  <th className="py-3.5 px-4">Nama Distrik</th>
-                  <th className="py-3.5 px-3">Kabupaten</th>
-                  <th className="py-3.5 px-3">Kampung Terdaftar</th>
-                  <th className="py-3.5 px-4 text-right">Aksi</th>
+                  <th className="py-3.5 px-4 w-[35%] min-w-[200px]">Nama Distrik</th>
+                  <th className="py-3.5 px-3 w-[28%] min-w-[170px]">Kabupaten</th>
+                  <th className="py-3.5 px-3 w-[27%] min-w-[160px]">Kampung Terdaftar</th>
+                  <th className="py-3.5 px-4 w-[10%] min-w-[80px] text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">

@@ -295,14 +295,14 @@ export default function RelawanAdminPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4">Nama Relawan & ID</th>
-                <th className="py-3.5 px-3">Kontak WA & Email</th>
-                <th className="py-3.5 px-3">Domisili Papua</th>
-                <th className="py-3.5 px-3">Divisi Penugasan</th>
-                <th className="py-3.5 px-3">Keahlian Lapangan</th>
-                <th className="py-3.5 px-3">Tgl Gabung</th>
-                <th className="py-3.5 px-3 text-center">Status</th>
-                <th className="py-3.5 px-4 text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[20%] min-w-[160px]">Nama Relawan</th>
+                <th className="py-3.5 px-3 w-[15%] min-w-[130px]">Kontak WA & Email</th>
+                <th className="py-3.5 px-3 w-[18%] min-w-[150px]">Domisili Papua</th>
+                <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Divisi Penugasan</th>
+                <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Keahlian Lapangan</th>
+                <th className="py-3.5 px-3 w-[11%] min-w-[100px]">Tgl Gabung</th>
+                <th className="py-3.5 px-3 w-[8%] min-w-[80px] text-center">Status</th>
+                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -322,14 +322,9 @@ export default function RelawanAdminPage() {
                     className="hover:bg-purple-50/20 transition-colors"
                   >
                     <td className="py-3.5 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-[11px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded shrink-0">
-                          {v.id}
-                        </span>
-                        <span className="font-semibold text-stone-900">
-                          {v.namaLengkap}
-                        </span>
-                      </div>
+                      <span className="font-semibold text-stone-900 block">
+                        {v.namaLengkap}
+                      </span>
                     </td>
                     <td className="py-3.5 px-3 text-xs font-mono font-medium text-stone-800">
                       {v.noTelepon}

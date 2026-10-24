@@ -129,7 +129,9 @@ export default function AdminDashboardPage() {
     const yatimPiatu = orphans.filter((o) => o.status === "Yatim Piatu").length;
     const laki = orphans.filter((o) => o.gender === "L").length;
     const perempuan = orphans.filter((o) => o.gender === "P").length;
-    return { yatim, piatu, yatimPiatu, laki, perempuan };
+    const santunanAktif = orphans.filter((o) => o.usia < 15).length;
+    const batasUsia = orphans.filter((o) => o.usia >= 15).length;
+    return { yatim, piatu, yatimPiatu, laki, perempuan, santunanAktif, batasUsia };
   }, [orphans]);
 
   return (
@@ -185,11 +187,9 @@ export default function AdminDashboardPage() {
           </div>
           <div className="pt-2.5 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
             <span>{verifiedOrphans} Terverifikasi</span>
-            {actionableOrphans.length > 0 && (
-              <span className="text-amber-700 font-semibold">
-                {actionableOrphans.length} Butuh Tindakan
-              </span>
-            )}
+            <span className="text-emerald-700 font-medium">
+              {orphans.filter((o) => o.usia < 15).length} Santunan • {orphans.filter((o) => o.usia >= 15).length} Batas Usia
+            </span>
           </div>
         </Link>
 
@@ -479,11 +479,11 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between text-xs text-stone-600">
-              <span>
-                Laki-laki: <strong className="text-stone-800">{demoStats.laki}</strong>
+              <span className="text-emerald-700 font-semibold">
+                Santunan (&lt;15 th): {demoStats.santunanAktif}
               </span>
-              <span>
-                Perempuan: <strong className="text-stone-800">{demoStats.perempuan}</strong>
+              <span className="text-rose-700 font-semibold">
+                Batas Usia (≥15 th): {demoStats.batasUsia}
               </span>
               <span className="text-stone-400">Total {totalOrphans} Anak</span>
             </div>

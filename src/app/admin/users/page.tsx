@@ -420,13 +420,13 @@ export default function UsersAdminPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4">Nama Pengguna & ID</th>
-                <th className="py-3.5 px-3">Email Akun</th>
-                <th className="py-3.5 px-3">Jabatan & Role</th>
-                <th className="py-3.5 px-3">Wilayah Penugasan</th>
-                <th className="py-3.5 px-3">Terakhir Login</th>
-                <th className="py-3.5 px-3 text-center">Status Akun</th>
-                <th className="py-3.5 px-4 text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[24%] min-w-[180px]">Nama Pengguna</th>
+                <th className="py-3.5 px-3 w-[20%] min-w-[160px]">Email Akun</th>
+                <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Jabatan & Role</th>
+                <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Wilayah Penugasan</th>
+                <th className="py-3.5 px-3 w-[12%] min-w-[110px]">Terakhir Login</th>
+                <th className="py-3.5 px-3 w-[6%] min-w-[85px] text-center">Status</th>
+                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">

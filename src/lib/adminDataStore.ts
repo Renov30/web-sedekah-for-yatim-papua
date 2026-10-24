@@ -23,6 +23,13 @@ export function getStoredOrphans(): OrphanRecord[] {
       localStorage.setItem(STORAGE_KEY_ORPHANS, JSON.stringify(initialOrphans));
       return initialOrphans;
     }
+    const existingIds = new Set(parsed.map((item: OrphanRecord) => item.id));
+    const missing = initialOrphans.filter((o) => !existingIds.has(o.id));
+    if (missing.length > 0) {
+      const merged = [...parsed, ...missing];
+      localStorage.setItem(STORAGE_KEY_ORPHANS, JSON.stringify(merged));
+      return merged;
+    }
     return parsed;
   } catch {
     return initialOrphans;
