@@ -15,6 +15,30 @@ export default function AdminLayout({
   const router = useRouter();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("sfy_admin_sidebar_collapsed");
+      if (saved !== null) {
+        queueMicrotask(() => setIsSidebarCollapsed(saved === "true"));
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const toggleSidebarCollapse = () => {
+    setIsSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("sfy_admin_sidebar_collapsed", String(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
 
   // If on login page, don't show admin shell
   const isLoginPage = pathname === "/admin/login";
@@ -56,9 +80,16 @@ export default function AdminLayout({
 
   return (
     <div className="h-screen w-full bg-[#FAF8FB] flex flex-row overflow-hidden antialiased">
-      {/* Desktop Fixed Sidebar (Edge-to-Edge, locked height) */}
-      <div className="hidden lg:flex w-64 xl:w-72 shrink-0 h-full bg-[#5E2276] border-r border-[#4A1860] z-40 overflow-hidden">
-        <AdminSidebar />
+      {/* Desktop Fixed Sidebar (Edge-to-Edge, locked height, collapsible) */}
+      <div
+        className={`hidden lg:flex shrink-0 h-full bg-[#5E2276] border-r border-[#4A1860] z-40 overflow-hidden transition-all duration-300 ease-in-out ${
+          isSidebarCollapsed ? "w-20" : "w-64 xl:w-72"
+        }`}
+      >
+        <AdminSidebar
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={toggleSidebarCollapse}
+        />
       </div>
 
       {/* Mobile Sidebar Overlay Drawer */}
@@ -71,7 +102,10 @@ export default function AdminLayout({
           />
           {/* Drawer */}
           <div className="relative z-10 w-72 max-w-[85vw] h-full shadow-2xl animate-in slide-in-from-left duration-200">
-            <AdminSidebar onCloseMobile={() => setMobileSidebarOpen(false)} />
+            <AdminSidebar
+              onCloseMobile={() => setMobileSidebarOpen(false)}
+              isCollapsed={false}
+            />
           </div>
         </div>
       )}
@@ -82,6 +116,8 @@ export default function AdminLayout({
           <AdminHeader
             onToggleSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
             isSidebarOpen={mobileSidebarOpen}
+            onToggleCollapse={toggleSidebarCollapse}
+            isSidebarCollapsed={isSidebarCollapsed}
           />
         </div>
         <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 xl:p-10 focus:outline-none">

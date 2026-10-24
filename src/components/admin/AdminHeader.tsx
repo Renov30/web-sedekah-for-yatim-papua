@@ -9,17 +9,23 @@ import {
   Radio,
   Calendar,
   LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { getStoredSession, clearSession, AuthSession } from "@/lib/auth";
 
 interface AdminHeaderProps {
   onToggleSidebar?: () => void;
   isSidebarOpen?: boolean;
+  onToggleCollapse?: () => void;
+  isSidebarCollapsed?: boolean;
 }
 
 export function AdminHeader({
   onToggleSidebar,
   isSidebarOpen,
+  onToggleCollapse,
+  isSidebarCollapsed = false,
 }: AdminHeaderProps) {
   const router = useRouter();
   const [currentDateString, setCurrentDateString] = useState("");
@@ -62,17 +68,35 @@ export function AdminHeader({
     <header className="px-3 sm:px-6 py-3 sm:py-4 border-b border-stone-100 flex items-center justify-between gap-2 sm:gap-4 bg-white">
       {/* Left: Mobile hamburger & Welcome Banner */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        {/* Mobile Drawer Trigger */}
         {onToggleSidebar && (
           <button
             type="button"
             onClick={onToggleSidebar}
-            className="lg:hidden p-1.5 sm:p-2 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors shrink-0"
+            className="lg:hidden p-1.5 sm:p-2 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors shrink-0 cursor-pointer"
             aria-label="Toggle Menu"
           >
             {isSidebarOpen ? (
               <X className="w-5 h-5" />
             ) : (
               <Menu className="w-5 h-5" />
+            )}
+          </button>
+        )}
+
+        {/* Desktop Sidebar Collapse Toggle */}
+        {onToggleCollapse && (
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="hidden lg:flex p-2 rounded-xl text-stone-500 hover:text-[#5E2276] hover:bg-purple-50 transition-colors shrink-0 cursor-pointer"
+            title={isSidebarCollapsed ? "Perluas Sidebar" : "Kecilkan Sidebar"}
+            aria-label="Toggle Sidebar"
+          >
+            {isSidebarCollapsed ? (
+              <PanelLeftOpen className="w-4 h-4 text-[#5E2276]" />
+            ) : (
+              <PanelLeftClose className="w-4 h-4" />
             )}
           </button>
         )}
