@@ -316,7 +316,7 @@ export default function MasterWilayahAdminPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-stone-200/80">
         <div>
           <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
-            Master Data Wilayah Binaan
+            Data Wilayah
           </h1>
           <p className="text-sm text-stone-500 mt-0.5">
             Daftar distrik dan kampung binaan di Merauke & Papua Selatan untuk pendataan anak yatim dan koordinator AV.

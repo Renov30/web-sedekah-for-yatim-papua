@@ -51,7 +51,7 @@ export const adminNavItems = [
     icon: MapPinHouse,
   },
   {
-    title: "Master Wilayah",
+    title: "Data Wilayah",
     href: "/admin/wilayah",
     icon: Map,
   },

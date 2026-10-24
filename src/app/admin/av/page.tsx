@@ -662,7 +662,7 @@ export default function AVAdminPage() {
                       target="_blank"
                       className="text-[10px] text-[#823296] hover:underline flex items-center gap-0.5"
                     >
-                      <span>Master Wilayah</span>
+                      <span>Data Wilayah</span>
                       <ExternalLink className="w-2.5 h-2.5" />
                     </Link>
                   </div>
