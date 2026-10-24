@@ -10,6 +10,7 @@
     "docker:prod:down": "docker compose -f compose.yaml down",
     "build": "next build",
     "start": "next start",
+    "postinstall": "prisma generate",
     "lint": "eslint",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

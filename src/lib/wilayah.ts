@@ -270,6 +270,55 @@ export function getStoredDistriks(): DistrikRecord[] {
 export function saveStoredDistriks(list: DistrikRecord[]): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY_DISTRIK, JSON.stringify(list));
+  fetch("/api/admin/wilayah", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ distriks: list }),
+  }).catch((err) =>
+    console.error("Gagal sinkronisasi distrik ke database:", err)
+  );
+}
+
+export async function fetchWilayahFromApi(): Promise<{
+  distriks: DistrikRecord[];
+  kampungs: KampungRecord[];
+}> {
+  try {
+    const res = await fetch("/api/admin/wilayah", { cache: "no-store" });
+    if (!res.ok) {
+      return {
+        distriks: getStoredDistriks(),
+        kampungs: getStoredKampungs(),
+      };
+    }
+    const json = await res.json();
+    if (
+      json.success &&
+      Array.isArray(json.distriks) &&
+      Array.isArray(json.kampungs)
+    ) {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(
+          STORAGE_KEY_DISTRIK,
+          JSON.stringify(json.distriks)
+        );
+        localStorage.setItem(
+          STORAGE_KEY_KAMPUNG,
+          JSON.stringify(json.kampungs)
+        );
+      }
+      return {
+        distriks: json.distriks,
+        kampungs: json.kampungs,
+      };
+    }
+  } catch (e) {
+    console.error("Gagal memuat wilayah dari API:", e);
+  }
+  return {
+    distriks: getStoredDistriks(),
+    kampungs: getStoredKampungs(),
+  };
 }
 
 export function getStoredKampungs(): KampungRecord[] {
@@ -296,6 +345,13 @@ export function getStoredKampungs(): KampungRecord[] {
 export function saveStoredKampungs(list: KampungRecord[]): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY_KAMPUNG, JSON.stringify(list));
+  fetch("/api/admin/wilayah", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ kampungs: list }),
+  }).catch((err) =>
+    console.error("Gagal sinkronisasi kampung ke database:", err)
+  );
 }
 
 export function addDistrik(

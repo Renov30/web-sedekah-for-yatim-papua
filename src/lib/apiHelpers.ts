@@ -47,3 +47,4 @@ export function formatIndonesianDate(date = new Date()): string {
     year: "numeric",
   }).format(date);
 }
+

@@ -19,6 +19,7 @@ import {
   KampungRecord,
   getStoredDistriks,
   getStoredKampungs,
+  fetchWilayahFromApi,
   addDistrik,
   updateDistrik,
   deleteDistrik,
@@ -77,6 +78,10 @@ export default function MasterWilayahAdminPage() {
     queueMicrotask(() => {
       setDistriks(getStoredDistriks());
       setKampungs(getStoredKampungs());
+    });
+    fetchWilayahFromApi().then(({ distriks: d, kampungs: k }) => {
+      setDistriks(d);
+      setKampungs(k);
     });
   }, []);
 

@@ -22,10 +22,13 @@ import {
 import {
   getStoredOrphans,
   getStoredAVs,
+  fetchOrphansFromApi,
+  fetchAVsFromApi,
 } from "@/lib/adminDataStore";
 import {
   getStoredDistriks,
   getStoredKampungs,
+  fetchWilayahFromApi,
   DistrikRecord,
   KampungRecord,
 } from "@/lib/wilayah";
@@ -42,6 +45,12 @@ export default function AdminDashboardPage() {
       setAvList(getStoredAVs());
       setDistriksList(getStoredDistriks());
       setKampungsList(getStoredKampungs());
+    });
+    fetchOrphansFromApi().then(setOrphans);
+    fetchAVsFromApi().then(setAvList);
+    fetchWilayahFromApi().then(({ distriks, kampungs }) => {
+      setDistriksList(distriks);
+      setKampungsList(kampungs);
     });
   }, []);
 

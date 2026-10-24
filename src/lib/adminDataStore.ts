@@ -52,9 +52,33 @@ export function saveStoredOrphans(list: OrphanRecord[]): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(STORAGE_KEY_ORPHANS, JSON.stringify(list));
+    fetch("/api/admin/orphans", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: list }),
+    }).catch((err) =>
+      console.error("Gagal sinkronisasi anak yatim ke database:", err)
+    );
   } catch (e) {
     console.error("Gagal menyimpan data anak yatim:", e);
   }
+}
+
+export async function fetchOrphansFromApi(): Promise<OrphanRecord[]> {
+  try {
+    const res = await fetch("/api/admin/orphans", { cache: "no-store" });
+    if (!res.ok) return getStoredOrphans();
+    const json = await res.json();
+    if (json.success && Array.isArray(json.data)) {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(STORAGE_KEY_ORPHANS, JSON.stringify(json.data));
+      }
+      return json.data;
+    }
+  } catch (e) {
+    console.error("Gagal memuat data anak yatim dari API:", e);
+  }
+  return getStoredOrphans();
 }
 
 export function getStoredAVs(): AVRecord[] {
@@ -82,9 +106,33 @@ export function saveStoredAVs(list: AVRecord[]): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(STORAGE_KEY_AVS, JSON.stringify(list));
+    fetch("/api/admin/av", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: list }),
+    }).catch((err) =>
+      console.error("Gagal sinkronisasi AV ke database:", err)
+    );
   } catch (e) {
     console.error("Gagal menyimpan data AV:", e);
   }
+}
+
+export async function fetchAVsFromApi(): Promise<AVRecord[]> {
+  try {
+    const res = await fetch("/api/admin/av", { cache: "no-store" });
+    if (!res.ok) return getStoredAVs();
+    const json = await res.json();
+    if (json.success && Array.isArray(json.data)) {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(STORAGE_KEY_AVS, JSON.stringify(json.data));
+      }
+      return json.data;
+    }
+  } catch (e) {
+    console.error("Gagal memuat data AV dari API:", e);
+  }
+  return getStoredAVs();
 }
 
 export function getStoredFinances(): FinanceTransaction[] {

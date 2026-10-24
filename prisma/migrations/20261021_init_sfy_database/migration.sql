@@ -1,5 +1,5 @@
 -- Migration: 20261021_init_sfy_database
--- Description: Skema awal database Sedekah for Yatim Papua (SFY)
+-- Description: Skema awal database Sedekah for Yatim Papua (SFY) lengkap & bersih (Clean Initial Migration)
 
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
@@ -10,6 +10,8 @@ CREATE TABLE "roles" (
     "nama" TEXT NOT NULL,
     "badgeColor" TEXT NOT NULL DEFAULT 'bg-purple-100 text-purple-900 border-purple-300',
     "deskripsi" TEXT NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -41,10 +43,60 @@ CREATE TABLE "users" (
     "status" TEXT NOT NULL DEFAULT 'Aktif',
     "wilayahTugas" TEXT NOT NULL DEFAULT 'Sekretariat Pusat Jayapura',
     "terakhirLogin" TEXT,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable: districts
+CREATE TABLE "districts" (
+    "id" TEXT NOT NULL,
+    "nama" TEXT NOT NULL,
+    "kabupaten" TEXT NOT NULL DEFAULT 'Kab. Merauke',
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "districts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable: villages
+CREATE TABLE "villages" (
+    "id" TEXT NOT NULL,
+    "nama" TEXT NOT NULL,
+    "districtId" TEXT NOT NULL,
+    "kabupaten" TEXT NOT NULL DEFAULT 'Kab. Merauke',
+    "catatan" TEXT,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "villages_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable: area_volunteers
+CREATE TABLE "area_volunteers" (
+    "id" TEXT NOT NULL,
+    "nama" TEXT NOT NULL,
+    "noHp" TEXT NOT NULL,
+    "kampung" TEXT NOT NULL,
+    "distrik" TEXT NOT NULL,
+    "kabupaten" TEXT NOT NULL,
+    "alamat" TEXT NOT NULL,
+    "catatanWilayah" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'Aktif',
+    "tanggalBergabung" TEXT NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "area_volunteers_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable: orphans
@@ -57,12 +109,17 @@ CREATE TABLE "orphans" (
     "status" TEXT NOT NULL,
     "asalDaerah" TEXT NOT NULL,
     "kabupaten" TEXT NOT NULL,
+    "kampung" TEXT,
+    "pjAvId" TEXT,
+    "pjAvNama" TEXT,
     "tempatTinggal" TEXT NOT NULL,
     "wali" TEXT NOT NULL,
     "jenjangPendidikan" TEXT NOT NULL,
     "kebutuhanMendesak" TEXT NOT NULL,
     "statusVerifikasi" TEXT NOT NULL DEFAULT 'Menunggu Survei',
     "tanggalMasuk" TEXT NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -80,6 +137,8 @@ CREATE TABLE "volunteers" (
     "keahlian" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'Menunggu Verifikasi',
     "tanggalGabung" TEXT NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -98,6 +157,8 @@ CREATE TABLE "donors" (
     "programFavorit" TEXT NOT NULL DEFAULT 'Pendidikan Santri Papua',
     "status" TEXT NOT NULL DEFAULT 'Donatur Rutin',
     "tanggalTerakhir" TEXT,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -117,6 +178,8 @@ CREATE TABLE "finance_transactions" (
     "status" TEXT NOT NULL DEFAULT 'Terverifikasi',
     "petugas" TEXT NOT NULL,
     "donorId" TEXT,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -126,10 +189,13 @@ CREATE TABLE "finance_transactions" (
 -- CreateIndex
 CREATE UNIQUE INDEX "role_permissions_roleId_moduleId_key" ON "role_permissions"("roleId", "moduleId");
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+CREATE UNIQUE INDEX "districts_nama_key" ON "districts"("nama");
+CREATE UNIQUE INDEX "villages_districtId_nama_key" ON "villages"("districtId", "nama");
 CREATE UNIQUE INDEX "finance_transactions_noRef_key" ON "finance_transactions"("noRef");
 
 -- AddForeignKey
 ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "roles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "users" ADD CONSTRAINT "users_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "villages" ADD CONSTRAINT "villages_districtId_fkey" FOREIGN KEY ("districtId") REFERENCES "districts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "orphans" ADD CONSTRAINT "orphans_pjAvId_fkey" FOREIGN KEY ("pjAvId") REFERENCES "area_volunteers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE "finance_transactions" ADD CONSTRAINT "finance_transactions_donorId_fkey" FOREIGN KEY ("donorId") REFERENCES "donors"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-

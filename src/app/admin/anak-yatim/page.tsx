@@ -19,10 +19,15 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { initialOrphans, initialAVs, OrphanRecord } from "@/data/admin/adminData";
-import { getStoredOrphans, saveStoredOrphans } from "@/lib/adminDataStore";
+import {
+  getStoredOrphans,
+  saveStoredOrphans,
+  fetchOrphansFromApi,
+} from "@/lib/adminDataStore";
 import {
   getStoredDistriks,
   getStoredKampungs,
+  fetchWilayahFromApi,
   addKampung,
   DistrikRecord,
   KampungRecord,
@@ -103,6 +108,11 @@ export default function AnakYatimAdminPage() {
       setDistriksList(getStoredDistriks());
       setKampungsList(getStoredKampungs());
       setOrphans(getStoredOrphans());
+    });
+    fetchOrphansFromApi().then(setOrphans);
+    fetchWilayahFromApi().then(({ distriks, kampungs }) => {
+      setDistriksList(distriks);
+      setKampungsList(kampungs);
     });
   }, []);
 

@@ -14,7 +14,7 @@ import {
   ArrowLeft,
   CheckCircle2,
 } from "lucide-react";
-import { authenticateUser } from "@/lib/auth";
+import { authenticateUser, saveSession } from "@/lib/auth";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -26,15 +26,40 @@ export default function AdminLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotModal, setShowForgotModal] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMessage("");
     setSuccessMessage("");
 
-    setTimeout(() => {
-      const result = authenticateUser(email, password);
+    try {
+      const res = await fetch("/api/admin/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const json = await res.json();
 
+      if (!res.ok || !json.success) {
+        setErrorMessage(
+          json.message || "Gagal masuk. Periksa email dan kata sandi Anda."
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      if (json.session) {
+        saveSession(json.session);
+      } else {
+        authenticateUser(email, password);
+      }
+
+      setSuccessMessage("Verifikasi berhasil! Mengalihkan ke dashboard...");
+      setTimeout(() => {
+        router.push("/admin");
+      }, 400);
+    } catch {
+      const result = authenticateUser(email, password);
       if (!result.success) {
         setErrorMessage(
           result.message || "Gagal masuk. Periksa email dan kata sandi Anda."
@@ -42,13 +67,11 @@ export default function AdminLoginPage() {
         setIsLoading(false);
         return;
       }
-
       setSuccessMessage("Verifikasi berhasil! Mengalihkan ke dashboard...");
-
       setTimeout(() => {
         router.push("/admin");
       }, 400);
-    }, 300);
+    }
   };
 
   return (
