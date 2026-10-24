@@ -216,9 +216,11 @@ export const OrphansScreen: React.FC = () => {
       {/* Top Action & Search Bar */}
       <View style={styles.topControls}>
         <View style={styles.titleRow}>
-          <View>
-            <Text style={styles.screenTitle}>Pendataan Anak Yatim</Text>
-            <Text style={styles.screenSub}>
+          <View style={styles.titleCol}>
+            <Text style={styles.screenTitle} numberOfLines={1}>
+              Pendataan Anak Yatim
+            </Text>
+            <Text style={styles.screenSub} numberOfLines={1}>
               {activeOrphans.length} Aktif • {deletedOrphans.length} Sampah
             </Text>
           </View>
@@ -242,14 +244,12 @@ export const OrphansScreen: React.FC = () => {
                   viewTrash && { color: "#be123c" },
                 ]}
               >
-                {viewTrash
-                  ? `Sampah (${deletedOrphans.length})`
-                  : `Sampah (${deletedOrphans.length})`}
+                {deletedOrphans.length}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.addBtn} onPress={openAddModal}>
-              <Ionicons name="add" size={18} color="#ffffff" />
+              <Ionicons name="add" size={16} color="#ffffff" />
               <Text style={styles.addBtnText}>Input Anak</Text>
             </TouchableOpacity>
           </View>
@@ -261,7 +261,7 @@ export const OrphansScreen: React.FC = () => {
             style={styles.searchInput}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Cari nama anak, ID, kampung, distrik, atau PJ AV..."
+            placeholder="Cari nama anak, ID, kampung, distrik..."
             placeholderTextColor="#a8a29e"
           />
           {searchQuery ? (
@@ -362,10 +362,6 @@ export const OrphansScreen: React.FC = () => {
                   <View style={styles.statusTag}>
                     <Text style={styles.statusTagText}>{item.status}</Text>
                   </View>
-                  <Text style={styles.ageText}>
-                    {item.gender === "L" ? "Laki-laki" : "Perempuan"},{" "}
-                    {item.usia} thn
-                  </Text>
                 </View>
 
                 <TouchableOpacity
@@ -394,7 +390,14 @@ export const OrphansScreen: React.FC = () => {
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.nameText}>{item.namaLengkap}</Text>
+              <View>
+                <Text style={styles.nameText}>{item.namaLengkap}</Text>
+                <Text style={styles.ageText}>
+                  Panggilan: {item.namaPanggilan} •{" "}
+                  {item.gender === "L" ? "Laki-laki" : "Perempuan"},{" "}
+                  {item.usia} tahun
+                </Text>
+              </View>
 
               <View style={styles.infoGrid}>
                 <View style={styles.infoRow}>
@@ -433,17 +436,17 @@ export const OrphansScreen: React.FC = () => {
                       style={styles.actionBtn}
                       onPress={() => setSelectedOrphan(item)}
                     >
-                      <Ionicons name="eye-outline" size={15} color="#57534e" />
+                      <Ionicons name="eye-outline" size={14} color="#57534e" />
                       <Text style={styles.actionBtnText}>Detail</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={styles.actionBtn}
+                      style={[styles.actionBtn, styles.actionBtnPurple]}
                       onPress={() => openEditModal(item)}
                     >
                       <Ionicons
                         name="create-outline"
-                        size={15}
+                        size={14}
                         color="#5E2276"
                       />
                       <Text style={[styles.actionBtnText, { color: "#5E2276" }]}>
@@ -452,12 +455,12 @@ export const OrphansScreen: React.FC = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={styles.actionBtn}
+                      style={[styles.actionBtn, styles.actionBtnRed]}
                       onPress={() => softDeleteOrphan(item.id)}
                     >
                       <Ionicons
                         name="trash-outline"
-                        size={15}
+                        size={14}
                         color="#dc2626"
                       />
                       <Text style={[styles.actionBtnText, { color: "#dc2626" }]}>
@@ -468,12 +471,12 @@ export const OrphansScreen: React.FC = () => {
                 ) : (
                   <>
                     <TouchableOpacity
-                      style={styles.actionBtn}
+                      style={[styles.actionBtn, styles.actionBtnGreen]}
                       onPress={() => restoreOrphan(item.id)}
                     >
                       <Ionicons
                         name="refresh-outline"
-                        size={15}
+                        size={14}
                         color="#059669"
                       />
                       <Text style={[styles.actionBtnText, { color: "#059669" }]}>
@@ -482,12 +485,12 @@ export const OrphansScreen: React.FC = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={styles.actionBtn}
+                      style={[styles.actionBtn, styles.actionBtnRed]}
                       onPress={() => deleteOrphanPermanently(item.id)}
                     >
                       <Ionicons
                         name="close-circle-outline"
-                        size={15}
+                        size={14}
                         color="#dc2626"
                       />
                       <Text style={[styles.actionBtnText, { color: "#dc2626" }]}>
@@ -514,7 +517,7 @@ export const OrphansScreen: React.FC = () => {
             {selectedOrphan && (
               <>
                 <View style={styles.modalHeader}>
-                  <View>
+                  <View style={styles.modalTitleCol}>
                     <Text style={styles.modalId}>{selectedOrphan.id}</Text>
                     <Text style={styles.modalTitle}>
                       {selectedOrphan.namaLengkap}
@@ -525,7 +528,7 @@ export const OrphansScreen: React.FC = () => {
                   </TouchableOpacity>
                 </View>
 
-                <ScrollView style={{ maxHeight: 420 }}>
+                <ScrollView style={{ maxHeight: 400 }}>
                   <View style={styles.detailGrid}>
                     <DetailRow
                       label="Nama Panggilan"
@@ -614,7 +617,7 @@ export const OrphansScreen: React.FC = () => {
         <View style={styles.modalBackdrop}>
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
+              <Text style={[styles.modalTitle, { flex: 1 }]}>
                 {editingOrphan
                   ? `Edit Data ${editingOrphan.id}`
                   : "Input Pendataan Anak Yatim"}
@@ -625,7 +628,7 @@ export const OrphansScreen: React.FC = () => {
             </View>
 
             <ScrollView
-              style={{ maxHeight: 460 }}
+              style={{ maxHeight: 440 }}
               keyboardShouldPersistTaps="handled"
             >
               <Text style={styles.formLabel}>Nama Lengkap Anak *</Text>
@@ -646,7 +649,7 @@ export const OrphansScreen: React.FC = () => {
                     placeholder="Fikri"
                   />
                 </View>
-                <View style={{ width: 95 }}>
+                <View style={{ width: 90 }}>
                   <Text style={styles.formLabel}>Usia (Thn)</Text>
                   <TextInput
                     style={styles.formInput}
@@ -840,7 +843,7 @@ export const OrphansScreen: React.FC = () => {
               />
 
               <Text style={styles.formLabel}>Status Verifikasi Survei</Text>
-              <View style={styles.selectorRow}>
+              <View style={styles.selectorRowWrap}>
                 {(
                   [
                     "Terverifikasi",
@@ -851,7 +854,7 @@ export const OrphansScreen: React.FC = () => {
                   <TouchableOpacity
                     key={sv}
                     style={[
-                      styles.selectorBtn,
+                      styles.selectorBtnWrap,
                       statusVerifikasi === sv && styles.selectorBtnActive,
                     ]}
                     onPress={() => setStatusVerifikasi(sv)}
@@ -881,7 +884,7 @@ export const OrphansScreen: React.FC = () => {
                 onPress={handleSaveForm}
               >
                 <Text style={styles.primaryBtnText}>
-                  {editingOrphan ? "Simpan Perubahan" : "Simpan Data Anak"}
+                  {editingOrphan ? "Simpan Perubahan" : "Simpan Data"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -909,20 +912,25 @@ const styles = StyleSheet.create({
   },
   topControls: {
     backgroundColor: "#ffffff",
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingHorizontal: 14,
+    paddingTop: 10,
     paddingBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#e7e5e4",
-    gap: 10,
+    gap: 8,
   },
   titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
+  },
+  titleCol: {
+    flex: 1,
+    minWidth: 0,
   },
   screenTitle: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "800",
     color: "#1c1917",
   },
@@ -934,13 +942,14 @@ const styles = StyleSheet.create({
   headerBtns: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 6,
+    flexShrink: 0,
   },
   trashToggleBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    paddingHorizontal: 10,
+    paddingHorizontal: 9,
     paddingVertical: 7,
     borderRadius: 10,
     backgroundColor: "#f5f5f4",
@@ -961,13 +970,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     backgroundColor: "#5E2276",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 11,
+    paddingVertical: 7,
     borderRadius: 10,
   },
   addBtnText: {
     color: "#ffffff",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
   },
   searchBox: {
@@ -976,20 +985,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f4",
     borderRadius: 12,
     paddingHorizontal: 12,
-    height: 40,
+    height: 38,
     gap: 8,
   },
   searchInput: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 12,
     color: "#1c1917",
   },
   filterRow: {
-    gap: 8,
+    gap: 6,
   },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 11,
+    paddingVertical: 5,
     borderRadius: 999,
     backgroundColor: "#f5f5f4",
     borderWidth: 1,
@@ -1032,8 +1041,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: 14,
+    paddingBottom: 28,
     gap: 12,
   },
   emptyBox: {
@@ -1045,6 +1054,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#78716c",
     fontWeight: "600",
+    textAlign: "center",
   },
   card: {
     backgroundColor: "#ffffff",
@@ -1058,11 +1068,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
   },
   idRow: {
     flexDirection: "row",
     alignItems: "center",
+    flexWrap: "wrap",
     gap: 6,
+    flex: 1,
+    minWidth: 0,
   },
   idBadge: {
     fontSize: 11,
@@ -1080,14 +1094,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#5E2276",
   },
-  ageText: {
-    fontSize: 11,
-    color: "#78716c",
-  },
   verifPill: {
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 999,
+    flexShrink: 0,
   },
   verifGreen: {
     backgroundColor: "#d1fae5",
@@ -1107,42 +1118,66 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: "#1c1917",
   },
+  ageText: {
+    fontSize: 11,
+    color: "#78716c",
+    marginTop: 2,
+  },
   infoGrid: {
     gap: 5,
   },
   infoRow: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: 6,
   },
   infoText: {
     fontSize: 12,
     color: "#44403c",
     flex: 1,
+    lineHeight: 16,
   },
   needText: {
     fontSize: 12,
     color: "#b45309",
     fontWeight: "600",
     flex: 1,
+    lineHeight: 16,
   },
   cardFooter: {
     flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 12,
+    gap: 8,
     paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: "#f5f5f4",
   },
   actionBtn: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 4,
-    paddingVertical: 4,
+    paddingVertical: 7,
     paddingHorizontal: 6,
+    borderRadius: 9,
+    backgroundColor: "#fafaf9",
+    borderWidth: 1,
+    borderColor: "#e7e5e4",
+  },
+  actionBtnPurple: {
+    backgroundColor: "#faf5ff",
+    borderColor: "#e9d5ff",
+  },
+  actionBtnRed: {
+    backgroundColor: "#fef2f2",
+    borderColor: "#fecaca",
+  },
+  actionBtnGreen: {
+    backgroundColor: "#ecfdf5",
+    borderColor: "#a7f3d0",
   },
   actionBtnText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
     color: "#57534e",
   },
@@ -1155,13 +1190,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    padding: 20,
-    gap: 14,
+    padding: 18,
+    gap: 12,
   },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
+  },
+  modalTitleCol: {
+    flex: 1,
+    minWidth: 0,
   },
   modalId: {
     fontSize: 11,
@@ -1174,7 +1214,7 @@ const styles = StyleSheet.create({
     color: "#1c1917",
   },
   detailGrid: {
-    gap: 10,
+    gap: 8,
   },
   detailRow: {
     paddingVertical: 6,
@@ -1217,8 +1257,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
   },
+  selectorRowWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
   selectorBtn: {
     flex: 1,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#d6d3d1",
+    alignItems: "center",
+    backgroundColor: "#fafaf9",
+  },
+  selectorBtnWrap: {
+    paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 10,
     borderWidth: 1,
@@ -1265,15 +1319,15 @@ const styles = StyleSheet.create({
   },
   modalFooter: {
     flexDirection: "row",
-    justifyContent: "flex-end",
     gap: 10,
     paddingTop: 8,
   },
   secondaryBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    flex: 1,
+    paddingVertical: 11,
     borderRadius: 10,
     backgroundColor: "#f5f5f4",
+    alignItems: "center",
   },
   secondaryBtnText: {
     fontSize: 12,
@@ -1281,10 +1335,11 @@ const styles = StyleSheet.create({
     color: "#57534e",
   },
   primaryBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    flex: 1,
+    paddingVertical: 11,
     borderRadius: 10,
     backgroundColor: "#5E2276",
+    alignItems: "center",
   },
   primaryBtnText: {
     fontSize: 12,
@@ -1292,4 +1347,3 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
 });
-

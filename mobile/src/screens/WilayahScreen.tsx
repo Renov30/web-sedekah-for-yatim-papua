@@ -195,9 +195,11 @@ export const WilayahScreen: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.topControls}>
         <View style={styles.titleRow}>
-          <View>
-            <Text style={styles.screenTitle}>Master Data Wilayah</Text>
-            <Text style={styles.screenSub}>
+          <View style={styles.titleCol}>
+            <Text style={styles.screenTitle} numberOfLines={1}>
+              Master Data Wilayah
+            </Text>
+            <Text style={styles.screenSub} numberOfLines={1}>
               {activeKampungs.length} Kampung • {activeDistriks.length} Distrik
             </Text>
           </View>
@@ -221,11 +223,9 @@ export const WilayahScreen: React.FC = () => {
                   viewTrash && { color: "#be123c" },
                 ]}
               >
-                Sampah (
                 {activeTab === "kampung"
                   ? deletedKampungs.length
                   : deletedDistriks.length}
-                )
               </Text>
             </TouchableOpacity>
 
@@ -237,9 +237,9 @@ export const WilayahScreen: React.FC = () => {
                   : openAddDistrikModal
               }
             >
-              <Ionicons name="add" size={18} color="#ffffff" />
+              <Ionicons name="add" size={16} color="#ffffff" />
               <Text style={styles.addBtnText}>
-                {activeTab === "kampung" ? "+ Kampung" : "+ Distrik"}
+                {activeTab === "kampung" ? "Kampung" : "Distrik"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -259,8 +259,9 @@ export const WilayahScreen: React.FC = () => {
                 styles.segmentText,
                 activeTab === "kampung" && styles.segmentTextActive,
               ]}
+              numberOfLines={1}
             >
-              Kampung Binaan ({activeKampungs.length})
+              Kampung ({activeKampungs.length})
             </Text>
           </TouchableOpacity>
 
@@ -276,8 +277,9 @@ export const WilayahScreen: React.FC = () => {
                 styles.segmentText,
                 activeTab === "distrik" && styles.segmentTextActive,
               ]}
+              numberOfLines={1}
             >
-              Master Distrik ({activeDistriks.length})
+              Distrik ({activeDistriks.length})
             </Text>
           </TouchableOpacity>
         </View>
@@ -290,7 +292,7 @@ export const WilayahScreen: React.FC = () => {
             onChangeText={setSearchQuery}
             placeholder={
               activeTab === "kampung"
-                ? "Cari nama kampung, distrik, atau catatan..."
+                ? "Cari nama kampung, distrik, catatan..."
                 : "Cari nama distrik atau kabupaten..."
             }
             placeholderTextColor="#a8a29e"
@@ -362,12 +364,12 @@ export const WilayahScreen: React.FC = () => {
                     {!viewTrash ? (
                       <>
                         <TouchableOpacity
-                          style={styles.actionBtn}
+                          style={[styles.actionBtn, styles.actionBtnPurple]}
                           onPress={() => openEditKampungModal(k)}
                         >
                           <Ionicons
                             name="create-outline"
-                            size={15}
+                            size={14}
                             color="#5E2276"
                           />
                           <Text
@@ -377,12 +379,12 @@ export const WilayahScreen: React.FC = () => {
                           </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                          style={styles.actionBtn}
+                          style={[styles.actionBtn, styles.actionBtnRed]}
                           onPress={() => softDeleteKampung(k.id)}
                         >
                           <Ionicons
                             name="trash-outline"
-                            size={15}
+                            size={14}
                             color="#dc2626"
                           />
                           <Text
@@ -395,12 +397,12 @@ export const WilayahScreen: React.FC = () => {
                     ) : (
                       <>
                         <TouchableOpacity
-                          style={styles.actionBtn}
+                          style={[styles.actionBtn, styles.actionBtnGreen]}
                           onPress={() => restoreKampung(k.id)}
                         >
                           <Ionicons
                             name="refresh-outline"
-                            size={15}
+                            size={14}
                             color="#059669"
                           />
                           <Text
@@ -410,12 +412,12 @@ export const WilayahScreen: React.FC = () => {
                           </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                          style={styles.actionBtn}
+                          style={[styles.actionBtn, styles.actionBtnRed]}
                           onPress={() => deleteKampungPermanently(k.id)}
                         >
                           <Ionicons
                             name="close-circle-outline"
-                            size={15}
+                            size={14}
                             color="#dc2626"
                           />
                           <Text
@@ -474,12 +476,12 @@ export const WilayahScreen: React.FC = () => {
                   {!viewTrash ? (
                     <>
                       <TouchableOpacity
-                        style={styles.actionBtn}
+                        style={[styles.actionBtn, styles.actionBtnPurple]}
                         onPress={() => openEditDistrikModal(d)}
                       >
                         <Ionicons
                           name="create-outline"
-                          size={15}
+                          size={14}
                           color="#5E2276"
                         />
                         <Text
@@ -489,7 +491,7 @@ export const WilayahScreen: React.FC = () => {
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={styles.actionBtn}
+                        style={[styles.actionBtn, styles.actionBtnRed]}
                         onPress={async () => {
                           const res = await softDeleteDistrik(d.id);
                           if (!res.success && res.message) {
@@ -499,7 +501,7 @@ export const WilayahScreen: React.FC = () => {
                       >
                         <Ionicons
                           name="trash-outline"
-                          size={15}
+                          size={14}
                           color="#dc2626"
                         />
                         <Text
@@ -512,12 +514,12 @@ export const WilayahScreen: React.FC = () => {
                   ) : (
                     <>
                       <TouchableOpacity
-                        style={styles.actionBtn}
+                        style={[styles.actionBtn, styles.actionBtnGreen]}
                         onPress={() => restoreDistrik(d.id)}
                       >
                         <Ionicons
                           name="refresh-outline"
-                          size={15}
+                          size={14}
                           color="#059669"
                         />
                         <Text
@@ -527,7 +529,7 @@ export const WilayahScreen: React.FC = () => {
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={styles.actionBtn}
+                        style={[styles.actionBtn, styles.actionBtnRed]}
                         onPress={async () => {
                           const res = await deleteDistrikPermanently(d.id);
                           if (!res.success && res.message) {
@@ -537,7 +539,7 @@ export const WilayahScreen: React.FC = () => {
                       >
                         <Ionicons
                           name="close-circle-outline"
-                          size={15}
+                          size={14}
                           color="#dc2626"
                         />
                         <Text
@@ -565,7 +567,7 @@ export const WilayahScreen: React.FC = () => {
         <View style={styles.modalBackdrop}>
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
+              <Text style={[styles.modalTitle, { flex: 1 }]}>
                 {editingKampung ? "Edit Data Kampung" : "Tambah Kampung Binaan"}
               </Text>
               <TouchableOpacity onPress={() => setIsKampungModalOpen(false)}>
@@ -658,7 +660,7 @@ export const WilayahScreen: React.FC = () => {
         <View style={styles.modalBackdrop}>
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
+              <Text style={[styles.modalTitle, { flex: 1 }]}>
                 {editingDistrik ? "Edit Master Distrik" : "Tambah Distrik Baru"}
               </Text>
               <TouchableOpacity onPress={() => setIsDistrikModalOpen(false)}>
@@ -730,20 +732,25 @@ const styles = StyleSheet.create({
   },
   topControls: {
     backgroundColor: "#ffffff",
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingHorizontal: 14,
+    paddingTop: 10,
     paddingBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#e7e5e4",
-    gap: 10,
+    gap: 8,
   },
   titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
+  },
+  titleCol: {
+    flex: 1,
+    minWidth: 0,
   },
   screenTitle: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "800",
     color: "#1c1917",
   },
@@ -755,13 +762,14 @@ const styles = StyleSheet.create({
   headerBtns: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 6,
+    flexShrink: 0,
   },
   trashToggleBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    paddingHorizontal: 10,
+    paddingHorizontal: 9,
     paddingVertical: 7,
     borderRadius: 10,
     backgroundColor: "#f5f5f4",
@@ -782,13 +790,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     backgroundColor: "#5E2276",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 11,
+    paddingVertical: 7,
     borderRadius: 10,
   },
   addBtnText: {
     color: "#ffffff",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
   },
   segmentBox: {
@@ -799,7 +807,8 @@ const styles = StyleSheet.create({
   },
   segmentTab: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 7,
+    paddingHorizontal: 6,
     borderRadius: 10,
     alignItems: "center",
   },
@@ -825,20 +834,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f4",
     borderRadius: 12,
     paddingHorizontal: 12,
-    height: 40,
+    height: 38,
     gap: 8,
   },
   searchInput: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 12,
     color: "#1c1917",
   },
   list: {
     flex: 1,
   },
   listContent: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: 14,
+    paddingBottom: 28,
     gap: 12,
   },
   emptyBox: {
@@ -850,6 +859,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#78716c",
     fontWeight: "600",
+    textAlign: "center",
   },
   card: {
     backgroundColor: "#ffffff",
@@ -863,6 +873,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
   },
   idBadge: {
     fontSize: 11,
@@ -872,6 +883,7 @@ const styles = StyleSheet.create({
   badgeRow: {
     flexDirection: "row",
     gap: 6,
+    flexShrink: 0,
   },
   statChipPurple: {
     backgroundColor: "#f3e8ff",
@@ -909,24 +921,42 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#78716c",
     marginTop: 2,
+    lineHeight: 15,
   },
   cardFooter: {
     flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 12,
+    gap: 8,
     paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: "#f5f5f4",
   },
   actionBtn: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 4,
-    paddingVertical: 4,
+    paddingVertical: 7,
     paddingHorizontal: 6,
+    borderRadius: 9,
+    backgroundColor: "#fafaf9",
+    borderWidth: 1,
+    borderColor: "#e7e5e4",
+  },
+  actionBtnPurple: {
+    backgroundColor: "#faf5ff",
+    borderColor: "#e9d5ff",
+  },
+  actionBtnRed: {
+    backgroundColor: "#fef2f2",
+    borderColor: "#fecaca",
+  },
+  actionBtnGreen: {
+    backgroundColor: "#ecfdf5",
+    borderColor: "#a7f3d0",
   },
   actionBtnText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
     color: "#57534e",
   },
@@ -939,13 +969,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    padding: 20,
+    padding: 18,
     gap: 10,
   },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
   },
   modalTitle: {
     fontSize: 16,
@@ -1001,15 +1032,15 @@ const styles = StyleSheet.create({
   },
   modalFooter: {
     flexDirection: "row",
-    justifyContent: "flex-end",
     gap: 10,
     paddingTop: 12,
   },
   secondaryBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    flex: 1,
+    paddingVertical: 11,
     borderRadius: 10,
     backgroundColor: "#f5f5f4",
+    alignItems: "center",
   },
   secondaryBtnText: {
     fontSize: 12,
@@ -1017,10 +1048,11 @@ const styles = StyleSheet.create({
     color: "#57534e",
   },
   primaryBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    flex: 1,
+    paddingVertical: 11,
     borderRadius: 10,
     backgroundColor: "#5E2276",
+    alignItems: "center",
   },
   primaryBtnText: {
     fontSize: 12,
@@ -1028,4 +1060,3 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
 });
-

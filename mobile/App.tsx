@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   Modal,
   StyleSheet,
   Text,
@@ -60,11 +61,17 @@ const MainShell: React.FC = () => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <View style={styles.logoMark}>
-            <Ionicons name="heart" size={18} color="#facc15" />
+            <Image
+              source={require("./assets/logo.png")}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
           </View>
-          <View>
+          <View style={styles.headerTextCol}>
             <View style={styles.brandRow}>
-              <Text style={styles.brandName}>SFY Papua</Text>
+              <Text style={styles.brandName} numberOfLines={1}>
+                SFY Papua
+              </Text>
               <View style={styles.roleTag}>
                 <Text style={styles.roleTagText}>LAPANGAN</Text>
               </View>
@@ -341,14 +348,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     flex: 1,
+    minWidth: 0,
+    marginRight: 8,
+  },
+  headerTextCol: {
+    flex: 1,
+    minWidth: 0,
   },
   logoMark: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: "rgba(255,255,255,0.15)",
+    width: 38,
+    height: 38,
+    borderRadius: 11,
+    backgroundColor: "#ffffff",
+    padding: 4,
     alignItems: "center",
     justifyContent: "center",
+    flexShrink: 0,
+  },
+  logoImage: {
+    width: 28,
+    height: 28,
   },
   brandRow: {
     flexDirection: "row",

@@ -160,9 +160,11 @@ export const AVScreen: React.FC = () => {
       {/* Top Bar */}
       <View style={styles.topControls}>
         <View style={styles.titleRow}>
-          <View>
-            <Text style={styles.screenTitle}>Koordinator Kampung (AV)</Text>
-            <Text style={styles.screenSub}>
+          <View style={styles.titleCol}>
+            <Text style={styles.screenTitle} numberOfLines={1}>
+              Koordinator Kampung (AV)
+            </Text>
+            <Text style={styles.screenSub} numberOfLines={1}>
               {activeAvs.length} Koordinator • {deletedAvs.length} Sampah
             </Text>
           </View>
@@ -186,12 +188,12 @@ export const AVScreen: React.FC = () => {
                   viewTrash && { color: "#be123c" },
                 ]}
               >
-                Sampah ({deletedAvs.length})
+                {deletedAvs.length}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.addBtn} onPress={openAddModal}>
-              <Ionicons name="add" size={18} color="#ffffff" />
+              <Ionicons name="add" size={16} color="#ffffff" />
               <Text style={styles.addBtnText}>Input AV</Text>
             </TouchableOpacity>
           </View>
@@ -203,7 +205,7 @@ export const AVScreen: React.FC = () => {
             style={styles.searchInput}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Cari nama AV, ID, kampung, distrik, atau No HP..."
+            placeholder="Cari nama AV, ID, kampung, distrik, No HP..."
             placeholderTextColor="#a8a29e"
           />
           {searchQuery ? (
@@ -312,9 +314,11 @@ export const AVScreen: React.FC = () => {
                   </Text>
                 </View>
 
-                <View style={styles.infoRow}>
+                <View style={styles.infoRowCenter}>
                   <Ionicons name="call-outline" size={14} color="#059669" />
-                  <Text style={styles.infoText}>{item.noHp}</Text>
+                  <Text style={styles.infoText} numberOfLines={1}>
+                    {item.noHp}
+                  </Text>
                   <TouchableOpacity
                     style={styles.waBtn}
                     onPress={() => handleOpenWhatsApp(item.noHp)}
@@ -347,16 +351,16 @@ export const AVScreen: React.FC = () => {
                       style={styles.actionBtn}
                       onPress={() => setSelectedAV(item)}
                     >
-                      <Ionicons name="eye-outline" size={15} color="#57534e" />
+                      <Ionicons name="eye-outline" size={14} color="#57534e" />
                       <Text style={styles.actionBtnText}>Detail</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.actionBtn}
+                      style={[styles.actionBtn, styles.actionBtnPurple]}
                       onPress={() => openEditModal(item)}
                     >
                       <Ionicons
                         name="create-outline"
-                        size={15}
+                        size={14}
                         color="#5E2276"
                       />
                       <Text style={[styles.actionBtnText, { color: "#5E2276" }]}>
@@ -364,12 +368,12 @@ export const AVScreen: React.FC = () => {
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.actionBtn}
+                      style={[styles.actionBtn, styles.actionBtnRed]}
                       onPress={() => softDeleteAV(item.id)}
                     >
                       <Ionicons
                         name="trash-outline"
-                        size={15}
+                        size={14}
                         color="#dc2626"
                       />
                       <Text style={[styles.actionBtnText, { color: "#dc2626" }]}>
@@ -380,12 +384,12 @@ export const AVScreen: React.FC = () => {
                 ) : (
                   <>
                     <TouchableOpacity
-                      style={styles.actionBtn}
+                      style={[styles.actionBtn, styles.actionBtnGreen]}
                       onPress={() => restoreAV(item.id)}
                     >
                       <Ionicons
                         name="refresh-outline"
-                        size={15}
+                        size={14}
                         color="#059669"
                       />
                       <Text style={[styles.actionBtnText, { color: "#059669" }]}>
@@ -393,12 +397,12 @@ export const AVScreen: React.FC = () => {
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.actionBtn}
+                      style={[styles.actionBtn, styles.actionBtnRed]}
                       onPress={() => deleteAVPermanently(item.id)}
                     >
                       <Ionicons
                         name="close-circle-outline"
-                        size={15}
+                        size={14}
                         color="#dc2626"
                       />
                       <Text style={[styles.actionBtnText, { color: "#dc2626" }]}>
@@ -425,7 +429,7 @@ export const AVScreen: React.FC = () => {
             {selectedAV && (
               <>
                 <View style={styles.modalHeader}>
-                  <View>
+                  <View style={styles.modalTitleCol}>
                     <Text style={styles.modalId}>{selectedAV.id}</Text>
                     <Text style={styles.modalTitle}>{selectedAV.nama}</Text>
                   </View>
@@ -508,7 +512,7 @@ export const AVScreen: React.FC = () => {
         <View style={styles.modalBackdrop}>
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
+              <Text style={[styles.modalTitle, { flex: 1 }]}>
                 {editingAV
                   ? `Edit Koordinator ${editingAV.id}`
                   : "Input Koordinator Kampung (AV)"}
@@ -519,7 +523,7 @@ export const AVScreen: React.FC = () => {
             </View>
 
             <ScrollView
-              style={{ maxHeight: 440 }}
+              style={{ maxHeight: 430 }}
               keyboardShouldPersistTaps="handled"
             >
               <Text style={styles.formLabel}>Nama Lengkap Koordinator AV *</Text>
@@ -629,14 +633,14 @@ export const AVScreen: React.FC = () => {
               />
 
               <Text style={styles.formLabel}>Status Keaktifan</Text>
-              <View style={styles.selectorRow}>
+              <View style={styles.selectorRowWrap}>
                 {(
                   ["Aktif", "Menunggu Verifikasi", "Non-aktif"] as const
                 ).map((st) => (
                   <TouchableOpacity
                     key={st}
                     style={[
-                      styles.selectorBtn,
+                      styles.selectorBtnWrap,
                       status === st && styles.selectorBtnActive,
                     ]}
                     onPress={() => setStatus(st)}
@@ -666,7 +670,7 @@ export const AVScreen: React.FC = () => {
                 onPress={handleSaveForm}
               >
                 <Text style={styles.primaryBtnText}>
-                  {editingAV ? "Simpan Perubahan" : "Simpan Koordinator"}
+                  {editingAV ? "Simpan Perubahan" : "Simpan Data"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -684,20 +688,25 @@ const styles = StyleSheet.create({
   },
   topControls: {
     backgroundColor: "#ffffff",
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingHorizontal: 14,
+    paddingTop: 10,
     paddingBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#e7e5e4",
-    gap: 10,
+    gap: 8,
   },
   titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
+  },
+  titleCol: {
+    flex: 1,
+    minWidth: 0,
   },
   screenTitle: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "800",
     color: "#1c1917",
   },
@@ -709,13 +718,14 @@ const styles = StyleSheet.create({
   headerBtns: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 6,
+    flexShrink: 0,
   },
   trashToggleBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    paddingHorizontal: 10,
+    paddingHorizontal: 9,
     paddingVertical: 7,
     borderRadius: 10,
     backgroundColor: "#f5f5f4",
@@ -736,13 +746,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     backgroundColor: "#5E2276",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 11,
+    paddingVertical: 7,
     borderRadius: 10,
   },
   addBtnText: {
     color: "#ffffff",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
   },
   searchBox: {
@@ -751,20 +761,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f4",
     borderRadius: 12,
     paddingHorizontal: 12,
-    height: 40,
+    height: 38,
     gap: 8,
   },
   searchInput: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 12,
     color: "#1c1917",
   },
   filterRow: {
-    gap: 8,
+    gap: 6,
   },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 11,
+    paddingVertical: 5,
     borderRadius: 999,
     backgroundColor: "#f5f5f4",
     borderWidth: 1,
@@ -786,8 +796,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: 14,
+    paddingBottom: 28,
     gap: 12,
   },
   emptyBox: {
@@ -799,6 +809,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#78716c",
     fontWeight: "600",
+    textAlign: "center",
   },
   card: {
     backgroundColor: "#ffffff",
@@ -812,6 +823,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
   },
   idBadge: {
     fontSize: 11,
@@ -822,6 +834,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 999,
+    flexShrink: 0,
   },
   statusGreen: {
     backgroundColor: "#d1fae5",
@@ -846,6 +859,11 @@ const styles = StyleSheet.create({
   },
   infoRow: {
     flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 6,
+  },
+  infoRowCenter: {
+    flexDirection: "row",
     alignItems: "center",
     gap: 6,
   },
@@ -853,6 +871,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#44403c",
     flex: 1,
+    lineHeight: 16,
   },
   waBtn: {
     flexDirection: "row",
@@ -860,10 +879,11 @@ const styles = StyleSheet.create({
     gap: 4,
     backgroundColor: "#ecfdf5",
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#a7f3d0",
+    flexShrink: 0,
   },
   waBtnText: {
     fontSize: 10,
@@ -878,21 +898,38 @@ const styles = StyleSheet.create({
   },
   cardFooter: {
     flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 12,
+    gap: 8,
     paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: "#f5f5f4",
   },
   actionBtn: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 4,
-    paddingVertical: 4,
+    paddingVertical: 7,
     paddingHorizontal: 6,
+    borderRadius: 9,
+    backgroundColor: "#fafaf9",
+    borderWidth: 1,
+    borderColor: "#e7e5e4",
+  },
+  actionBtnPurple: {
+    backgroundColor: "#faf5ff",
+    borderColor: "#e9d5ff",
+  },
+  actionBtnRed: {
+    backgroundColor: "#fef2f2",
+    borderColor: "#fecaca",
+  },
+  actionBtnGreen: {
+    backgroundColor: "#ecfdf5",
+    borderColor: "#a7f3d0",
   },
   actionBtnText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
     color: "#57534e",
   },
@@ -905,13 +942,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    padding: 20,
-    gap: 14,
+    padding: 18,
+    gap: 12,
   },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 8,
+  },
+  modalTitleCol: {
+    flex: 1,
+    minWidth: 0,
   },
   modalId: {
     fontSize: 11,
@@ -981,12 +1023,13 @@ const styles = StyleSheet.create({
     color: "#5E2276",
     fontWeight: "700",
   },
-  selectorRow: {
+  selectorRowWrap: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
   },
-  selectorBtn: {
-    flex: 1,
+  selectorBtnWrap: {
+    paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 10,
     borderWidth: 1,
@@ -1008,15 +1051,15 @@ const styles = StyleSheet.create({
   },
   modalFooter: {
     flexDirection: "row",
-    justifyContent: "flex-end",
     gap: 10,
     paddingTop: 8,
   },
   secondaryBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    flex: 1,
+    paddingVertical: 11,
     borderRadius: 10,
     backgroundColor: "#f5f5f4",
+    alignItems: "center",
   },
   secondaryBtnText: {
     fontSize: 12,
@@ -1024,10 +1067,11 @@ const styles = StyleSheet.create({
     color: "#57534e",
   },
   primaryBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    flex: 1,
+    paddingVertical: 11,
     borderRadius: 10,
     backgroundColor: "#5E2276",
+    alignItems: "center",
   },
   primaryBtnText: {
     fontSize: 12,
@@ -1035,4 +1079,3 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
 });
-

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -96,7 +97,11 @@ export const LoginScreen: React.FC = () => {
         {/* Main Login Card */}
         <View style={styles.card}>
           <View style={styles.logoBox}>
-            <Ionicons name="heart-circle" size={44} color="#facc15" />
+            <Image
+              source={require("../../assets/logo.png")}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
           </View>
 
           <View style={styles.headerBlock}>
@@ -360,14 +365,21 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   logoBox: {
-    width: 64,
-    height: 64,
+    width: 68,
+    height: 68,
     borderRadius: 18,
-    backgroundColor: "#5E2276",
+    backgroundColor: "#ffffff",
+    borderWidth: 1.5,
+    borderColor: "#e9d5ff",
+    padding: 8,
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
     marginBottom: 14,
+  },
+  logoImage: {
+    width: 48,
+    height: 48,
   },
   headerBlock: {
     alignItems: "center",
@@ -469,7 +481,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    paddingVertical: 8,
+    paddingVertical: 9,
     paddingHorizontal: 12,
     borderRadius: 10,
     backgroundColor: "#faf5ff",
@@ -477,9 +489,11 @@ const styles = StyleSheet.create({
     borderColor: "#e9d5ff",
   },
   autofillText: {
+    flexShrink: 1,
     fontSize: 11,
     fontWeight: "600",
     color: "#5E2276",
+    textAlign: "center",
   },
   offlineInfoBox: {
     marginTop: 16,
