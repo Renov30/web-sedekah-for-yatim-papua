@@ -161,7 +161,12 @@ export default function AnakYatimAdminPage() {
     const fromMaster = activeDistriks.map((d) => d.nama);
     const fromOrphans = activeOrphans
       .map((o) => o.asalDaerah)
-      .filter((d): d is string => Boolean(d) && !deletedNames.has(d.toLowerCase()));
+      .filter(
+        (d): d is string =>
+          typeof d === "string" &&
+          d.length > 0 &&
+          !deletedNames.has(d.toLowerCase())
+      );
     return Array.from(new Set([...fromMaster, ...fromOrphans])).sort();
   }, [activeDistriks, activeOrphans, distriksList]);
 
@@ -172,7 +177,12 @@ export default function AnakYatimAdminPage() {
     const fromMaster = activeKampungs.map((k) => k.nama);
     const fromOrphans = activeOrphans
       .map((o) => o.kampung)
-      .filter((k): k is string => Boolean(k) && !deletedNames.has(k.toLowerCase()));
+      .filter(
+        (k): k is string =>
+          typeof k === "string" &&
+          k.length > 0 &&
+          !deletedNames.has(k.toLowerCase())
+      );
     return Array.from(new Set([...fromMaster, ...fromOrphans])).sort();
   }, [activeKampungs, activeOrphans, kampungsList]);
 
