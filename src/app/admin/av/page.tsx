@@ -18,6 +18,11 @@ import {
 } from "lucide-react";
 import { initialAVs, initialOrphans, AVRecord, OrphanRecord } from "@/data/admin/adminData";
 import {
+  getStoredAVs,
+  saveStoredAVs,
+  getStoredOrphans,
+} from "@/lib/adminDataStore";
+import {
   getStoredDistriks,
   getStoredKampungs,
   addKampung,
@@ -27,7 +32,7 @@ import {
 
 export default function AVAdminPage() {
   const [avList, setAvList] = useState<AVRecord[]>(initialAVs);
-  const [orphans] = useState<OrphanRecord[]>(initialOrphans);
+  const [orphans, setOrphans] = useState<OrphanRecord[]>(initialOrphans);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterDistrik, setFilterDistrik] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -42,6 +47,8 @@ export default function AVAdminPage() {
     queueMicrotask(() => {
       setDistriksList(getStoredDistriks());
       setKampungsList(getStoredKampungs());
+      setAvList(getStoredAVs());
+      setOrphans(getStoredOrphans());
     });
   }, []);
 
@@ -84,8 +91,8 @@ export default function AVAdminPage() {
   const totalOrphansSupervised = orphans.filter((o) => !!o.pjAvId).length;
 
   const handleToggleStatus = (id: string) => {
-    setAvList((prev) =>
-      prev.map((item) => {
+    setAvList((prev) => {
+      const nextList = prev.map((item) => {
         if (item.id === id) {
           const nextStatus: AVRecord["status"] =
             item.status === "Aktif"
@@ -96,8 +103,10 @@ export default function AVAdminPage() {
           return { ...item, status: nextStatus };
         }
         return item;
-      })
-    );
+      });
+      saveStoredAVs(nextList);
+      return nextList;
+    });
 
     if (selectedAV && selectedAV.id === id) {
       setSelectedAV((prev) =>
@@ -145,7 +154,9 @@ export default function AVAdminPage() {
         formData.catatanWilayah || "Koordinator posko lapangan kampung baru.",
     };
 
-    setAvList([newRecord, ...avList]);
+    const updated = [newRecord, ...avList];
+    setAvList(updated);
+    saveStoredAVs(updated);
     setIsAddModalOpen(false);
     setIsCustomKampung(false);
     setCustomKampungName("");

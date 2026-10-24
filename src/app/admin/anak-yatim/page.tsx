@@ -17,6 +17,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { initialOrphans, initialAVs, OrphanRecord } from "@/data/admin/adminData";
+import { getStoredOrphans, saveStoredOrphans } from "@/lib/adminDataStore";
 import {
   getStoredDistriks,
   getStoredKampungs,
@@ -74,6 +75,7 @@ export default function AnakYatimAdminPage() {
     queueMicrotask(() => {
       setDistriksList(getStoredDistriks());
       setKampungsList(getStoredKampungs());
+      setOrphans(getStoredOrphans());
     });
   }, []);
 
@@ -198,7 +200,9 @@ export default function AnakYatimAdminPage() {
       }).format(new Date()),
     };
 
-    setOrphans([newRecord, ...orphans]);
+    const updated = [newRecord, ...orphans];
+    setOrphans(updated);
+    saveStoredOrphans(updated);
     setIsAddModalOpen(false);
     setIsCustomDistrik(false);
     setIsCustomKampung(false);
@@ -224,10 +228,10 @@ export default function AnakYatimAdminPage() {
   };
 
   const handleToggleVerif = (id: string) => {
-    setOrphans((prev) =>
-      prev.map((item) => {
+    setOrphans((prev) => {
+      const nextList: OrphanRecord[] = prev.map((item) => {
         if (item.id === id) {
-          const nextStatus =
+          const nextStatus: OrphanRecord["statusVerifikasi"] =
             item.statusVerifikasi === "Terverifikasi"
               ? "Perlu Pembaruan"
               : item.statusVerifikasi === "Perlu Pembaruan"
@@ -236,8 +240,10 @@ export default function AnakYatimAdminPage() {
           return { ...item, statusVerifikasi: nextStatus };
         }
         return item;
-      })
-    );
+      });
+      saveStoredOrphans(nextList);
+      return nextList;
+    });
 
     if (selectedOrphan && selectedOrphan.id === id) {
       setSelectedOrphan((prev) =>
