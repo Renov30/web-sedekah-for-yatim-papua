@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   KeyRound,
+  Map,
   ExternalLink,
   ChevronRight,
   LogOut,
@@ -48,6 +49,11 @@ export const adminNavItems = [
     title: "Pendataan AV",
     href: "/admin/av",
     icon: MapPinHouse,
+  },
+  {
+    title: "Master Wilayah",
+    href: "/admin/wilayah",
+    icon: Map,
   },
   {
     title: "Pendataan Relawan",
@@ -206,7 +212,7 @@ export function AdminSidebar({
             </div>
           )}
 
-          {adminNavItems.slice(0, 6).map((item) => {
+          {adminNavItems.slice(0, 7).map((item) => {
             const isActive =
               item.href === "/admin"
                 ? pathname === "/admin"
@@ -269,7 +275,7 @@ export function AdminSidebar({
             </div>
           )}
 
-          {adminNavItems.slice(6).map((item) => {
+          {adminNavItems.slice(7).map((item) => {
             const isActive = pathname.startsWith(item.href);
             const Icon = item.icon;
 

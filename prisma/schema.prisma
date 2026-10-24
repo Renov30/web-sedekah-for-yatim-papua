@@ -62,7 +62,37 @@ model User {
 }
 
 // ==========================================
-// 3. PENDATAAN KOORDINATOR KAMPUNG (AV)
+// 3. MASTER DATA WILAYAH (DISTRIK & KAMPUNG)
+// ==========================================
+model District {
+  id        String    @id // e.g. "DST-001"
+  nama      String    @unique // e.g. "Distrik Merauke"
+  kabupaten String    @default("Kab. Merauke")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  villages  Village[]
+
+  @@map("districts")
+}
+
+model Village {
+  id         String   @id // e.g. "KMP-001"
+  nama       String   // e.g. "Kampung Wasur"
+  districtId String
+  kabupaten  String   @default("Kab. Merauke")
+  catatan    String?  @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  district   District @relation(fields: [districtId], references: [id], onDelete: Cascade)
+
+  @@unique([districtId, nama])
+  @@map("villages")
+}
+
+// ==========================================
+// 4. PENDATAAN KOORDINATOR KAMPUNG (AV)
 // ==========================================
 model AreaVolunteer {
   id               String   @id // e.g. "AV-001"

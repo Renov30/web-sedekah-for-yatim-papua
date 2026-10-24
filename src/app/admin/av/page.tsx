@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   MapPinHouse,
   Search,
-  Filter,
   Plus,
   Download,
   Eye,
@@ -12,14 +12,18 @@ import {
   Clock,
   AlertCircle,
   X,
-  Phone,
-  MapPin,
   GraduationCap,
-  Users,
   MessageCircle,
-  Calendar,
+  ExternalLink,
 } from "lucide-react";
 import { initialAVs, initialOrphans, AVRecord, OrphanRecord } from "@/data/admin/adminData";
+import {
+  getStoredDistriks,
+  getStoredKampungs,
+  addKampung,
+  DistrikRecord,
+  KampungRecord,
+} from "@/lib/wilayah";
 
 export default function AVAdminPage() {
   const [avList, setAvList] = useState<AVRecord[]>(initialAVs);
@@ -27,6 +31,19 @@ export default function AVAdminPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterDistrik, setFilterDistrik] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+
+  // Master Wilayah Data
+  const [distriksList, setDistriksList] = useState<DistrikRecord[]>([]);
+  const [kampungsList, setKampungsList] = useState<KampungRecord[]>([]);
+  const [isCustomKampung, setIsCustomKampung] = useState(false);
+  const [customKampungName, setCustomKampungName] = useState("");
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      setDistriksList(getStoredDistriks());
+      setKampungsList(getStoredKampungs());
+    });
+  }, []);
 
   // Detail Modal State
   const [selectedAV, setSelectedAV] = useState<AVRecord | null>(null);
@@ -101,11 +118,19 @@ export default function AVAdminPage() {
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const finalKampung = isCustomKampung ? customKampungName.trim() : formData.kampung;
+
+    if (finalKampung && formData.distrik) {
+      addKampung(finalKampung, formData.distrik, formData.kabupaten);
+      setDistriksList(getStoredDistriks());
+      setKampungsList(getStoredKampungs());
+    }
+
     const newRecord: AVRecord = {
       id: `AV-00${avList.length + 1}`,
       nama: formData.nama,
       noHp: formData.noHp,
-      kampung: formData.kampung,
+      kampung: finalKampung,
       distrik: formData.distrik,
       kabupaten: formData.kabupaten,
       alamat: formData.alamat,
@@ -122,6 +147,8 @@ export default function AVAdminPage() {
 
     setAvList([newRecord, ...avList]);
     setIsAddModalOpen(false);
+    setIsCustomKampung(false);
+    setCustomKampungName("");
     setFormData({
       nama: "",
       noHp: "",
@@ -262,12 +289,11 @@ export default function AVAdminPage() {
             className="px-3 py-2 rounded-xl text-sm border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700"
           >
             <option value="all">Semua Distrik</option>
-            <option value="Distrik Merauke">Distrik Merauke</option>
-            <option value="Distrik Semangga">Distrik Semangga</option>
-            <option value="Distrik Malind">Distrik Malind</option>
-            <option value="Distrik Kurik">Distrik Kurik</option>
-            <option value="Distrik Sota">Distrik Sota</option>
-            <option value="Distrik Tanah Miring">Distrik Tanah Miring</option>
+            {distriksList.map((d) => (
+              <option key={d.id} value={d.nama}>
+                {d.nama}
+              </option>
+            ))}
           </select>
 
           <select
@@ -627,39 +653,89 @@ export default function AVAdminPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-stone-700 font-medium">
+                      Distrik Penugasan *
+                    </label>
+                    <Link
+                      href="/admin/wilayah"
+                      target="_blank"
+                      className="text-[10px] text-[#823296] hover:underline flex items-center gap-0.5"
+                    >
+                      <span>Master Wilayah</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </Link>
+                  </div>
+                  <select
+                    value={formData.distrik}
+                    onChange={(e) => {
+                      const sel = distriksList.find((d) => d.nama === e.target.value);
+                      setFormData({
+                        ...formData,
+                        distrik: e.target.value,
+                        kabupaten: sel ? sel.kabupaten : formData.kabupaten,
+                      });
+                    }}
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white"
+                  >
+                    {distriksList.map((d) => (
+                      <option key={d.id} value={d.nama}>
+                        {d.nama}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
                   <label className="block text-stone-700 font-medium mb-1">
                     Nama Kampung *
                   </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Contoh: Kampung Wasur"
-                    value={formData.kampung}
-                    onChange={(e) =>
-                      setFormData({ ...formData, kampung: e.target.value })
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-stone-700 font-medium mb-1">
-                    Distrik
-                  </label>
-                  <select
-                    value={formData.distrik}
-                    onChange={(e) =>
-                      setFormData({ ...formData, distrik: e.target.value })
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white"
-                  >
-                    <option value="Distrik Merauke">Distrik Merauke</option>
-                    <option value="Distrik Semangga">Distrik Semangga</option>
-                    <option value="Distrik Malind">Distrik Malind</option>
-                    <option value="Distrik Kurik">Distrik Kurik</option>
-                    <option value="Distrik Sota">Distrik Sota</option>
-                    <option value="Distrik Tanah Miring">Distrik Tanah Miring</option>
-                    <option value="Distrik Jagebob">Distrik Jagebob</option>
-                  </select>
+                  {isCustomKampung ? (
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ketik kampung baru..."
+                        value={customKampungName}
+                        onChange={(e) => setCustomKampungName(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-[#823296] focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCustomKampung(false);
+                          setCustomKampungName("");
+                        }}
+                        className="px-2 py-2 text-[10px] font-semibold text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-lg shrink-0 cursor-pointer"
+                      >
+                        Pilih
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <select
+                        value={formData.kampung}
+                        onChange={(e) =>
+                          setFormData({ ...formData, kampung: e.target.value })
+                        }
+                        className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-800"
+                      >
+                        {kampungsList.map((k) => (
+                          <option key={k.id} value={k.nama}>
+                            {k.nama} ({k.distrikNama})
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setIsCustomKampung(true)}
+                        className="px-2 py-2 text-[10px] font-semibold text-[#823296] bg-purple-50 hover:bg-purple-100 rounded-lg shrink-0 cursor-pointer"
+                        title="Ketik kampung baru jika belum ada di database"
+                      >
+                        + Baru
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -14,8 +14,16 @@ import {
   MapPin,
   MapPinHouse,
   RotateCcw,
+  ExternalLink,
 } from "lucide-react";
 import { initialOrphans, initialAVs, OrphanRecord } from "@/data/admin/adminData";
+import {
+  getStoredDistriks,
+  getStoredKampungs,
+  addKampung,
+  DistrikRecord,
+  KampungRecord,
+} from "@/lib/wilayah";
 
 export default function AnakYatimAdminPage() {
   const [orphans, setOrphans] = useState<OrphanRecord[]>(initialOrphans);
@@ -54,18 +62,35 @@ export default function AnakYatimAdminPage() {
       | "Perlu Pembaruan",
   });
 
-  // Dynamic filter lists from data
+  // Master Wilayah Data
+  const [distriksList, setDistriksList] = useState<DistrikRecord[]>([]);
+  const [kampungsList, setKampungsList] = useState<KampungRecord[]>([]);
+  const [isCustomDistrik, setIsCustomDistrik] = useState(false);
+  const [isCustomKampung, setIsCustomKampung] = useState(false);
+  const [customDistrikName, setCustomDistrikName] = useState("");
+  const [customKampungName, setCustomKampungName] = useState("");
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      setDistriksList(getStoredDistriks());
+      setKampungsList(getStoredKampungs());
+    });
+  }, []);
+
+  // Dynamic filter lists from data + master database
   const uniqueDistriks = useMemo(() => {
-    const list = orphans.map((o) => o.asalDaerah).filter(Boolean);
-    return Array.from(new Set(list)).sort();
-  }, [orphans]);
+    const fromMaster = distriksList.map((d) => d.nama);
+    const fromOrphans = orphans.map((o) => o.asalDaerah).filter(Boolean);
+    return Array.from(new Set([...fromMaster, ...fromOrphans])).sort();
+  }, [distriksList, orphans]);
 
   const uniqueKampungs = useMemo(() => {
-    const list = orphans
+    const fromMaster = kampungsList.map((k) => k.nama);
+    const fromOrphans = orphans
       .map((o) => o.kampung)
       .filter((k): k is string => Boolean(k));
-    return Array.from(new Set(list)).sort();
-  }, [orphans]);
+    return Array.from(new Set([...fromMaster, ...fromOrphans])).sort();
+  }, [kampungsList, orphans]);
 
   const isFilterActive =
     searchQuery !== "" ||
@@ -138,6 +163,15 @@ export default function AnakYatimAdminPage() {
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const finalDistrik = isCustomDistrik ? customDistrikName.trim() : formData.asalDaerah;
+    const finalKampung = isCustomKampung ? customKampungName.trim() : formData.kampung;
+
+    if (finalKampung && finalDistrik) {
+      addKampung(finalKampung, finalDistrik, formData.kabupaten);
+      setDistriksList(getStoredDistriks());
+      setKampungsList(getStoredKampungs());
+    }
+
     const matchedAV = initialAVs.find((av) => av.nama === formData.pjAvNama);
 
     const newRecord: OrphanRecord = {
@@ -147,9 +181,9 @@ export default function AnakYatimAdminPage() {
       gender: formData.gender,
       usia: Number(formData.usia),
       status: formData.status,
-      asalDaerah: formData.asalDaerah,
+      asalDaerah: finalDistrik,
       kabupaten: formData.kabupaten,
-      kampung: formData.kampung,
+      kampung: finalKampung,
       pjAvId: matchedAV ? matchedAV.id : undefined,
       pjAvNama: formData.pjAvNama || "Belum ditentukan",
       tempatTinggal: formData.tempatTinggal,
@@ -166,6 +200,10 @@ export default function AnakYatimAdminPage() {
 
     setOrphans([newRecord, ...orphans]);
     setIsAddModalOpen(false);
+    setIsCustomDistrik(false);
+    setIsCustomKampung(false);
+    setCustomDistrikName("");
+    setCustomKampungName("");
     // Reset Form
     setFormData({
       namaLengkap: "",
@@ -861,20 +899,73 @@ export default function AnakYatimAdminPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-stone-700 font-medium mb-1">
-                    Distrik Asal
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Contoh: Distrik Kurik / Tanah Miring"
-                    value={formData.asalDaerah}
-                    onChange={(e) =>
-                      setFormData({ ...formData, asalDaerah: e.target.value })
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-stone-700 font-medium">
+                      Distrik Asal *
+                    </label>
+                    <Link
+                      href="/admin/wilayah"
+                      target="_blank"
+                      className="text-[10px] text-[#823296] hover:underline flex items-center gap-0.5"
+                    >
+                      <span>Master Wilayah</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </Link>
+                  </div>
+                  {isCustomDistrik ? (
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ketik nama distrik baru..."
+                        value={customDistrikName}
+                        onChange={(e) => setCustomDistrikName(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-[#823296] focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCustomDistrik(false);
+                          setCustomDistrikName("");
+                        }}
+                        className="px-2 py-2 text-[10px] font-semibold text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-lg shrink-0 cursor-pointer"
+                      >
+                        Pilih
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <select
+                        value={formData.asalDaerah}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const sel = distriksList.find((d) => d.nama === val);
+                          setFormData({
+                            ...formData,
+                            asalDaerah: val,
+                            kabupaten: sel ? sel.kabupaten : formData.kabupaten,
+                          });
+                        }}
+                        className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-800"
+                      >
+                        {uniqueDistriks.map((d) => (
+                          <option key={d} value={d}>
+                            {d}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setIsCustomDistrik(true)}
+                        className="px-2 py-2 text-[10px] font-semibold text-[#823296] bg-purple-50 hover:bg-purple-100 rounded-lg shrink-0 cursor-pointer"
+                        title="Ketik distrik baru jika belum ada di database"
+                      >
+                        + Baru
+                      </button>
+                    </div>
+                  )}
                 </div>
+
                 <div>
                   <label className="block text-stone-700 font-medium mb-1">
                     Kabupaten (Papua Selatan)
@@ -896,20 +987,59 @@ export default function AnakYatimAdminPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-stone-700 font-medium mb-1">
-                    Kampung Domisili *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Contoh: Kampung Wasur / Urumb"
-                    value={formData.kampung}
-                    onChange={(e) =>
-                      setFormData({ ...formData, kampung: e.target.value })
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-stone-700 font-medium">
+                      Kampung Domisili *
+                    </label>
+                  </div>
+                  {isCustomKampung ? (
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ketik nama kampung baru..."
+                        value={customKampungName}
+                        onChange={(e) => setCustomKampungName(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-[#823296] focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCustomKampung(false);
+                          setCustomKampungName("");
+                        }}
+                        className="px-2 py-2 text-[10px] font-semibold text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-lg shrink-0 cursor-pointer"
+                      >
+                        Pilih
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <select
+                        value={formData.kampung}
+                        onChange={(e) =>
+                          setFormData({ ...formData, kampung: e.target.value })
+                        }
+                        className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-800"
+                      >
+                        {uniqueKampungs.map((k) => (
+                          <option key={k} value={k}>
+                            {k}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setIsCustomKampung(true)}
+                        className="px-2 py-2 text-[10px] font-semibold text-[#823296] bg-purple-50 hover:bg-purple-100 rounded-lg shrink-0 cursor-pointer"
+                        title="Ketik kampung baru jika belum ada di database"
+                      >
+                        + Baru
+                      </button>
+                    </div>
+                  )}
                 </div>
+
                 <div>
                   <label className="block text-stone-700 font-medium mb-1">
                     Penanggung Jawab AV (Koordinator)

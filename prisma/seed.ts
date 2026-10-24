@@ -8,8 +8,8 @@ import {
   initialUsers,
   initialRoles,
   initialPermissions,
-  moduleList,
 } from "../src/data/admin/adminData";
+import { initialDistriks, initialKampungs } from "../src/lib/wilayah";
 
 const prisma = new PrismaClient();
 
@@ -90,7 +90,43 @@ async function main() {
     });
   }
 
-  // 4. Area Volunteers (AV - Koordinator Kampung)
+  // 4. Master Wilayah (Distrik & Kampung)
+  console.log("➡️ Seeding Master Wilayah (Distrik & Kampung)...");
+  for (const d of initialDistriks) {
+    await prisma.district.upsert({
+      where: { id: d.id },
+      update: {
+        nama: d.nama,
+        kabupaten: d.kabupaten,
+      },
+      create: {
+        id: d.id,
+        nama: d.nama,
+        kabupaten: d.kabupaten,
+      },
+    });
+  }
+
+  for (const k of initialKampungs) {
+    await prisma.village.upsert({
+      where: { id: k.id },
+      update: {
+        nama: k.nama,
+        districtId: k.distrikId,
+        kabupaten: k.kabupaten,
+        catatan: k.catatan,
+      },
+      create: {
+        id: k.id,
+        nama: k.nama,
+        districtId: k.distrikId,
+        kabupaten: k.kabupaten,
+        catatan: k.catatan,
+      },
+    });
+  }
+
+  // 5. Area Volunteers (AV - Koordinator Kampung)
   console.log("➡️ Seeding Koordinator Kampung (AV)...");
   for (const av of initialAVs) {
     await prisma.areaVolunteer.upsert({

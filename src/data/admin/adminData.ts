@@ -643,6 +643,7 @@ export const initialRoles: RoleDefinition[] = [
 export const moduleList = [
   { id: "anak-yatim", name: "Pendataan Anak Yatim", desc: "Data santri yatim/piatu, profil keluarga, dan riwayat pendidikan" },
   { id: "av", name: "Pendataan AV", desc: "Database koordinator lapangan kampung, penanggung jawab (PJ) santri yatim, dan informasi posko" },
+  { id: "wilayah", name: "Master Wilayah", desc: "Database distrik dan kampung binaan di Merauke & Papua Selatan" },
   { id: "relawan", name: "Pendataan Relawan", desc: "Database anggota relawan aktif, keahlian, dan divisi tugas" },
   { id: "donatur", name: "Pendataan Donatur", desc: "Database donatur perorangan, lembaga, dan riwayat komitmen" },
   { id: "keuangan", name: "Manajemen Keuangan", desc: "Arus kas masuk-keluar, pencatatan kuitansi, dan neraca sedekah" },
@@ -655,6 +656,7 @@ export const initialPermissions: RolePermissionsMap = {
   super_admin: {
     "anak-yatim": { create: true, read: true, update: true, delete: true },
     av: { create: true, read: true, update: true, delete: true },
+    wilayah: { create: true, read: true, update: true, delete: true },
     relawan: { create: true, read: true, update: true, delete: true },
     donatur: { create: true, read: true, update: true, delete: true },
     keuangan: { create: true, read: true, update: true, delete: true },
@@ -665,6 +667,7 @@ export const initialPermissions: RolePermissionsMap = {
   bendahara: {
     "anak-yatim": { create: false, read: true, update: false, delete: false },
     av: { create: false, read: true, update: false, delete: false },
+    wilayah: { create: false, read: true, update: false, delete: false },
     relawan: { create: false, read: true, update: false, delete: false },
     donatur: { create: true, read: true, update: true, delete: false },
     keuangan: { create: true, read: true, update: true, delete: true },
@@ -675,6 +678,7 @@ export const initialPermissions: RolePermissionsMap = {
   koordinator_relawan: {
     "anak-yatim": { create: true, read: true, update: true, delete: false },
     av: { create: true, read: true, update: true, delete: true },
+    wilayah: { create: true, read: true, update: true, delete: false },
     relawan: { create: true, read: true, update: true, delete: true },
     donatur: { create: false, read: true, update: false, delete: false },
     keuangan: { create: false, read: true, update: false, delete: false },
@@ -685,6 +689,7 @@ export const initialPermissions: RolePermissionsMap = {
   staf_lapangan: {
     "anak-yatim": { create: true, read: true, update: true, delete: false },
     av: { create: true, read: true, update: true, delete: false },
+    wilayah: { create: true, read: true, update: true, delete: false },
     relawan: { create: false, read: true, update: false, delete: false },
     donatur: { create: false, read: false, update: false, delete: false },
     keuangan: { create: false, read: false, update: false, delete: false },
@@ -695,6 +700,7 @@ export const initialPermissions: RolePermissionsMap = {
   auditor: {
     "anak-yatim": { create: false, read: true, update: false, delete: false },
     av: { create: false, read: true, update: false, delete: false },
+    wilayah: { create: false, read: true, update: false, delete: false },
     relawan: { create: false, read: true, update: false, delete: false },
     donatur: { create: false, read: true, update: false, delete: false },
     keuangan: { create: false, read: true, update: false, delete: false },
