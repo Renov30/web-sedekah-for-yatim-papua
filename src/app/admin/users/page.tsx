@@ -19,7 +19,8 @@ import {
   Shield,
   CheckSquare,
 } from "lucide-react";
-import { initialRoles } from "@/data/admin/adminData";
+import { initialRoles, RoleDefinition } from "@/data/admin/adminData";
+import { getStoredRoles } from "@/lib/adminDataStore";
 import {
   UserWithAuth,
   getStoredUsers,
@@ -34,6 +35,7 @@ import {
 
 export default function UsersAdminPage() {
   const [users, setUsers] = useState<UserWithAuth[]>([]);
+  const [roles, setRoles] = useState<RoleDefinition[]>(initialRoles);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterRole, setFilterRole] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -79,9 +81,14 @@ export default function UsersAdminPage() {
   const [showFormPassword, setShowFormPassword] = useState(false);
 
   useEffect(() => {
-    // Load persisted users from storage
-    queueMicrotask(() => setUsers(getStoredUsers()));
+    // Load persisted users and roles from storage
+    queueMicrotask(() => {
+      setUsers(getStoredUsers());
+      setRoles(getStoredRoles());
+    });
   }, []);
+
+  const activeRoles = roles.filter((r) => !r.isDeleted);
 
   const refreshUsers = () => {
     setUsers(getStoredUsers());
@@ -110,12 +117,12 @@ export default function UsersAdminPage() {
   });
 
   const getRoleName = (roleId: string) => {
-    const role = initialRoles.find((r) => r.id === roleId);
+    const role = activeRoles.find((r) => r.id === roleId);
     return role ? role.nama : roleId;
   };
 
   const getRoleBadge = (roleId: string) => {
-    const role = initialRoles.find((r) => r.id === roleId);
+    const role = activeRoles.find((r) => r.id === roleId);
     return role ? role.badgeColor : "bg-stone-100 text-stone-800";
   };
 
@@ -273,6 +280,14 @@ export default function UsersAdminPage() {
     );
   };
 
+  const isMasterAccount = (u: UserWithAuth) => {
+    return (
+      u.id === "USR-001" ||
+      u.email.toLowerCase() ===
+        MASTER_ADMIN_CREDENTIALS.email.toLowerCase()
+    );
+  };
+
   const selectableUsers = filteredUsers.filter((u) => !isMasterAccount(u));
   const isAllSelected =
     selectableUsers.length > 0 &&
@@ -373,14 +388,6 @@ export default function UsersAdminPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
-
-  const isMasterAccount = (u: UserWithAuth) => {
-    return (
-      u.id === "USR-001" ||
-      u.email.toLowerCase() ===
-        MASTER_ADMIN_CREDENTIALS.email.toLowerCase()
-    );
   };
 
   const handleOpenEdit = (user: UserWithAuth) => {
@@ -569,7 +576,7 @@ export default function UsersAdminPage() {
             className="px-3 py-2 rounded-xl text-sm border border-stone-200 focus:outline-none focus:border-[#823296] bg-white text-stone-700"
           >
             <option value="all">Semua Role</option>
-            {initialRoles.map((r) => (
+            {activeRoles.map((r) => (
               <option key={r.id} value={r.id}>
                 {r.nama}
               </option>
@@ -1228,7 +1235,7 @@ export default function UsersAdminPage() {
                     }
                     className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white"
                   >
-                    {initialRoles.map((r) => (
+                    {activeRoles.map((r) => (
                       <option key={r.id} value={r.id}>
                         {r.nama}
                       </option>
@@ -1362,7 +1369,7 @@ export default function UsersAdminPage() {
                     }
                     className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white disabled:bg-stone-100 disabled:text-stone-500"
                   >
-                    {initialRoles.map((role) => (
+                    {activeRoles.map((role) => (
                       <option key={role.id} value={role.id}>
                         {role.nama}
                       </option>

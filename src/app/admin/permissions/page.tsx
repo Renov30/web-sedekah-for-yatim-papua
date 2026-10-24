@@ -11,12 +11,15 @@ import {
   moduleList,
   initialPermissions,
   RolePermissionsMap,
+  RoleDefinition,
 } from "@/data/admin/adminData";
+import { getStoredRoles } from "@/lib/adminDataStore";
 
 function PermissionsContent() {
   const searchParams = useSearchParams();
   const requestedRole = searchParams.get("role");
 
+  const [roles, setRoles] = useState<RoleDefinition[]>(initialRoles);
   const [selectedRoleId, setSelectedRoleId] = useState<string>("super_admin");
   const [permissionsMap, setPermissionsMap] =
     useState<RolePermissionsMap>(initialPermissions);
@@ -25,13 +28,22 @@ function PermissionsContent() {
   );
 
   useEffect(() => {
-    if (requestedRole && initialRoles.some((r) => r.id === requestedRole)) {
-      queueMicrotask(() => setSelectedRoleId(requestedRole));
-    }
+    queueMicrotask(() => {
+      const storedRoles = getStoredRoles();
+      setRoles(storedRoles);
+      const nonDeleted = storedRoles.filter((r) => !r.isDeleted);
+      if (requestedRole && nonDeleted.some((r) => r.id === requestedRole)) {
+        setSelectedRoleId(requestedRole);
+      }
+    });
   }, [requestedRole]);
 
+  const activeRoles = roles.filter((r) => !r.isDeleted);
+
   const currentRole =
-    initialRoles.find((r) => r.id === selectedRoleId) || initialRoles[0];
+    activeRoles.find((r) => r.id === selectedRoleId) ||
+    activeRoles[0] ||
+    initialRoles[0];
 
   const currentRolePerms = permissionsMap[selectedRoleId] || {};
 
@@ -162,7 +174,7 @@ function PermissionsContent() {
       {/* Role Selection Tabs */}
       <div className="bg-white p-3 rounded-2xl border border-stone-200/80 shadow-2xs">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-          {initialRoles.map((r) => {
+          {activeRoles.map((r) => {
             const isSelected = r.id === selectedRoleId;
             return (
               <button

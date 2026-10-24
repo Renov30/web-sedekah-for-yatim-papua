@@ -156,6 +156,14 @@ export const initialKampungs: KampungRecord[] = [
     kabupaten: "Kab. Merauke",
     catatan: "Pusat pondok pesantren mitra dan asrama binaan.",
   },
+  {
+    id: "KMP-025",
+    nama: "Kampung Rawasari",
+    distrikId: "DST-003",
+    distrikNama: "Distrik Kurik",
+    kabupaten: "Kab. Merauke",
+    catatan: "Komunitas binaan santri anak yatim Kurik Rawasari.",
+  },
 
   // Distrik Tanah Miring
   {

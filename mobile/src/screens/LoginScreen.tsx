@@ -261,7 +261,7 @@ export const LoginScreen: React.FC = () => {
                 onPress={() => setTempUrl(PRODUCTION_SERVER_URL)}
               >
                 <Text style={styles.presetChipText}>
-                  Production (sfypapua.org)
+                  Production (Vercel)
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity

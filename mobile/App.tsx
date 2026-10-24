@@ -249,7 +249,7 @@ const MainShell: React.FC = () => {
                 onPress={() => setTempUrl(PRODUCTION_SERVER_URL)}
               >
                 <Text style={styles.presetText}>
-                  Production (sfypapua.org)
+                  Production (Vercel)
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity

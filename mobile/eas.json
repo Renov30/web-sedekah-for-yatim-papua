@@ -14,7 +14,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://sfypapua.org"
+        "EXPO_PUBLIC_API_URL": "https://web-sfy.vercel.app"
       }
     },
     "production": {
@@ -23,7 +23,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://sfypapua.org"
+        "EXPO_PUBLIC_API_URL": "https://web-sfy.vercel.app"
       }
     }
   },

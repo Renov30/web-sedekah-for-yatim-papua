@@ -48,45 +48,15 @@ const DEFAULT_OFFLINE_CREDENTIAL: CachedCredential = {
   },
 };
 
-export const PRODUCTION_SERVER_URL = "https://sfypapua.org";
+export const PRODUCTION_SERVER_URL = "https://web-sfy.vercel.app";
 
 export function detectDefaultServerUrl(): string {
-  // 1. Check EXPO_PUBLIC_API_URL environment variable (used in Production APK build)
+  // 1. Check EXPO_PUBLIC_API_URL environment variable (used in Production APK build or .env)
   if (process.env.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL.replace(/\/+$/, "");
   }
 
-  // 2. If running on web in browser
-  if (Platform.OS === "web") {
-    return "http://localhost:3000";
-  }
-
-  // 3. Try to detect LAN IP from Expo hostUri / debuggerHost / experienceUrl during development
-  const manifest2DebuggerHost = (
-    Constants.manifest2 as {
-      extra?: { expoGo?: { debuggerHost?: string } };
-    } | null
-  )?.extra?.expoGo?.debuggerHost;
-
-  const expHost = Constants.experienceUrl
-    ? Constants.experienceUrl.replace(/^exp:\/\//, "").split("/")[0]
-    : undefined;
-
-  const rawHostUri =
-    Constants.expoConfig?.hostUri || manifest2DebuggerHost || expHost;
-
-  if (rawHostUri) {
-    const host = rawHostUri.split(":")[0];
-    if (host && host !== "localhost" && host !== "127.0.0.1") {
-      return `http://${host}:3000`;
-    }
-  }
-
-  // 4. In development mode, default to local LAN server; in standalone production APK, fallback to sfypapua.org
-  if (typeof __DEV__ !== "undefined" && __DEV__) {
-    return "http://192.168.1.15:3000";
-  }
-
+  // 2. Default to production server so the mobile app works immediately like a normal app anywhere
   return PRODUCTION_SERVER_URL;
 }
 
@@ -96,13 +66,12 @@ export async function getServerUrl(): Promise<string> {
     const saved = await AsyncStorage.getItem(KEY_SERVER_URL);
     if (saved && saved.trim()) {
       const cleanSaved = saved.trim().replace(/\/+$/, "");
-      // In Expo Go dev mode, if an old LAN IP or undeployed production domain was cached, auto-heal to current LAN IP
+      // Auto-heal old unreachable hosts (e.g. inactive sfypapua.org or stale local LAN IP) to production
       if (
-        typeof __DEV__ !== "undefined" &&
-        __DEV__ &&
-        cleanSaved !== detected &&
-        (cleanSaved === PRODUCTION_SERVER_URL ||
-          cleanSaved.includes("10.145.210.220"))
+        cleanSaved === "https://sfypapua.org" ||
+        cleanSaved.includes("192.168.1.15") ||
+        cleanSaved.includes("10.145.210.220") ||
+        cleanSaved === "http://localhost:3000"
       ) {
         await AsyncStorage.setItem(KEY_SERVER_URL, detected);
         return detected;

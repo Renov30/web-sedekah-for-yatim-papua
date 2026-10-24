@@ -9,6 +9,7 @@ import React, {
 import { AppState, AppStateStatus } from "react-native";
 import {
   clearStoredSessionMobile,
+  detectDefaultServerUrl,
   enqueueSyncOperation,
   formatDateIndonesian,
   formatNowIndonesian,
@@ -143,7 +144,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({
   const [pendingCount, setPendingCount] = useState<number>(0);
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
   const [serverUrl, setServerUrlState] = useState<string>(
-    "http://192.168.1.15:3000"
+    detectDefaultServerUrl()
   );
   const [lastSyncFeedback, setLastSyncFeedback] = useState<string | null>(null);
 
