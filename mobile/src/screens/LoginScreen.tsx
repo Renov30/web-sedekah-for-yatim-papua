@@ -21,7 +21,7 @@ import {
 
 export const LoginScreen: React.FC = () => {
   const { login, serverUrl, updateServerUrl, isOnline } = useData();
-  const [email, setEmail] = useState("admin@sfypapua.org");
+  const [email, setEmail] = useState("admin");
   const [password, setPassword] = useState("AdminSFY2025!");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +33,7 @@ export const LoginScreen: React.FC = () => {
   const handleLogin = async () => {
     setErrorMsg(null);
     if (!email.trim() || !password) {
-      setErrorMsg("Email dan kata sandi wajib diisi.");
+      setErrorMsg("Username dan kata sandi wajib diisi.");
       return;
     }
     setIsLoading(true);
@@ -128,10 +128,10 @@ export const LoginScreen: React.FC = () => {
           ) : null}
 
           <View style={styles.fieldGroup}>
-            <Text style={styles.label}>Alamat Email Petugas / Admin</Text>
+            <Text style={styles.label}>Username Petugas / Admin</Text>
             <View style={styles.inputWrapper}>
               <Ionicons
-                name="mail-outline"
+                name="person-outline"
                 size={18}
                 color="#78716c"
                 style={styles.inputIcon}
@@ -140,9 +140,8 @@ export const LoginScreen: React.FC = () => {
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
-                placeholder="admin@sfypapua.org"
+                placeholder="admin"
                 placeholderTextColor="#a8a29e"
-                keyboardType="email-address"
                 autoCapitalize="none"
               />
             </View>
@@ -199,14 +198,14 @@ export const LoginScreen: React.FC = () => {
           <TouchableOpacity
             style={styles.autofillBox}
             onPress={() => {
-              setEmail("admin@sfypapua.org");
+              setEmail("admin");
               setPassword("AdminSFY2025!");
               setErrorMsg(null);
             }}
           >
             <Ionicons name="key-outline" size={15} color="#5E2276" />
             <Text style={styles.autofillText}>
-              Gunakan Kredensial Master Admin (admin@sfypapua.org)
+              Gunakan Kredensial Master Admin (admin)
             </Text>
           </TouchableOpacity>
 

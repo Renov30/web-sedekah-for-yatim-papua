@@ -31,13 +31,13 @@ interface CachedCredential {
 }
 
 const DEFAULT_OFFLINE_CREDENTIAL: CachedCredential = {
-  email: "admin@sfypapua.org",
+  email: "admin",
   password: "AdminSFY2025!",
   session: {
     user: {
       id: "USR-001",
       nama: "Master Administrator SFY",
-      email: "admin@sfypapua.org",
+      email: "admin",
       roleId: "super_admin",
       status: "Aktif",
       terakhirLogin: "Mode Offline",
@@ -503,7 +503,11 @@ export async function loginWithOfflineFallback(
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: cleanEmail, password: passwordInput }),
+        body: JSON.stringify({
+          username: cleanEmail,
+          email: cleanEmail,
+          password: passwordInput,
+        }),
       },
       4500
     );
@@ -513,7 +517,7 @@ export async function loginWithOfflineFallback(
       return {
         success: false,
         isOfflineLogin: false,
-        message: json.message || "Email atau kata sandi tidak valid.",
+        message: json.message || "Username atau kata sandi tidak valid.",
       };
     }
 
@@ -550,9 +554,16 @@ export async function loginWithOfflineFallback(
       cachedList.push(DEFAULT_OFFLINE_CREDENTIAL);
     }
 
-    const matched = cachedList.find(
-      (c) => c.email.toLowerCase() === cleanEmail
-    );
+    const isMasterAlias =
+      cleanEmail === "admin" || cleanEmail === "admin@sfypapua.org";
+
+    const matched = cachedList.find((c) => {
+      const cName = c.email.toLowerCase();
+      if (isMasterAlias && (cName === "admin" || cName === "admin@sfypapua.org")) {
+        return true;
+      }
+      return cName === cleanEmail;
+    });
 
     if (!matched) {
       return {

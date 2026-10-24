@@ -21,11 +21,11 @@ export const roleDisplayNames: Record<string, string> = {
   auditor: "Auditor & Pengawas",
 };
 
-// Master Admin (Super Admin) Default Account
+// Master Admin (Super Admin) Default Account (uses plain username "admin")
 export const MASTER_ADMIN_CREDENTIALS: UserWithAuth = {
   id: "USR-001",
   nama: "Master Administrator SFY",
-  email: "admin@sfypapua.org",
+  email: "admin",
   password: "AdminSFY2025!",
   roleId: "super_admin",
   status: "Aktif",
@@ -54,39 +54,125 @@ export function getStoredUsers(): UserWithAuth[] {
       );
       return [MASTER_ADMIN_CREDENTIALS];
     }
+
+    // Auto-migrate legacy master admin email "admin@sfypapua.org" -> "admin"
+    let migrated = false;
+    const normalized = parsed.map((u) => {
+      if (
+        u.id === "USR-001" &&
+        u.email.toLowerCase() === "admin@sfypapua.org"
+      ) {
+        migrated = true;
+        return { ...u, email: "admin" };
+      }
+      return u;
+    });
+
     // Ensure master admin is preserved with super_admin role
-    const hasMaster = parsed.some(
-      (u) => u.email.toLowerCase() === MASTER_ADMIN_CREDENTIALS.email.toLowerCase()
+    const hasMaster = normalized.some(
+      (u) =>
+        u.id === "USR-001" ||
+        u.email.toLowerCase() === MASTER_ADMIN_CREDENTIALS.email.toLowerCase() ||
+        u.email.toLowerCase() === "admin@sfypapua.org"
     );
     if (!hasMaster) {
-      const merged = [MASTER_ADMIN_CREDENTIALS, ...parsed];
+      const merged = [MASTER_ADMIN_CREDENTIALS, ...normalized];
       localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(merged));
       return merged;
     }
-    return parsed;
+
+    if (migrated) {
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(normalized));
+    }
+    return normalized;
   } catch {
     return [MASTER_ADMIN_CREDENTIALS];
   }
 }
 
-export function saveStoredUsers(users: UserWithAuth[]): void {
+export function saveStoredUsers(
+  users: UserWithAuth[],
+  syncToServer = true
+): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+  if (syncToServer) {
+    fetch("/api/admin/users", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: users }),
+    }).catch(() => {});
+  }
+}
+
+export async function fetchUsersFromApi(): Promise<UserWithAuth[]> {
+  const localUsers = getStoredUsers();
+  if (typeof window === "undefined") return localUsers;
+
+  try {
+    const res = await fetch("/api/admin/users", { cache: "no-store" });
+    if (!res.ok) return localUsers;
+    const json = await res.json();
+    if (!json.success || !Array.isArray(json.data)) return localUsers;
+
+    const serverUsers = json.data as UserWithAuth[];
+    const mergedMap = new Map<string, UserWithAuth>();
+
+    for (const su of serverUsers) {
+      mergedMap.set(su.id, su);
+    }
+
+    let hasUnsyncedLocal = false;
+    for (const lu of localUsers) {
+      const existsById = mergedMap.has(lu.id);
+      const existsByUsername = Array.from(mergedMap.values()).some(
+        (su) => su.email.toLowerCase() === lu.email.toLowerCase()
+      );
+      if (!existsById && !existsByUsername) {
+        mergedMap.set(lu.id, lu);
+        hasUnsyncedLocal = true;
+      }
+    }
+
+    const merged = Array.from(mergedMap.values());
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(merged));
+
+    if (hasUnsyncedLocal) {
+      fetch("/api/admin/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: merged }),
+      }).catch(() => {});
+    }
+
+    return merged;
+  } catch {
+    return localUsers;
+  }
 }
 
 export function authenticateUser(
-  emailInput: string,
+  usernameInput: string,
   passwordInput: string
 ): { success: boolean; message?: string; session?: AuthSession } {
-  const cleanEmail = emailInput.trim().toLowerCase();
+  const cleanUsername = usernameInput.trim().toLowerCase();
   const users = getStoredUsers();
 
-  const user = users.find((u) => u.email.toLowerCase() === cleanEmail);
+  const isMasterAlias =
+    cleanUsername === "admin" || cleanUsername === "admin@sfypapua.org";
+
+  const user = users.find((u) => {
+    const uName = u.email.toLowerCase();
+    if (isMasterAlias && (u.id === "USR-001" || uName === "admin" || uName === "admin@sfypapua.org")) {
+      return true;
+    }
+    return uName === cleanUsername || u.nama.toLowerCase() === cleanUsername;
+  });
 
   if (!user) {
     return {
       success: false,
-      message: "Email pengguna belum terdaftar di sistem SFY Papua.",
+      message: "Username pengguna belum terdaftar di sistem SFY Papua.",
     };
   }
 
@@ -153,20 +239,24 @@ export function registerNewUser(
   newUser: Omit<UserWithAuth, "id" | "terakhirLogin">
 ): { success: boolean; message?: string; user?: UserWithAuth } {
   const users = getStoredUsers();
-  const cleanEmail = newUser.email.trim().toLowerCase();
+  const cleanUsername = newUser.email.trim().toLowerCase();
 
-  if (users.some((u) => u.email.toLowerCase() === cleanEmail)) {
+  if (users.some((u) => u.email.toLowerCase() === cleanUsername)) {
     return {
       success: false,
-      message: `Email ${newUser.email} sudah terdaftar. Gunakan alamat email lain.`,
+      message: `Username "${newUser.email}" sudah terdaftar. Gunakan username lain.`,
     };
   }
 
-  const newId = `USR-${String(users.length + 1).padStart(3, "0")}`;
+  const maxNum = users.reduce((max, u) => {
+    const num = parseInt(u.id.replace(/\D/g, ""), 10);
+    return isNaN(num) ? max : Math.max(max, num);
+  }, 0);
+  const newId = `USR-${String(maxNum + 1).padStart(3, "0")}`;
   const created: UserWithAuth = {
     ...newUser,
     id: newId,
-    email: cleanEmail,
+    email: cleanUsername,
     terakhirLogin: "Belum pernah login",
   };
 
@@ -190,16 +280,16 @@ export function updateStoredUser(
     return { success: false, message: "Pengguna tidak ditemukan." };
   }
 
-  // If email is changing, verify uniqueness
+  // If username is changing, verify uniqueness
   if (updates.email) {
-    const cleanEmail = updates.email.trim().toLowerCase();
+    const cleanUsername = updates.email.trim().toLowerCase();
     const duplicate = users.find(
-      (u) => u.id !== id && u.email.toLowerCase() === cleanEmail
+      (u) => u.id !== id && u.email.toLowerCase() === cleanUsername
     );
     if (duplicate) {
-      return { success: false, message: "Email sudah digunakan oleh akun lain." };
+      return { success: false, message: "Username sudah digunakan oleh akun lain." };
     }
-    updates.email = cleanEmail;
+    updates.email = cleanUsername;
   }
 
   users[index] = {
@@ -259,7 +349,8 @@ export function deleteStoredUser(
 
   if (
     target.id === "USR-001" ||
-    target.email.toLowerCase() === MASTER_ADMIN_CREDENTIALS.email.toLowerCase()
+    target.email.toLowerCase() === MASTER_ADMIN_CREDENTIALS.email.toLowerCase() ||
+    target.email.toLowerCase() === "admin@sfypapua.org"
   ) {
     return {
       success: false,
@@ -312,7 +403,8 @@ export function permanentDeleteStoredUser(
 
   if (
     target.id === "USR-001" ||
-    target.email.toLowerCase() === MASTER_ADMIN_CREDENTIALS.email.toLowerCase()
+    target.email.toLowerCase() === MASTER_ADMIN_CREDENTIALS.email.toLowerCase() ||
+    target.email.toLowerCase() === "admin@sfypapua.org"
   ) {
     return {
       success: false,

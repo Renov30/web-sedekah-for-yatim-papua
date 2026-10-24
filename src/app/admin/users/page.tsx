@@ -24,6 +24,7 @@ import { getStoredRoles } from "@/lib/adminDataStore";
 import {
   UserWithAuth,
   getStoredUsers,
+  fetchUsersFromApi,
   registerNewUser,
   updateStoredUser,
   deleteStoredUser,
@@ -81,10 +82,13 @@ export default function UsersAdminPage() {
   const [showFormPassword, setShowFormPassword] = useState(false);
 
   useEffect(() => {
-    // Load persisted users and roles from storage
+    // Load persisted users and roles from storage, then sync with database API
     queueMicrotask(() => {
       setUsers(getStoredUsers());
       setRoles(getStoredRoles());
+      fetchUsersFromApi().then((serverUsers) => {
+        setUsers(serverUsers);
+      });
     });
   }, []);
 
@@ -284,7 +288,8 @@ export default function UsersAdminPage() {
     return (
       u.id === "USR-001" ||
       u.email.toLowerCase() ===
-        MASTER_ADMIN_CREDENTIALS.email.toLowerCase()
+        MASTER_ADMIN_CREDENTIALS.email.toLowerCase() ||
+      u.email.toLowerCase() === "admin@sfypapua.org"
     );
   };
 
@@ -360,7 +365,7 @@ export default function UsersAdminPage() {
     const headers = [
       "ID",
       "Nama Pengguna",
-      "Email",
+      "Username",
       "Role",
       "Wilayah Tugas",
       "Status",
@@ -411,7 +416,7 @@ export default function UsersAdminPage() {
     }
 
     if (!editFormData.email.trim()) {
-      showNotification("error", "Email pengguna tidak boleh kosong.");
+      showNotification("error", "Username pengguna tidak boleh kosong.");
       return;
     }
 
@@ -563,7 +568,7 @@ export default function UsersAdminPage() {
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
             <input
               type="text"
-              placeholder="Cari nama pengguna, email, atau wilayah tugas..."
+              placeholder="Cari nama pengguna, username, atau wilayah tugas..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-2 rounded-xl text-sm border border-stone-200 focus:outline-none focus:border-[#823296] focus:ring-1 focus:ring-[#823296]"
@@ -700,7 +705,7 @@ export default function UsersAdminPage() {
                   />
                 </th>
                 <th className="py-3.5 px-4 w-[22%] min-w-[170px]">Nama Pengguna</th>
-                <th className="py-3.5 px-3 w-[18%] min-w-[150px]">Email Akun</th>
+                <th className="py-3.5 px-3 w-[18%] min-w-[150px]">Username Login</th>
                 <th className="py-3.5 px-3 w-[15%] min-w-[125px]">Jabatan & Role</th>
                 <th className="py-3.5 px-3 w-[15%] min-w-[125px]">Wilayah Penugasan</th>
                 <th className="py-3.5 px-3 w-[12%] min-w-[105px]">{viewTrash ? "Tgl Dihapus" : "Terakhir Login"}</th>
@@ -912,7 +917,7 @@ export default function UsersAdminPage() {
             <div className="space-y-3 text-xs">
               <div className="p-3 bg-stone-50 rounded-xl space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-stone-500">Email Akun:</span>
+                  <span className="text-stone-500">Username Login:</span>
                   <span className="font-mono text-stone-900">
                     {selectedUser.email}
                   </span>
@@ -1180,12 +1185,12 @@ export default function UsersAdminPage() {
 
               <div>
                 <label className="block text-stone-700 font-medium mb-1">
-                  Alamat Email Resmi *
+                  Username Login *
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   required
-                  placeholder="nama@sfypapua.org"
+                  placeholder="Contoh: ahmad_faisal"
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
@@ -1342,12 +1347,12 @@ export default function UsersAdminPage() {
 
               <div>
                 <label className="block text-stone-700 font-medium mb-1">
-                  Email Akun (Digunakan untuk Login) *
+                  Username Akun (Digunakan untuk Login) *
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   required
-                  placeholder="nama@sfypapua.org"
+                  placeholder="Contoh: ahmad_fauzi"
                   value={editFormData.email}
                   onChange={(e) =>
                     setEditFormData({ ...editFormData, email: e.target.value })

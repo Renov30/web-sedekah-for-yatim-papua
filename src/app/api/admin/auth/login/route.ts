@@ -10,21 +10,41 @@ export async function OPTIONS() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const emailInput = String(body.email || "").trim().toLowerCase();
+    const rawUsername = String(body.username || body.email || "")
+      .trim()
+      .toLowerCase();
     const passwordInput = String(body.password || "");
 
-    if (!emailInput || !passwordInput) {
+    if (!rawUsername || !passwordInput) {
       return jsonResponse(
         {
           success: false,
-          message: "Email dan kata sandi wajib diisi.",
+          message: "Username dan kata sandi wajib diisi.",
         },
         400
       );
     }
 
-    let user = await prisma.user.findUnique({
-      where: { email: emailInput },
+    const isMasterAlias =
+      rawUsername === "admin" ||
+      rawUsername === "admin@sfypapua.org" ||
+      rawUsername === MASTER_ADMIN_CREDENTIALS.email.toLowerCase();
+
+    let user = await prisma.user.findFirst({
+      where: isMasterAlias
+        ? {
+            OR: [
+              { id: MASTER_ADMIN_CREDENTIALS.id },
+              { email: { equals: "admin", mode: "insensitive" } },
+              { email: { equals: "admin@sfypapua.org", mode: "insensitive" } },
+            ],
+          }
+        : {
+            OR: [
+              { email: { equals: rawUsername, mode: "insensitive" } },
+              { nama: { equals: rawUsername, mode: "insensitive" } },
+            ],
+          },
       include: {
         role: {
           include: {
@@ -35,10 +55,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Ensure master admin exists in DB if logging in as master admin
-    if (
-      !user &&
-      emailInput === MASTER_ADMIN_CREDENTIALS.email.toLowerCase()
-    ) {
+    if (!user && isMasterAlias) {
       await prisma.role.upsert({
         where: { id: "super_admin" },
         update: {},
@@ -70,13 +87,29 @@ export async function POST(request: NextRequest) {
           },
         },
       });
+    } else if (user && isMasterAlias && user.email === "admin@sfypapua.org") {
+      // Auto-migrate legacy master admin email to plain username "admin"
+      const conflict = await prisma.user.findUnique({ where: { email: "admin" } });
+      if (!conflict) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { email: "admin" },
+          include: {
+            role: {
+              include: {
+                permissions: true,
+              },
+            },
+          },
+        });
+      }
     }
 
     if (!user) {
       return jsonResponse(
         {
           success: false,
-          message: "Email pengguna belum terdaftar di sistem SFY Papua.",
+          message: "Username pengguna belum terdaftar di sistem SFY Papua.",
         },
         401
       );
@@ -163,4 +196,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

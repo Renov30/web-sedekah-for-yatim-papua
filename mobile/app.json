@@ -22,6 +22,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "df609b03-8a3e-4b61-9591-a55d0c6750c9"
+      }
+    },
+    "owner": "renovgeny"
   }
 }

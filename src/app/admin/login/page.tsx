@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Lock,
-  Mail,
+  User,
   Eye,
   EyeOff,
   ArrowRight,
@@ -14,11 +14,16 @@ import {
   ArrowLeft,
   CheckCircle2,
 } from "lucide-react";
-import { authenticateUser, saveSession } from "@/lib/auth";
+import {
+  authenticateUser,
+  getStoredUsers,
+  saveSession,
+  saveStoredUsers,
+} from "@/lib/auth";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -36,13 +41,28 @@ export default function AdminLoginPage() {
       const res = await fetch("/api/admin/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          username: username.trim(),
+          email: username.trim(),
+          password,
+        }),
       });
       const json = await res.json();
 
       if (!res.ok || !json.success) {
+        // Fallback: check if account exists in local browser storage and sync to DB
+        const localAuth = authenticateUser(username, password);
+        if (localAuth.success) {
+          saveStoredUsers(getStoredUsers(), true);
+          setSuccessMessage("Verifikasi berhasil! Mengalihkan ke dashboard...");
+          setTimeout(() => {
+            router.push("/admin");
+          }, 400);
+          return;
+        }
+
         setErrorMessage(
-          json.message || "Gagal masuk. Periksa email dan kata sandi Anda."
+          json.message || "Gagal masuk. Periksa username dan kata sandi Anda."
         );
         setIsLoading(false);
         return;
@@ -51,7 +71,7 @@ export default function AdminLoginPage() {
       if (json.session) {
         saveSession(json.session);
       } else {
-        authenticateUser(email, password);
+        authenticateUser(username, password);
       }
 
       setSuccessMessage("Verifikasi berhasil! Mengalihkan ke dashboard...");
@@ -59,10 +79,10 @@ export default function AdminLoginPage() {
         router.push("/admin");
       }, 400);
     } catch {
-      const result = authenticateUser(email, password);
+      const result = authenticateUser(username, password);
       if (!result.success) {
         setErrorMessage(
-          result.message || "Gagal masuk. Periksa email dan kata sandi Anda."
+          result.message || "Gagal masuk. Periksa username dan kata sandi Anda."
         );
         setIsLoading(false);
         return;
@@ -134,16 +154,17 @@ export default function AdminLoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
             <div>
               <label className="block text-stone-700 font-semibold mb-1.5">
-                Alamat Email Pengguna
+                Username Pengguna
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+                <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
                 <input
-                  type="email"
+                  type="text"
                   required
-                  placeholder="admin@sfypapua.org"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="username"
+                  placeholder="Masukkan username (contoh: admin)"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-[#5E2276] focus:ring-1 focus:ring-[#5E2276] text-sm text-stone-900 placeholder:text-stone-400"
                 />
               </div>
@@ -167,6 +188,7 @@ export default function AdminLoginPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   required
+                  autoComplete="current-password"
                   placeholder="Masukkan kata sandi..."
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

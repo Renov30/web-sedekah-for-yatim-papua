@@ -1046,7 +1046,7 @@ export const initialUsers: UserAccount[] = [
   {
     id: "USR-001",
     nama: "Master Administrator SFY",
-    email: "admin@sfypapua.org",
+    email: "admin",
     roleId: "super_admin",
     status: "Aktif",
     terakhirLogin: "Belum pernah login",
