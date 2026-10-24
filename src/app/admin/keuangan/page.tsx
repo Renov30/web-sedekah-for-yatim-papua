@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ArrowDownLeft,
   ArrowUpRight,
   Search,
   Plus,
   Download,
+  Edit2,
   CheckCircle2,
   Clock,
   FileText,
@@ -16,6 +17,10 @@ import {
   initialFinances,
   FinanceTransaction,
 } from "@/data/admin/adminData";
+import {
+  getStoredFinances,
+  saveStoredFinances,
+} from "@/lib/adminDataStore";
 
 export default function KeuanganAdminPage() {
   const [transactions, setTransactions] =
@@ -27,6 +32,12 @@ export default function KeuanganAdminPage() {
   const [selectedTx, setSelectedTx] = useState<FinanceTransaction | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  useEffect(() => {
+    queueMicrotask(() => {
+      setTransactions(getStoredFinances());
+    });
+  }, []);
+
   const [formData, setFormData] = useState({
     jenis: "Pemasukan" as "Pemasukan" | "Pengeluaran",
     kategori: "Sedekah Rutin",
@@ -34,6 +45,19 @@ export default function KeuanganAdminPage() {
     keterangan: "",
     metode: "Bank BSI",
     petugas: "Ustadzah Wardah (Bendahara)",
+    status: "Terverifikasi" as "Terverifikasi" | "Review",
+  });
+
+  // Edit Modal State
+  const [editingTx, setEditingTx] = useState<FinanceTransaction | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    tanggal: "",
+    jenis: "Pemasukan" as "Pemasukan" | "Pengeluaran",
+    kategori: "",
+    jumlah: 0,
+    keterangan: "",
+    metode: "",
+    petugas: "",
     status: "Terverifikasi" as "Terverifikasi" | "Review",
   });
 
@@ -61,16 +85,18 @@ export default function KeuanganAdminPage() {
   });
 
   const handleToggleStatus = (id: string) => {
-    setTransactions((prev) =>
-      prev.map((t) => {
+    setTransactions((prev) => {
+      const nextList: FinanceTransaction[] = prev.map((t) => {
         if (t.id === id) {
-          const nextStatus =
+          const nextStatus: FinanceTransaction["status"] =
             t.status === "Terverifikasi" ? "Review" : "Terverifikasi";
           return { ...t, status: nextStatus };
         }
         return t;
-      })
-    );
+      });
+      saveStoredFinances(nextList);
+      return nextList;
+    });
 
     if (selectedTx && selectedTx.id === id) {
       setSelectedTx((prev) =>
@@ -111,7 +137,9 @@ export default function KeuanganAdminPage() {
       petugas: formData.petugas,
     };
 
-    setTransactions([newRecord, ...transactions]);
+    const updated = [newRecord, ...transactions];
+    setTransactions(updated);
+    saveStoredFinances(updated);
     setIsAddModalOpen(false);
     setFormData({
       jenis: "Pemasukan",
@@ -122,6 +150,50 @@ export default function KeuanganAdminPage() {
       petugas: "Ustadzah Wardah (Bendahara)",
       status: "Terverifikasi",
     });
+  };
+
+  const handleOpenEdit = (tx: FinanceTransaction) => {
+    setEditingTx(tx);
+    setEditFormData({
+      tanggal: tx.tanggal,
+      jenis: tx.jenis,
+      kategori: tx.kategori,
+      jumlah: tx.jumlah,
+      keterangan: tx.keterangan,
+      metode: tx.metode,
+      petugas: tx.petugas,
+      status: tx.status,
+    });
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTx) return;
+
+    const updated = transactions.map((t) => {
+      if (t.id === editingTx.id) {
+        return {
+          ...t,
+          tanggal: editFormData.tanggal,
+          jenis: editFormData.jenis,
+          kategori: editFormData.kategori.trim(),
+          jumlah: Number(editFormData.jumlah),
+          keterangan: editFormData.keterangan.trim(),
+          metode: editFormData.metode.trim(),
+          petugas: editFormData.petugas.trim(),
+          status: editFormData.status,
+        };
+      }
+      return t;
+    });
+
+    setTransactions(updated);
+    saveStoredFinances(updated);
+    if (selectedTx && selectedTx.id === editingTx.id) {
+      const updatedItem = updated.find((t) => t.id === editingTx.id);
+      if (updatedItem) setSelectedTx(updatedItem);
+    }
+    setEditingTx(null);
   };
 
   const handleExportCSV = () => {
@@ -302,7 +374,7 @@ export default function KeuanganAdminPage() {
                 <th className="py-3.5 px-3 w-[14%] min-w-[120px] text-right">Nominal (Rp)</th>
                 <th className="py-3.5 px-3 w-[16%] min-w-[140px]">Metode & Petugas</th>
                 <th className="py-3.5 px-3 w-[9%] min-w-[85px] text-center">Audit</th>
-                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[10%] min-w-[120px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -385,14 +457,25 @@ export default function KeuanganAdminPage() {
                       </button>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedTx(trx)}
-                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
-                      >
-                        <FileText className="w-3.5 h-3.5" />
-                        <span>Kuitansi</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedTx(trx)}
+                          className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
+                          title="Lihat Kuitansi"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>Kuitansi</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(trx)}
+                          className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                          title="Edit Transaksi Kas"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -495,13 +578,23 @@ export default function KeuanganAdminPage() {
                 >
                   Toggle Audit Status
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedTx(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
-                >
-                  Tutup Kuitansi
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenEdit(selectedTx)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-purple-50 text-[#823296] hover:bg-purple-100 transition-colors"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                    <span>Edit Transaksi</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTx(null)}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
+                  >
+                    Tutup
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -664,6 +757,200 @@ export default function KeuanganAdminPage() {
                   className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
                 >
                   Simpan Transaksi Kas
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingTx && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-semibold text-stone-700 bg-stone-100 px-2 py-0.5 rounded">
+                  {editingTx.noRef}
+                </span>
+                <h3 className="text-base font-bold text-stone-900">
+                  Edit Catatan Transaksi Kas
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingTx(null)}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Tanggal Transaksi *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.tanggal}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        tanggal: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Jenis Arus Kas *
+                  </label>
+                  <select
+                    value={editFormData.jenis}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        jenis: e.target.value as "Pemasukan" | "Pengeluaran",
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white font-medium"
+                  >
+                    <option value="Pemasukan">Pemasukan (Kas Masuk / Sedekah)</option>
+                    <option value="Pengeluaran">Pengeluaran (Kas Keluar / Program)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Pos Alokasi / Kategori *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.kategori}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        kategori: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Nominal Transaksi (Rp) *
+                  </label>
+                  <input
+                    type="number"
+                    min={1000}
+                    step={1000}
+                    required
+                    value={editFormData.jumlah}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        jumlah: parseInt(e.target.value) || 0,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] font-mono font-bold"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Keterangan Lengkap & Peruntukan *
+                </label>
+                <textarea
+                  required
+                  rows={2}
+                  value={editFormData.keterangan}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      keterangan: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Metode Transaksi / Rekening
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.metode}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        metode: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Petugas Pencatat
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.petugas}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        petugas: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Status Verifikasi / Audit
+                </label>
+                <select
+                  value={editFormData.status}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      status: e.target.value as "Terverifikasi" | "Review",
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white font-medium"
+                >
+                  <option value="Terverifikasi">Terverifikasi (Sah)</option>
+                  <option value="Review">Menunggu Review Nota</option>
+                </select>
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingTx(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
+                >
+                  Simpan Perubahan
                 </button>
               </div>
             </form>

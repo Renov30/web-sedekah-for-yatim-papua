@@ -9,6 +9,7 @@ import {
   MapPin,
   X,
   UserPlus,
+  Edit2,
   KeyRound,
   Trash2,
   Eye,
@@ -39,6 +40,14 @@ export default function UsersAdminPage() {
     useState<UserWithAuth | null>(null);
   const [deleteConfirmUser, setDeleteConfirmUser] =
     useState<UserWithAuth | null>(null);
+  const [editingUser, setEditingUser] = useState<UserWithAuth | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    nama: "",
+    email: "",
+    roleId: "staf_lapangan",
+    status: "Aktif" as "Aktif" | "Non-aktif",
+    wilayahTugas: "Sekretariat Pusat Merauke (Papua Selatan)",
+  });
 
   const [newPasswordInput, setNewPasswordInput] = useState("");
   const [showPasswordInModal, setShowPasswordInModal] = useState(false);
@@ -257,6 +266,54 @@ export default function UsersAdminPage() {
     );
   };
 
+  const handleOpenEdit = (user: UserWithAuth) => {
+    setEditingUser(user);
+    setEditFormData({
+      nama: user.nama,
+      email: user.email,
+      roleId: user.roleId,
+      status: user.status,
+      wilayahTugas: user.wilayahTugas,
+    });
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+
+    if (!editFormData.nama.trim()) {
+      showNotification("error", "Nama pengguna tidak boleh kosong.");
+      return;
+    }
+
+    if (!editFormData.email.trim()) {
+      showNotification("error", "Email pengguna tidak boleh kosong.");
+      return;
+    }
+
+    const isMaster = isMasterAccount(editingUser);
+    const updates = {
+      nama: editFormData.nama.trim(),
+      email: editFormData.email.trim(),
+      roleId: isMaster ? "super_admin" : editFormData.roleId,
+      status: isMaster ? ("Aktif" as const) : editFormData.status,
+      wilayahTugas: editFormData.wilayahTugas.trim() || "Merauke",
+    };
+
+    const res = updateStoredUser(editingUser.id, updates);
+    if (!res.success) {
+      showNotification("error", res.message || "Gagal memperbarui data pengguna.");
+      return;
+    }
+
+    refreshUsers();
+    if (selectedUser?.id === editingUser.id) {
+      setSelectedUser({ ...selectedUser, ...updates });
+    }
+    setEditingUser(null);
+    showNotification("success", `Data akun ${updates.nama} berhasil diperbarui.`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Notification Toast */}
@@ -420,13 +477,13 @@ export default function UsersAdminPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4 w-[24%] min-w-[180px]">Nama Pengguna</th>
-                <th className="py-3.5 px-3 w-[20%] min-w-[160px]">Email Akun</th>
-                <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Jabatan & Role</th>
-                <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Wilayah Penugasan</th>
-                <th className="py-3.5 px-3 w-[12%] min-w-[110px]">Terakhir Login</th>
-                <th className="py-3.5 px-3 w-[6%] min-w-[85px] text-center">Status</th>
-                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[22%] min-w-[170px]">Nama Pengguna</th>
+                <th className="py-3.5 px-3 w-[18%] min-w-[150px]">Email Akun</th>
+                <th className="py-3.5 px-3 w-[15%] min-w-[125px]">Jabatan & Role</th>
+                <th className="py-3.5 px-3 w-[15%] min-w-[125px]">Wilayah Penugasan</th>
+                <th className="py-3.5 px-3 w-[12%] min-w-[105px]">Terakhir Login</th>
+                <th className="py-3.5 px-3 w-[8%] min-w-[85px] text-center">Status</th>
+                <th className="py-3.5 px-4 w-[10%] min-w-[120px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -522,10 +579,18 @@ export default function UsersAdminPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedUser(u)}
-                          className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors cursor-pointer"
                           title="Lihat Detail Akun"
                         >
                           Detail
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(u)}
+                          className="p-1.5 rounded-lg text-xs text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                          title="Edit Akun Pengguna"
+                        >
+                          <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           type="button"
@@ -533,7 +598,7 @@ export default function UsersAdminPage() {
                             setResetPasswordModalUser(u);
                             setNewPasswordInput("");
                           }}
-                          className="p-1.5 rounded-lg text-xs text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors"
+                          className="p-1.5 rounded-lg text-xs text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
                           title="Ubah Kata Sandi"
                         >
                           <KeyRound className="w-4 h-4" />
@@ -542,7 +607,7 @@ export default function UsersAdminPage() {
                           <button
                             type="button"
                             onClick={() => setDeleteConfirmUser(u)}
-                            className="p-1.5 rounded-lg text-xs text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                            className="p-1.5 rounded-lg text-xs text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                             title="Hapus Pengguna"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -633,18 +698,31 @@ export default function UsersAdminPage() {
                 >
                   Ubah Status ({selectedUser.status})
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setResetPasswordModalUser(selectedUser);
-                    setNewPasswordInput("");
-                    setSelectedUser(null);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
-                >
-                  <KeyRound className="w-3.5 h-3.5" />
-                  <span>Ubah Kata Sandi</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleOpenEdit(selectedUser);
+                      setSelectedUser(null);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                    <span>Edit Data</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setResetPasswordModalUser(selectedUser);
+                      setNewPasswordInput("");
+                      setSelectedUser(null);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882] cursor-pointer"
+                  >
+                    <KeyRound className="w-3.5 h-3.5" />
+                    <span>Ubah Kata Sandi</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -897,6 +975,145 @@ export default function UsersAdminPage() {
                   className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
                 >
                   Simpan & Buat Akun
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+              <h3 className="text-base font-bold text-stone-900">
+                Edit Data Pengguna
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingUser(null)}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {isMasterAccount(editingUser) && (
+              <div className="p-3 bg-purple-50 rounded-xl border border-purple-200/60 text-xs text-purple-900 flex items-start gap-2">
+                <Shield className="w-4 h-4 text-[#5E2276] shrink-0 mt-0.5" />
+                <p>
+                  Ini adalah <strong>Akun Master Administrator</strong>. Hak akses role dan status akun dikunci aktif demi keamanan sistem.
+                </p>
+              </div>
+            )}
+
+            <form onSubmit={handleEditSubmit} className="space-y-3.5 text-xs">
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Nama Lengkap Pengguna *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Contoh: Ahmad Fauzi, S.Pd"
+                  value={editFormData.nama}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, nama: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Email Akun (Digunakan untuk Login) *
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="nama@sfypapua.org"
+                  value={editFormData.email}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, email: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Jabatan / Role
+                  </label>
+                  <select
+                    value={editFormData.roleId}
+                    disabled={isMasterAccount(editingUser)}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, roleId: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white disabled:bg-stone-100 disabled:text-stone-500"
+                  >
+                    {initialRoles.map((role) => (
+                      <option key={role.id} value={role.id}>
+                        {role.nama}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Status Akses Login
+                  </label>
+                  <select
+                    value={editFormData.status}
+                    disabled={isMasterAccount(editingUser)}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        status: e.target.value as "Aktif" | "Non-aktif",
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white disabled:bg-stone-100 disabled:text-stone-500"
+                  >
+                    <option value="Aktif">Aktif</option>
+                    <option value="Non-aktif">Non-aktif</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Wilayah Tugas / Kantor
+                </label>
+                <input
+                  type="text"
+                  placeholder="Contoh: Distrik Kurik / Posko Merauke"
+                  value={editFormData.wilayahTugas}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      wilayahTugas: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882] cursor-pointer"
+                >
+                  Simpan Perubahan
                 </button>
               </div>
             </form>

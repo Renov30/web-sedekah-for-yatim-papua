@@ -8,6 +8,7 @@ import {
   Plus,
   Download,
   Eye,
+  Edit2,
   CheckCircle2,
   Clock,
   AlertCircle,
@@ -66,6 +67,19 @@ export default function AVAdminPage() {
     alamat: "",
     catatanWilayah: "",
     status: "Aktif" as "Aktif" | "Non-aktif" | "Menunggu Verifikasi",
+  });
+
+  // Edit Modal State
+  const [editingAV, setEditingAV] = useState<AVRecord | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    nama: "",
+    noHp: "",
+    kampung: "",
+    distrik: "",
+    kabupaten: "",
+    alamat: "",
+    catatanWilayah: "",
+    status: "Aktif" as AVRecord["status"],
   });
 
   // Filtered List
@@ -170,6 +184,50 @@ export default function AVAdminPage() {
       catatanWilayah: "",
       status: "Aktif",
     });
+  };
+
+  const handleOpenEdit = (av: AVRecord) => {
+    setEditingAV(av);
+    setEditFormData({
+      nama: av.nama,
+      noHp: av.noHp,
+      kampung: av.kampung,
+      distrik: av.distrik,
+      kabupaten: av.kabupaten,
+      alamat: av.alamat,
+      catatanWilayah: av.catatanWilayah || "",
+      status: av.status,
+    });
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingAV) return;
+
+    const updated = avList.map((av) => {
+      if (av.id === editingAV.id) {
+        return {
+          ...av,
+          nama: editFormData.nama.trim(),
+          noHp: editFormData.noHp.trim(),
+          kampung: editFormData.kampung.trim(),
+          distrik: editFormData.distrik.trim(),
+          kabupaten: editFormData.kabupaten.trim(),
+          alamat: editFormData.alamat.trim(),
+          status: editFormData.status,
+          catatanWilayah: editFormData.catatanWilayah.trim(),
+        };
+      }
+      return av;
+    });
+
+    setAvList(updated);
+    saveStoredAVs(updated);
+    if (selectedAV && selectedAV.id === editingAV.id) {
+      const updatedItem = updated.find((a) => a.id === editingAV.id);
+      if (updatedItem) setSelectedAV(updatedItem);
+    }
+    setEditingAV(null);
   };
 
   const handleExportCSV = () => {
@@ -365,7 +423,7 @@ export default function AVAdminPage() {
                 <th className="py-3.5 px-3 w-[11%] min-w-[100px]">Anak Asuh (PJ)</th>
                 <th className="py-3.5 px-3 w-[11%] min-w-[105px]">Tgl Bergabung</th>
                 <th className="py-3.5 px-3 w-[9%] min-w-[85px] text-center">Status</th>
-                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[10%] min-w-[120px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -448,14 +506,25 @@ export default function AVAdminPage() {
                       </button>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedAV(av)}
-                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>Detail & PJ</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedAV(av)}
+                          className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
+                          title="Lihat Detail & Santri Dampingan"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Detail</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(av)}
+                          className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                          title="Edit Data Koordinator AV"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -614,13 +683,23 @@ export default function AVAdminPage() {
                 >
                   Ubah Status: {selectedAV.status}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedAV(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200"
-                >
-                  Tutup
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenEdit(selectedAV)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-purple-50 text-[#823296] hover:bg-purple-100 transition-colors"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                    <span>Edit Data AV</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAV(null)}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200"
+                  >
+                    Tutup
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -847,6 +926,182 @@ export default function AVAdminPage() {
                   className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
                 >
                   Simpan Koordinator AV
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT MODAL */}
+      {editingAV && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-semibold text-[#823296] bg-purple-50 px-2 py-0.5 rounded">
+                  {editingAV.id}
+                </span>
+                <h3 className="text-base font-bold text-stone-900">
+                  Edit Data Koordinator Lapangan (AV)
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingAV(null)}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Nama Lengkap *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.nama}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, nama: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Nomor HP / WhatsApp *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.noHp}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, noHp: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Distrik Wilayah Binaan *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.distrik}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, distrik: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Kabupaten *
+                  </label>
+                  <select
+                    value={editFormData.kabupaten}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, kabupaten: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white"
+                  >
+                    <option value="Kab. Merauke">Kab. Merauke</option>
+                    <option value="Kab. Boven Digoel">Kab. Boven Digoel</option>
+                    <option value="Kab. Mappi">Kab. Mappi</option>
+                    <option value="Kab. Asmat">Kab. Asmat</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Kampung Binaan *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editFormData.kampung}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, kampung: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Alamat Lengkap / Posko *
+                </label>
+                <textarea
+                  required
+                  rows={2}
+                  value={editFormData.alamat}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, alamat: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Catatan Kondisi Wilayah / Koordinasi
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.catatanWilayah}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      catatanWilayah: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Status Keaktifan
+                </label>
+                <select
+                  value={editFormData.status}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      status: e.target.value as AVRecord["status"],
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white font-medium"
+                >
+                  <option value="Aktif">Aktif</option>
+                  <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+                  <option value="Non-aktif">Non-aktif</option>
+                </select>
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingAV(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
+                >
+                  Simpan Perubahan
                 </button>
               </div>
             </form>

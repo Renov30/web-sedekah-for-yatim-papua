@@ -201,6 +201,22 @@ export function updateStoredUser(
   };
 
   saveStoredUsers(users);
+
+  // Sync active session if the edited user is currently logged in
+  const currentSession = getStoredSession();
+  if (currentSession && currentSession.user.id === id) {
+    saveSession({
+      ...currentSession,
+      user: {
+        ...currentSession.user,
+        ...updates,
+      },
+      roleName: updates.roleId
+        ? roleDisplayNames[updates.roleId] || updates.roleId
+        : currentSession.roleName,
+    });
+  }
+
   return { success: true };
 }
 

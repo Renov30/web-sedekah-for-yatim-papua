@@ -16,6 +16,8 @@ export interface OrphanRecord {
   kebutuhanMendesak: string;
   statusVerifikasi: "Terverifikasi" | "Menunggu Survei" | "Perlu Pembaruan";
   tanggalMasuk: string;
+  isDeleted?: boolean;
+  deletedAt?: string;
 }
 
 export interface AVRecord {
@@ -30,6 +32,8 @@ export interface AVRecord {
   status: "Aktif" | "Non-aktif" | "Menunggu Verifikasi";
   tanggalBergabung: string;
   catatanWilayah?: string;
+  isDeleted?: boolean;
+  deletedAt?: string;
 }
 
 export interface VolunteerRecord {
@@ -42,6 +46,8 @@ export interface VolunteerRecord {
   keahlian: string;
   status: "Aktif" | "Menunggu Verifikasi" | "Cuti";
   tanggalGabung: string;
+  isDeleted?: boolean;
+  deletedAt?: string;
 }
 
 export interface DonorRecord {
@@ -55,6 +61,8 @@ export interface DonorRecord {
   programFavorit: string;
   status: "Donatur Rutin" | "Donatur Insidental";
   tanggalTerakhir: string;
+  isDeleted?: boolean;
+  deletedAt?: string;
 }
 
 export interface FinanceTransaction {
@@ -68,6 +76,8 @@ export interface FinanceTransaction {
   metode: string;
   status: "Terverifikasi" | "Review";
   petugas: string;
+  isDeleted?: boolean;
+  deletedAt?: string;
 }
 
 export interface UserAccount {
@@ -78,6 +88,8 @@ export interface UserAccount {
   status: "Aktif" | "Non-aktif";
   terakhirLogin: string;
   wilayahTugas: string;
+  isDeleted?: boolean;
+  deletedAt?: string;
 }
 
 export interface RoleDefinition {
@@ -86,6 +98,8 @@ export interface RoleDefinition {
   badgeColor: string;
   deskripsi: string;
   userCount: number;
+  isDeleted?: boolean;
+  deletedAt?: string;
 }
 
 export interface ModulePermission {

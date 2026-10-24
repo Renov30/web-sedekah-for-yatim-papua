@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Search,
   Plus,
   Download,
+  Edit2,
   CheckCircle2,
   Clock,
   Phone,
@@ -14,6 +15,10 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { initialVolunteers, VolunteerRecord } from "@/data/admin/adminData";
+import {
+  getStoredVolunteers,
+  saveStoredVolunteers,
+} from "@/lib/adminDataStore";
 
 export default function RelawanAdminPage() {
   const [volunteers, setVolunteers] =
@@ -26,6 +31,12 @@ export default function RelawanAdminPage() {
     useState<VolunteerRecord | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  useEffect(() => {
+    queueMicrotask(() => {
+      setVolunteers(getStoredVolunteers());
+    });
+  }, []);
+
   const [formData, setFormData] = useState({
     namaLengkap: "",
     email: "",
@@ -34,6 +45,19 @@ export default function RelawanAdminPage() {
     divisi: "Pendidikan & Bimbel" as VolunteerRecord["divisi"],
     keahlian: "",
     status: "Menunggu Verifikasi" as VolunteerRecord["status"],
+  });
+
+  // Edit Modal State
+  const [editingVolunteer, setEditingVolunteer] =
+    useState<VolunteerRecord | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    namaLengkap: "",
+    email: "",
+    noTelepon: "",
+    domisili: "",
+    divisi: "Pendidikan & Bimbel" as VolunteerRecord["divisi"],
+    keahlian: "",
+    status: "Aktif" as VolunteerRecord["status"],
   });
 
   const filteredVolunteers = volunteers.filter((item) => {
@@ -52,8 +76,8 @@ export default function RelawanAdminPage() {
   });
 
   const handleToggleStatus = (id: string) => {
-    setVolunteers((prev) =>
-      prev.map((item) => {
+    setVolunteers((prev) => {
+      const nextList = prev.map((item) => {
         if (item.id === id) {
           const nextStatus: VolunteerRecord["status"] =
             item.status === "Aktif"
@@ -64,8 +88,10 @@ export default function RelawanAdminPage() {
           return { ...item, status: nextStatus };
         }
         return item;
-      })
-    );
+      });
+      saveStoredVolunteers(nextList);
+      return nextList;
+    });
 
     if (selectedVolunteer && selectedVolunteer.id === id) {
       setSelectedVolunteer((prev) =>
@@ -102,7 +128,9 @@ export default function RelawanAdminPage() {
       }).format(new Date()),
     };
 
-    setVolunteers([newRecord, ...volunteers]);
+    const updated = [newRecord, ...volunteers];
+    setVolunteers(updated);
+    saveStoredVolunteers(updated);
     setIsAddModalOpen(false);
     setFormData({
       namaLengkap: "",
@@ -113,6 +141,48 @@ export default function RelawanAdminPage() {
       keahlian: "",
       status: "Menunggu Verifikasi",
     });
+  };
+
+  const handleOpenEdit = (v: VolunteerRecord) => {
+    setEditingVolunteer(v);
+    setEditFormData({
+      namaLengkap: v.namaLengkap,
+      email: v.email,
+      noTelepon: v.noTelepon,
+      domisili: v.domisili,
+      divisi: v.divisi,
+      keahlian: v.keahlian,
+      status: v.status,
+    });
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingVolunteer) return;
+
+    const updated = volunteers.map((v) => {
+      if (v.id === editingVolunteer.id) {
+        return {
+          ...v,
+          namaLengkap: editFormData.namaLengkap.trim(),
+          email: editFormData.email.trim(),
+          noTelepon: editFormData.noTelepon.trim(),
+          domisili: editFormData.domisili.trim(),
+          divisi: editFormData.divisi,
+          keahlian: editFormData.keahlian.trim(),
+          status: editFormData.status,
+        };
+      }
+      return v;
+    });
+
+    setVolunteers(updated);
+    saveStoredVolunteers(updated);
+    if (selectedVolunteer && selectedVolunteer.id === editingVolunteer.id) {
+      const updatedItem = updated.find((v) => v.id === editingVolunteer.id);
+      if (updatedItem) setSelectedVolunteer(updatedItem);
+    }
+    setEditingVolunteer(null);
   };
 
   const handleExportCSV = () => {
@@ -302,7 +372,7 @@ export default function RelawanAdminPage() {
                 <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Keahlian Lapangan</th>
                 <th className="py-3.5 px-3 w-[11%] min-w-[100px]">Tgl Gabung</th>
                 <th className="py-3.5 px-3 w-[8%] min-w-[80px] text-center">Status</th>
-                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[10%] min-w-[120px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -370,13 +440,24 @@ export default function RelawanAdminPage() {
                       </button>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedVolunteer(v)}
-                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
-                      >
-                        <span>Profil</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedVolunteer(v)}
+                          className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
+                          title="Lihat Profil"
+                        >
+                          <span>Profil</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(v)}
+                          className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                          title="Edit Data Relawan"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -463,15 +544,25 @@ export default function RelawanAdminPage() {
                 >
                   Ubah Status: {selectedVolunteer.status}
                 </button>
-                <a
-                  href={`https://wa.me/${selectedVolunteer.noTelepon.replace(/[^0-9]/g, "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700"
-                >
-                  <Phone className="w-3.5 h-3.5" />
-                  <span>Hubungi WA</span>
-                </a>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenEdit(selectedVolunteer)}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl bg-purple-50 text-[#823296] hover:bg-purple-100 transition-colors"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                    <span>Edit Data</span>
+                  </button>
+                  <a
+                    href={`https://wa.me/${selectedVolunteer.noTelepon.replace(/[^0-9]/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Hubungi WA</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -610,6 +701,181 @@ export default function RelawanAdminPage() {
                   className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
                 >
                   Simpan Relawan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingVolunteer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                  {editingVolunteer.id}
+                </span>
+                <h3 className="text-base font-bold text-stone-900">
+                  Edit Data Relawan Lapangan
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingVolunteer(null)}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="space-y-3.5 text-xs">
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Nama Lengkap Relawan *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editFormData.namaLengkap}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      namaLengkap: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Email Aktif *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={editFormData.email}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        email: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    No Telepon / WhatsApp *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.noTelepon}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        noTelepon: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Domisili Papua *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.domisili}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        domisili: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Divisi Penugasan *
+                  </label>
+                  <select
+                    value={editFormData.divisi}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        divisi: e.target.value as VolunteerRecord["divisi"],
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white font-medium"
+                  >
+                    <option value="Pendidikan & Bimbel">Pendidikan & Bimbel</option>
+                    <option value="Distribusi & Logistik">Distribusi & Logistik</option>
+                    <option value="Kesehatan & Gizi">Kesehatan & Gizi</option>
+                    <option value="Media & Publikasi">Media & Publikasi</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Keahlian / Profesi
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.keahlian}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      keahlian: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Status Keaktifan
+                </label>
+                <select
+                  value={editFormData.status}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      status: e.target.value as VolunteerRecord["status"],
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white font-medium"
+                >
+                  <option value="Aktif">Aktif</option>
+                  <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+                  <option value="Cuti">Cuti</option>
+                </select>
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingVolunteer(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
+                >
+                  Simpan Perubahan
                 </button>
               </div>
             </form>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Search,
   Plus,
@@ -8,9 +8,14 @@ import {
   Building2,
   User,
   ShieldCheck,
+  Edit2,
   X,
 } from "lucide-react";
 import { initialDonors, DonorRecord } from "@/data/admin/adminData";
+import {
+  getStoredDonors,
+  saveStoredDonors,
+} from "@/lib/adminDataStore";
 
 export default function DonaturAdminPage() {
   const [donors, setDonors] = useState<DonorRecord[]>(initialDonors);
@@ -21,6 +26,12 @@ export default function DonaturAdminPage() {
   const [selectedDonor, setSelectedDonor] = useState<DonorRecord | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  useEffect(() => {
+    queueMicrotask(() => {
+      setDonors(getStoredDonors());
+    });
+  }, []);
+
   const [formData, setFormData] = useState({
     nama: "",
     tipe: "Individu" as DonorRecord["tipe"],
@@ -29,6 +40,19 @@ export default function DonaturAdminPage() {
     totalDonasi: 1000000,
     jumlahFrekuensi: 1,
     programFavorit: "Pendidikan Santri Papua",
+    status: "Donatur Rutin" as DonorRecord["status"],
+  });
+
+  // Edit Modal State
+  const [editingDonor, setEditingDonor] = useState<DonorRecord | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    nama: "",
+    tipe: "Individu" as DonorRecord["tipe"],
+    email: "",
+    noTelepon: "",
+    totalDonasi: 0,
+    jumlahFrekuensi: 1,
+    programFavorit: "",
     status: "Donatur Rutin" as DonorRecord["status"],
   });
 
@@ -65,7 +89,9 @@ export default function DonaturAdminPage() {
       }).format(new Date()),
     };
 
-    setDonors([newRecord, ...donors]);
+    const updated = [newRecord, ...donors];
+    setDonors(updated);
+    saveStoredDonors(updated);
     setIsAddModalOpen(false);
     setFormData({
       nama: "",
@@ -77,6 +103,50 @@ export default function DonaturAdminPage() {
       programFavorit: "Pendidikan Santri Papua",
       status: "Donatur Rutin",
     });
+  };
+
+  const handleOpenEdit = (donor: DonorRecord) => {
+    setEditingDonor(donor);
+    setEditFormData({
+      nama: donor.nama,
+      tipe: donor.tipe,
+      email: donor.email,
+      noTelepon: donor.noTelepon,
+      totalDonasi: donor.totalDonasi,
+      jumlahFrekuensi: donor.jumlahFrekuensi,
+      programFavorit: donor.programFavorit,
+      status: donor.status,
+    });
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingDonor) return;
+
+    const updated = donors.map((d) => {
+      if (d.id === editingDonor.id) {
+        return {
+          ...d,
+          nama: editFormData.nama.trim(),
+          tipe: editFormData.tipe,
+          email: editFormData.email.trim(),
+          noTelepon: editFormData.noTelepon.trim(),
+          totalDonasi: Number(editFormData.totalDonasi),
+          jumlahFrekuensi: Number(editFormData.jumlahFrekuensi),
+          programFavorit: editFormData.programFavorit.trim(),
+          status: editFormData.status,
+        };
+      }
+      return d;
+    });
+
+    setDonors(updated);
+    saveStoredDonors(updated);
+    if (selectedDonor && selectedDonor.id === editingDonor.id) {
+      const updatedItem = updated.find((d) => d.id === editingDonor.id);
+      if (updatedItem) setSelectedDonor(updatedItem);
+    }
+    setEditingDonor(null);
   };
 
   const handleExportCSV = () => {
@@ -264,7 +334,7 @@ export default function DonaturAdminPage() {
                 <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Fokus Penyaluran</th>
                 <th className="py-3.5 px-3 w-[12%] min-w-[105px]">Status</th>
                 <th className="py-3.5 px-3 w-[11%] min-w-[100px]">Donasi Terakhir</th>
-                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
+                <th className="py-3.5 px-4 w-[10%] min-w-[120px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -331,13 +401,24 @@ export default function DonaturAdminPage() {
                       {d.tanggalTerakhir}
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedDonor(d)}
-                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
-                      >
-                        <span>Riwayat</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedDonor(d)}
+                          className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
+                          title="Lihat Riwayat Donatur"
+                        >
+                          <span>Riwayat</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(d)}
+                          className="p-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                          title="Edit Data Donatur"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -419,7 +500,15 @@ export default function DonaturAdminPage() {
                 </p>
               </div>
 
-              <div className="pt-2 flex justify-end">
+              <div className="pt-2 flex items-center justify-between border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => handleOpenEdit(selectedDonor)}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl bg-purple-50 text-[#823296] hover:bg-purple-100 transition-colors"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                  <span>Edit Data Donatur</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => setSelectedDonor(null)}
@@ -592,6 +681,201 @@ export default function DonaturAdminPage() {
                   className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
                 >
                   Simpan Donatur
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingDonor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded">
+                  {editingDonor.id}
+                </span>
+                <h3 className="text-base font-bold text-stone-900">
+                  Edit Data Donatur / Muzakki
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingDonor(null)}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="space-y-3.5 text-xs">
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Nama Donatur / Lembaga *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editFormData.nama}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, nama: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Kategori Donatur *
+                  </label>
+                  <select
+                    value={editFormData.tipe}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        tipe: e.target.value as DonorRecord["tipe"],
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white font-medium"
+                  >
+                    <option value="Individu">Individu (Pribadi)</option>
+                    <option value="Lembaga/Komunitas">Lembaga / Komunitas / CSR</option>
+                    <option value="Hamba Allah">Hamba Allah (Anonim)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Status Rutin / Insidental *
+                  </label>
+                  <select
+                    value={editFormData.status}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        status: e.target.value as DonorRecord["status"],
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white font-medium"
+                  >
+                    <option value="Donatur Rutin">Donatur Rutin</option>
+                    <option value="Insidental">Insidental</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={editFormData.email}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        email: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Nomor WhatsApp / Telepon *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.noTelepon}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        noTelepon: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Total Akumulasi Donasi (Rp) *
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={10000}
+                    required
+                    value={editFormData.totalDonasi}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        totalDonasi: parseInt(e.target.value) || 0,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] font-mono font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Frekuensi Donasi (Kali) *
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    required
+                    value={editFormData.jumlahFrekuensi}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        jumlahFrekuensi: parseInt(e.target.value) || 1,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Program Favorit / Fokus Alokasi
+                </label>
+                <select
+                  value={editFormData.programFavorit}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      programFavorit: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white font-medium"
+                >
+                  <option value="Pendidikan Santri Papua">Pendidikan Santri Papua</option>
+                  <option value="Pangan Halal Bergizi">Pangan Halal Bergizi</option>
+                  <option value="Kado Yatim Lebaran">Kado Yatim Lebaran</option>
+                  <option value="Kesehatan & Nutrisi">Kesehatan & Nutrisi</option>
+                </select>
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingDonor(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
+                >
+                  Simpan Perubahan
                 </button>
               </div>
             </form>

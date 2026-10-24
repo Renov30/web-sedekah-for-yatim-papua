@@ -7,6 +7,7 @@ import {
   Plus,
   Download,
   Eye,
+  Edit2,
   CheckCircle2,
   Clock,
   AlertTriangle,
@@ -43,7 +44,27 @@ export default function AnakYatimAdminPage() {
 
   // Add Form Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingOrphan, setEditingOrphan] = useState<OrphanRecord | null>(null);
   const [formData, setFormData] = useState({
+    namaLengkap: "",
+    namaPanggilan: "",
+    gender: "L" as "L" | "P",
+    usia: 10,
+    status: "Yatim" as "Yatim" | "Piatu" | "Yatim Piatu",
+    asalDaerah: "Distrik Merauke",
+    kabupaten: "Kab. Merauke",
+    kampung: "Kampung Wasur",
+    pjAvNama: "Yohanes Gebze",
+    tempatTinggal: "Asrama SFY Merauke",
+    wali: "",
+    jenjangPendidikan: "SD Kelas 4",
+    kebutuhanMendesak: "Seragam & Buku Pelajaran",
+    statusVerifikasi: "Menunggu Survei" as
+      | "Terverifikasi"
+      | "Menunggu Survei"
+      | "Perlu Pembaruan",
+  });
+  const [editFormData, setEditFormData] = useState({
     namaLengkap: "",
     namaPanggilan: "",
     gender: "L" as "L" | "P",
@@ -264,6 +285,67 @@ export default function AnakYatimAdminPage() {
           : null
       );
     }
+  };
+
+  const handleOpenEdit = (orphan: OrphanRecord) => {
+    setEditingOrphan(orphan);
+    setEditFormData({
+      namaLengkap: orphan.namaLengkap,
+      namaPanggilan: orphan.namaPanggilan,
+      gender: orphan.gender,
+      usia: orphan.usia,
+      status: orphan.status,
+      asalDaerah: orphan.asalDaerah,
+      kabupaten: orphan.kabupaten,
+      kampung: orphan.kampung || "",
+      pjAvNama: orphan.pjAvNama || "",
+      tempatTinggal: orphan.tempatTinggal,
+      wali: orphan.wali,
+      jenjangPendidikan: orphan.jenjangPendidikan,
+      kebutuhanMendesak: orphan.kebutuhanMendesak,
+      statusVerifikasi: orphan.statusVerifikasi,
+    });
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingOrphan) return;
+
+    const matchedAV = initialAVs.find((av) => av.nama === editFormData.pjAvNama);
+
+    const updatedList = orphans.map((o) => {
+      if (o.id === editingOrphan.id) {
+        return {
+          ...o,
+          namaLengkap: editFormData.namaLengkap.trim(),
+          namaPanggilan:
+            editFormData.namaPanggilan.trim() ||
+            editFormData.namaLengkap.trim().split(" ")[0],
+          gender: editFormData.gender,
+          usia: editFormData.usia,
+          status: editFormData.status,
+          asalDaerah: editFormData.asalDaerah,
+          kabupaten: editFormData.kabupaten,
+          kampung: editFormData.kampung,
+          pjAvId: matchedAV ? matchedAV.id : o.pjAvId,
+          pjAvNama: matchedAV ? matchedAV.nama : editFormData.pjAvNama,
+          tempatTinggal: editFormData.tempatTinggal.trim(),
+          wali: editFormData.wali.trim(),
+          jenjangPendidikan: editFormData.jenjangPendidikan.trim(),
+          kebutuhanMendesak: editFormData.kebutuhanMendesak.trim(),
+          statusVerifikasi: editFormData.statusVerifikasi,
+        };
+      }
+      return o;
+    });
+
+    setOrphans(updatedList);
+    saveStoredOrphans(updatedList);
+    if (selectedOrphan && selectedOrphan.id === editingOrphan.id) {
+      const updatedItem = updatedList.find((o) => o.id === editingOrphan.id);
+      if (updatedItem) setSelectedOrphan(updatedItem);
+    }
+    setEditingOrphan(null);
   };
 
   const handleExportCSV = () => {
@@ -571,15 +653,15 @@ export default function AnakYatimAdminPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
               <tr>
-                <th className="py-3.5 px-4 w-[18%] min-w-[160px]">Nama Santri</th>
+                <th className="py-3.5 px-4 w-[16%] min-w-[150px]">Nama Santri</th>
                 <th className="py-3.5 px-3 w-[14%] min-w-[130px]">Usia & Santunan</th>
                 <th className="py-3.5 px-3 w-[10%] min-w-[95px]">Status</th>
                 <th className="py-3.5 px-3 w-[15%] min-w-[140px]">Domisili Papua</th>
-                <th className="py-3.5 px-3 w-[15%] min-w-[140px]">Tempat Tinggal</th>
+                <th className="py-3.5 px-3 w-[14%] min-w-[135px]">Tempat Tinggal</th>
                 <th className="py-3.5 px-3 w-[12%] min-w-[110px]">Pendidikan</th>
-                <th className="py-3.5 px-3 w-[16%] min-w-[130px]">Kebutuhan Prioritas</th>
-                <th className="py-3.5 px-3 w-[10%] min-w-[105px] text-center">Verifikasi</th>
-                <th className="py-3.5 px-4 w-[6%] min-w-[70px] text-right">Aksi</th>
+                <th className="py-3.5 px-3 w-[15%] min-w-[130px]">Kebutuhan Prioritas</th>
+                <th className="py-3.5 px-3 w-[10%] min-w-[100px] text-center">Verifikasi</th>
+                <th className="py-3.5 px-4 w-[9%] min-w-[110px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -686,14 +768,25 @@ export default function AnakYatimAdminPage() {
                       </button>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedOrphan(orphan)}
-                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>Detail</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedOrphan(orphan)}
+                          className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-[#823296] hover:text-white transition-colors cursor-pointer"
+                          title="Lihat Detail Santri"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Detail</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(orphan)}
+                          className="p-1.5 rounded-lg text-stone-600 hover:text-[#823296] hover:bg-purple-50 transition-colors cursor-pointer"
+                          title="Edit Data Santri"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -852,11 +945,22 @@ export default function AnakYatimAdminPage() {
               </div>
             </div>
 
-            <div className="pt-2 flex justify-end">
+            <div className="pt-2 flex items-center justify-between border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => {
+                  handleOpenEdit(selectedOrphan);
+                  setSelectedOrphan(null);
+                }}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882] cursor-pointer"
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+                <span>Edit Data Santri</span>
+              </button>
               <button
                 type="button"
                 onClick={() => setSelectedOrphan(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 cursor-pointer"
               >
                 Tutup
               </button>
@@ -1257,6 +1361,343 @@ export default function AnakYatimAdminPage() {
                   className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
                 >
                   Simpan Santri Baru
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Edit Santri */}
+      {editingOrphan && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl w-full max-w-xl p-6 shadow-2xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+              <h2 className="text-lg font-bold text-stone-900">
+                Edit Data Anak Yatim / Santri
+              </h2>
+              <button
+                type="button"
+                onClick={() => setEditingOrphan(null)}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Nama Lengkap *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.namaLengkap}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        namaLengkap: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Nama Panggilan
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.namaPanggilan}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        namaPanggilan: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Gender *
+                  </label>
+                  <select
+                    value={editFormData.gender}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        gender: e.target.value as "L" | "P",
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white"
+                  >
+                    <option value="L">Laki-laki (L)</option>
+                    <option value="P">Perempuan (P)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Usia (Tahun) *
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={25}
+                    required
+                    value={editFormData.usia}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        usia: parseInt(e.target.value) || 0,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Status Santri *
+                  </label>
+                  <select
+                    value={editFormData.status}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        status: e.target.value as OrphanRecord["status"],
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white"
+                  >
+                    <option value="Yatim">Yatim</option>
+                    <option value="Piatu">Piatu</option>
+                    <option value="Yatim Piatu">Yatim Piatu</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Santunan Status Indicator Banner */}
+              <div
+                className={`p-2.5 rounded-xl border text-xs flex items-center justify-between ${
+                  editFormData.usia >= 15
+                    ? "bg-rose-50 border-rose-200 text-rose-800"
+                    : "bg-emerald-50 border-emerald-200 text-emerald-800"
+                }`}
+              >
+                <div>
+                  <p className="font-bold text-[11px]">
+                    {editFormData.usia >= 15
+                      ? `⚠️ Usia ${editFormData.usia} Tahun: Melewati Batas Usia Santunan (≥15 th)`
+                      : `✓ Usia ${editFormData.usia} Tahun: Memenuhi Batas Usia Santunan (<15 th)`}
+                  </p>
+                  <p className="text-[10px] text-stone-500 mt-0.5">
+                    {editFormData.usia >= 15
+                      ? "Santri 15 tahun ke atas tidak lagi dialokasikan santunan rutin yayasan."
+                      : "Santri berhak mendapatkan alokasi paket santunan rutin SFY."}
+                  </p>
+                </div>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                    editFormData.usia >= 15
+                      ? "bg-rose-100 text-rose-900 border border-rose-300"
+                      : "bg-emerald-100 text-emerald-900 border border-emerald-300"
+                  }`}
+                >
+                  {editFormData.usia >= 15 ? "Non-Santunan" : "Aktif Santunan"}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Distrik Asal *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.asalDaerah}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        asalDaerah: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Kabupaten
+                  </label>
+                  <select
+                    value={editFormData.kabupaten}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        kabupaten: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white"
+                  >
+                    <option value="Kab. Merauke">Kab. Merauke</option>
+                    <option value="Kab. Boven Digoel">Kab. Boven Digoel</option>
+                    <option value="Kab. Mappi">Kab. Mappi</option>
+                    <option value="Kab. Asmat">Kab. Asmat</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Kampung Domisili *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.kampung}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        kampung: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Penanggung Jawab AV
+                  </label>
+                  <select
+                    value={editFormData.pjAvNama}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        pjAvNama: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white"
+                  >
+                    <option value="">-- Pilih Koordinator AV --</option>
+                    {initialAVs.map((av) => (
+                      <option key={av.id} value={av.nama}>
+                        {av.nama} ({av.kampung})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Tempat Tinggal Saat Ini
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.tempatTinggal}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        tempatTinggal: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Nama Wali / Pengasuh
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.wali}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        wali: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Jenjang & Sekolah
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.jenjangPendidikan}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        jenjangPendidikan: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-700 font-medium mb-1">
+                    Status Verifikasi
+                  </label>
+                  <select
+                    value={editFormData.statusVerifikasi}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        statusVerifikasi: e.target.value as OrphanRecord["statusVerifikasi"],
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296] bg-white font-medium"
+                  >
+                    <option value="Terverifikasi">Terverifikasi</option>
+                    <option value="Menunggu Survei">Menunggu Survei</option>
+                    <option value="Perlu Pembaruan">Perlu Pembaruan</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-stone-700 font-medium mb-1">
+                  Kebutuhan Mendesak
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.kebutuhanMendesak}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      kebutuhanMendesak: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:border-[#823296]"
+                />
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingOrphan(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882]"
+                >
+                  Simpan Perubahan
                 </button>
               </div>
             </form>
