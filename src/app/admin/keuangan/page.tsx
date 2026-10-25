@@ -87,7 +87,7 @@ export default function KeuanganAdminPage() {
     .filter((t) => t.jenis === "Pengeluaran")
     .reduce((sum, t) => sum + t.jumlah, 0);
 
-  const currentBalance = 175000000 + (totalIncome - totalExpense);
+  const currentBalance = totalIncome - totalExpense;
 
   const filteredTransactions = baseTransactions.filter((t) => {
     const matchesSearch =

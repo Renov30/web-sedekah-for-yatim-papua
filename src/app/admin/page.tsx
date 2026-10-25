@@ -181,7 +181,7 @@ export default function AdminDashboardPage() {
   const totalExpense = activeFinances
     .filter((f) => f.jenis === "Pengeluaran")
     .reduce((sum, f) => sum + f.jumlah, 0);
-  const cashBalance = 175000000 + (totalIncome - totalExpense);
+  const cashBalance = totalIncome - totalExpense;
 
   // 5. Dynamic Regional Distribution
   const regionalDistribution = useMemo(() => {
