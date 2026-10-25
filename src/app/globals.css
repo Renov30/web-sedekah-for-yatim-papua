@@ -70,8 +70,21 @@ body {
 /* Accessible focus visible ring */
 :focus-visible {
   outline: 2px solid #823296;
-  outline-offset: 3px;
-  border-radius: 9999px;
+  outline-offset: 2px;
+}
+
+/* Form controls (textbox, textarea, select) highlight styling */
+@layer base {
+  input:not([type="checkbox"]):not([type="radio"]):focus,
+  input:not([type="checkbox"]):not([type="radio"]):focus-visible,
+  textarea:focus,
+  textarea:focus-visible,
+  select:focus,
+  select:focus-visible {
+    outline: none;
+    border-color: #823296;
+    box-shadow: 0 0 0 2px rgba(130, 50, 150, 0.25);
+  }
 }
 
 /* Signature Royal Purple Selection Highlight */
