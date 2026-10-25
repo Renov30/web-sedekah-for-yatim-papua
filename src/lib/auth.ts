@@ -422,7 +422,23 @@ export function getStoredSession(): AuthSession | null {
   try {
     const raw = localStorage.getItem(AUTH_STORAGE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as AuthSession;
+    const session = JSON.parse(raw) as AuthSession;
+
+    // Ensure session roleId stays in sync with stored users list
+    const storedUsers = getStoredUsers();
+    const matchedUser = storedUsers.find(
+      (u) =>
+        u.id === session.user.id ||
+        u.email.toLowerCase() === session.user.email.toLowerCase()
+    );
+    if (matchedUser && matchedUser.roleId !== session.user.roleId) {
+      session.user.roleId = matchedUser.roleId;
+      session.roleName =
+        roleDisplayNames[matchedUser.roleId] || matchedUser.roleId;
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+    }
+
+    return session;
   } catch {
     return null;
   }
@@ -431,9 +447,11 @@ export function getStoredSession(): AuthSession | null {
 export function saveSession(session: AuthSession) {
   if (typeof window === "undefined") return;
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+  window.dispatchEvent(new Event("sfy-permissions-updated"));
 }
 
 export function clearSession() {
   if (typeof window === "undefined") return;
   localStorage.removeItem(AUTH_STORAGE_KEY);
+  window.dispatchEvent(new Event("sfy-permissions-updated"));
 }

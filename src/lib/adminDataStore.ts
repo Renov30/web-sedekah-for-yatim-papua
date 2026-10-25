@@ -5,12 +5,15 @@ import {
   VolunteerRecord,
   DonorRecord,
   RoleDefinition,
+  RolePermissionsMap,
   initialOrphans,
   initialAVs,
   initialFinances,
   initialVolunteers,
   initialDonors,
   initialRoles,
+  initialPermissions,
+  moduleList,
 } from "@/data/admin/adminData";
 
 export const STORAGE_KEY_ORPHANS = "sfy_registered_orphans";
@@ -19,6 +22,7 @@ export const STORAGE_KEY_FINANCES = "sfy_registered_finances";
 export const STORAGE_KEY_VOLUNTEERS = "sfy_registered_volunteers";
 export const STORAGE_KEY_DONORS = "sfy_registered_donors";
 export const STORAGE_KEY_ROLES = "sfy_registered_roles";
+export const STORAGE_KEY_PERMISSIONS = "sfy_registered_permissions_v2";
 
 let pendingOrphansSave: Promise<void> | null = null;
 let pendingAVsSave: Promise<void> | null = null;
@@ -262,7 +266,103 @@ export function saveStoredRoles(list: RoleDefinition[]): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(STORAGE_KEY_ROLES, JSON.stringify(list));
+    window.dispatchEvent(new Event("sfy-permissions-updated"));
   } catch (e) {
     console.error("Gagal menyimpan data role:", e);
   }
+}
+
+export function getStoredPermissions(): RolePermissionsMap {
+  if (typeof window === "undefined") {
+    return initialPermissions;
+  }
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PERMISSIONS);
+    if (!raw) {
+      localStorage.setItem(
+        STORAGE_KEY_PERMISSIONS,
+        JSON.stringify(initialPermissions)
+      );
+      return initialPermissions;
+    }
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") {
+      localStorage.setItem(
+        STORAGE_KEY_PERMISSIONS,
+        JSON.stringify(initialPermissions)
+      );
+      return initialPermissions;
+    }
+    return {
+      ...initialPermissions,
+      ...parsed,
+      super_admin: initialPermissions.super_admin,
+    };
+  } catch {
+    return initialPermissions;
+  }
+}
+
+export function saveStoredPermissions(map: RolePermissionsMap): void {
+  if (typeof window === "undefined") return;
+  try {
+    const safeMap: RolePermissionsMap = {
+      ...map,
+      super_admin: initialPermissions.super_admin,
+    };
+    localStorage.setItem(STORAGE_KEY_PERMISSIONS, JSON.stringify(safeMap));
+    window.dispatchEvent(new Event("sfy-permissions-updated"));
+    fetch("/api/admin/permissions", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ permissions: safeMap }),
+    }).catch(() => {});
+  } catch (e) {
+    console.error("Gagal menyimpan matriks hak akses:", e);
+  }
+}
+
+export function getModuleFromPathname(pathname: string): string | null {
+  if (!pathname || pathname === "/admin" || pathname === "/admin/login") {
+    return null;
+  }
+  const clean = pathname.replace(/^\/admin\/?/, "").split("/")[0];
+  if (!clean) return null;
+  const known = moduleList.some((m) => m.id === clean);
+  return known ? clean : null;
+}
+
+export function getRolePermissionsForModule(
+  roleId: string | undefined,
+  moduleId: string,
+  permissionsMap?: RolePermissionsMap
+): { create: boolean; read: boolean; update: boolean; delete: boolean } {
+  const effectiveRole = roleId || "staf_lapangan";
+  if (effectiveRole === "super_admin") {
+    return { create: true, read: true, update: true, delete: true };
+  }
+
+  const map = permissionsMap || getStoredPermissions();
+  const roleObj = map[effectiveRole] || initialPermissions[effectiveRole];
+  if (!roleObj || !roleObj[moduleId]) {
+    return { create: false, read: false, update: false, delete: false };
+  }
+
+  return {
+    create: Boolean(roleObj[moduleId].create),
+    read: Boolean(roleObj[moduleId].read),
+    update: Boolean(roleObj[moduleId].update),
+    delete: Boolean(roleObj[moduleId].delete),
+  };
+}
+
+export function canRoleAccessPath(
+  roleId: string | undefined,
+  pathname: string,
+  permissionsMap?: RolePermissionsMap
+): boolean {
+  const moduleId = getModuleFromPathname(pathname);
+  if (!moduleId) return true; // /admin (Dashboard) & /admin/login
+  const perms = getRolePermissionsForModule(roleId, moduleId, permissionsMap);
+  return perms.read;
 }

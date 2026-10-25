@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   ExternalLink,
   Map,
+  LayoutDashboard,
 } from "lucide-react";
 import {
   getStoredSession,
@@ -21,6 +22,12 @@ import {
   MASTER_ADMIN_CREDENTIALS,
   roleDisplayNames,
 } from "@/lib/auth";
+import {
+  canRoleAccessPath,
+  getStoredPermissions,
+  getStoredRoles,
+} from "@/lib/adminDataStore";
+import { initialPermissions, RolePermissionsMap } from "@/data/admin/adminData";
 
 interface AdminHeaderProps {
   onToggleSidebar?: () => void;
@@ -34,11 +41,30 @@ export function AdminHeader({
   const router = useRouter();
   const [currentDateString, setCurrentDateString] = useState("");
   const [session, setSession] = useState<AuthSession | null>(null);
+  const [permissionsMap, setPermissionsMap] =
+    useState<RolePermissionsMap>(initialPermissions);
+  const [roleTitle, setRoleTitle] = useState("Super Admin Lembaga");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    queueMicrotask(() => setSession(getStoredSession()));
+    const syncHeaderState = () => {
+      const currentSession = getStoredSession();
+      setSession(currentSession);
+      setPermissionsMap(getStoredPermissions());
+
+      const rId = currentSession?.user.roleId || "super_admin";
+      const storedRoles = getStoredRoles();
+      const matched = storedRoles.find((r) => r.id === rId);
+      setRoleTitle(
+        matched?.nama ||
+          currentSession?.roleName ||
+          roleDisplayNames[rId] ||
+          "Staf Lembaga"
+      );
+    };
+
+    queueMicrotask(syncHeaderState);
 
     const updateTime = () => {
       const now = new Date();
@@ -52,6 +78,13 @@ export function AdminHeader({
     };
 
     updateTime();
+
+    window.addEventListener("sfy-permissions-updated", syncHeaderState);
+    window.addEventListener("storage", syncHeaderState);
+    return () => {
+      window.removeEventListener("sfy-permissions-updated", syncHeaderState);
+      window.removeEventListener("storage", syncHeaderState);
+    };
   }, []);
 
   // Close dropdown on outside click or Escape key
@@ -85,19 +118,32 @@ export function AdminHeader({
     router.push("/admin/login");
   };
 
+  const roleId = session?.user.roleId || "super_admin";
   const displayName = session?.user.nama || MASTER_ADMIN_CREDENTIALS.nama;
   const firstName = displayName.split(" ")[0];
-  const displayEmail = session?.user.email || MASTER_ADMIN_CREDENTIALS.email;
-  const displayRole =
-    session?.roleName ||
-    (session?.user.roleId && roleDisplayNames[session.user.roleId]) ||
-    "Super Admin Lembaga";
+  const displayUsername = session?.user.email || MASTER_ADMIN_CREDENTIALS.email;
   const initials = displayName
     .split(" ")
     .map((n) => n[0])
     .slice(0, 2)
     .join("")
     .toUpperCase();
+
+  const canAccessUsers = canRoleAccessPath(
+    roleId,
+    "/admin/users",
+    permissionsMap
+  );
+  const canAccessPermissions = canRoleAccessPath(
+    roleId,
+    "/admin/permissions",
+    permissionsMap
+  );
+  const canAccessWilayah = canRoleAccessPath(
+    roleId,
+    "/admin/wilayah",
+    permissionsMap
+  );
 
   return (
     <header className="px-3 sm:px-6 py-3 sm:py-4 border-b border-stone-100 flex items-center justify-between gap-2 sm:gap-4 bg-white relative z-30">
@@ -121,7 +167,10 @@ export function AdminHeader({
 
         {/* Welcome Pill */}
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 text-[#5E2276] text-xs font-medium">
-          <span>Assalamu&apos;alaikum, <strong className="font-semibold">{firstName}</strong></span>
+          <span>
+            Assalamu&apos;alaikum,{" "}
+            <strong className="font-semibold">{firstName}</strong>
+          </span>
         </div>
       </div>
 
@@ -158,7 +207,7 @@ export function AdminHeader({
                 {displayName}
               </p>
               <p className="text-[10px] text-stone-500 leading-tight truncate">
-                {displayRole}
+                {roleTitle}
               </p>
             </div>
 
@@ -177,44 +226,59 @@ export function AdminHeader({
                 <p className="text-sm font-bold text-stone-900 truncate">
                   {displayName}
                 </p>
-                <p className="text-xs text-stone-500 truncate mt-0.5">
-                  {displayEmail}
+                <p className="text-xs text-stone-500 font-mono truncate mt-0.5">
+                  @{displayUsername}
                 </p>
                 <div className="mt-1.5 flex items-center gap-1.5">
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#5E2276] text-white">
-                    {displayRole}
+                    {roleTitle}
                   </span>
                 </div>
               </div>
 
-              {/* Action Menu Links */}
+              {/* Action Menu Links (Filtered by Role Permission) */}
               <div className="py-1.5 px-1.5 space-y-0.5">
                 <Link
-                  href="/admin/users"
+                  href="/admin"
                   onClick={() => setIsDropdownOpen(false)}
                   className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-stone-700 hover:bg-purple-50 hover:text-[#5E2276] transition-colors"
                 >
-                  <Users className="w-4 h-4 text-stone-400" />
-                  <span>Kelola Pengguna</span>
+                  <LayoutDashboard className="w-4 h-4 text-stone-400" />
+                  <span>Dashboard Utama</span>
                 </Link>
 
-                <Link
-                  href="/admin/permissions"
-                  onClick={() => setIsDropdownOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-stone-700 hover:bg-purple-50 hover:text-[#5E2276] transition-colors"
-                >
-                  <ShieldCheck className="w-4 h-4 text-stone-400" />
-                  <span>Hak Akses (RBAC)</span>
-                </Link>
+                {canAccessUsers && (
+                  <Link
+                    href="/admin/users"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-stone-700 hover:bg-purple-50 hover:text-[#5E2276] transition-colors"
+                  >
+                    <Users className="w-4 h-4 text-stone-400" />
+                    <span>Kelola Pengguna</span>
+                  </Link>
+                )}
 
-                <Link
-                  href="/admin/wilayah"
-                  onClick={() => setIsDropdownOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-stone-700 hover:bg-purple-50 hover:text-[#5E2276] transition-colors"
-                >
-                  <Map className="w-4 h-4 text-stone-400" />
-                  <span>Data Wilayah</span>
-                </Link>
+                {canAccessPermissions && (
+                  <Link
+                    href="/admin/permissions"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-stone-700 hover:bg-purple-50 hover:text-[#5E2276] transition-colors"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-stone-400" />
+                    <span>Hak Akses (RBAC)</span>
+                  </Link>
+                )}
+
+                {canAccessWilayah && (
+                  <Link
+                    href="/admin/wilayah"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-stone-700 hover:bg-purple-50 hover:text-[#5E2276] transition-colors"
+                  >
+                    <Map className="w-4 h-4 text-stone-400" />
+                    <span>Data Wilayah</span>
+                  </Link>
+                )}
 
                 <Link
                   href="/"

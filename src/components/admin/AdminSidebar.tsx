@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -21,7 +21,17 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
-import { clearSession } from "@/lib/auth";
+import {
+  clearSession,
+  getStoredSession,
+  roleDisplayNames,
+} from "@/lib/auth";
+import {
+  canRoleAccessPath,
+  getStoredPermissions,
+  getStoredRoles,
+} from "@/lib/adminDataStore";
+import { initialPermissions, RolePermissionsMap } from "@/data/admin/adminData";
 
 interface AdminSidebarProps {
   onCloseMobile?: () => void;
@@ -33,52 +43,72 @@ export const adminNavItems = [
   {
     title: "Dashboard",
     href: "/admin",
+    moduleId: null,
     icon: LayoutDashboard,
+    group: "operational" as const,
   },
   {
     title: "Pendataan Anak Yatim",
     href: "/admin/anak-yatim",
+    moduleId: "anak-yatim",
     icon: GraduationCap,
+    group: "operational" as const,
   },
   {
     title: "Pendataan AV",
     href: "/admin/av",
+    moduleId: "av",
     icon: MapPinHouse,
+    group: "operational" as const,
   },
   {
     title: "Data Wilayah",
     href: "/admin/wilayah",
+    moduleId: "wilayah",
     icon: Map,
+    group: "operational" as const,
   },
   {
     title: "Pendataan Relawan",
     href: "/admin/relawan",
+    moduleId: "relawan",
     icon: HeartHandshake,
+    group: "operational" as const,
   },
   {
     title: "Pendataan Donatur",
     href: "/admin/donatur",
+    moduleId: "donatur",
     icon: Users2,
+    group: "operational" as const,
   },
   {
     title: "Manajemen Keuangan",
     href: "/admin/keuangan",
+    moduleId: "keuangan",
     icon: Wallet,
+    group: "operational" as const,
   },
   {
     title: "Kelola User",
     href: "/admin/users",
+    moduleId: "users",
     icon: ShieldAlert,
+    group: "settings" as const,
   },
   {
     title: "Manajemen Role",
     href: "/admin/roles",
+    moduleId: "roles",
     icon: ShieldCheck,
+    group: "settings" as const,
   },
   {
     title: "Permission Role",
     href: "/admin/permissions",
+    moduleId: "permissions",
     icon: KeyRound,
+    group: "settings" as const,
   },
 ];
 
@@ -89,6 +119,63 @@ export function AdminSidebar({
 }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+
+  const [roleId, setRoleId] = useState<string>("super_admin");
+  const [roleBadgeLabel, setRoleBadgeLabel] = useState<string>("Admin");
+  const [permissionsMap, setPermissionsMap] =
+    useState<RolePermissionsMap>(initialPermissions);
+
+  useEffect(() => {
+    const syncRoleAndPerms = () => {
+      const session = getStoredSession();
+      const currentRoleId = session?.user.roleId || "super_admin";
+      setRoleId(currentRoleId);
+
+      const storedRoles = getStoredRoles();
+      const matchedRole = storedRoles.find((r) => r.id === currentRoleId);
+      const fullLabel =
+        matchedRole?.nama ||
+        session?.roleName ||
+        roleDisplayNames[currentRoleId] ||
+        "Staf";
+      // Short badge label for sidebar top pill
+      const shortLabel =
+        currentRoleId === "super_admin"
+          ? "Super Admin"
+          : currentRoleId === "bendahara"
+          ? "Bendahara"
+          : currentRoleId === "koordinator_relawan"
+          ? "Koordinator"
+          : currentRoleId === "staf_lapangan"
+          ? "Staf Lapangan"
+          : currentRoleId === "auditor"
+          ? "Auditor"
+          : fullLabel.split(" ")[0];
+      setRoleBadgeLabel(shortLabel);
+      setPermissionsMap(getStoredPermissions());
+    };
+
+    queueMicrotask(syncRoleAndPerms);
+
+    window.addEventListener("sfy-permissions-updated", syncRoleAndPerms);
+    window.addEventListener("storage", syncRoleAndPerms);
+    return () => {
+      window.removeEventListener("sfy-permissions-updated", syncRoleAndPerms);
+      window.removeEventListener("storage", syncRoleAndPerms);
+    };
+  }, [pathname]);
+
+  const operationalItems = adminNavItems.filter(
+    (item) =>
+      item.group === "operational" &&
+      canRoleAccessPath(roleId, item.href, permissionsMap)
+  );
+
+  const settingsItems = adminNavItems.filter(
+    (item) =>
+      item.group === "settings" &&
+      canRoleAccessPath(roleId, item.href, permissionsMap)
+  );
 
   const handleLogout = () => {
     clearSession();
@@ -160,7 +247,7 @@ export function AdminSidebar({
                     SFY Papua
                   </span>
                   <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-[#facc15] text-[#1c0b27] shrink-0">
-                    Admin
+                    {roleBadgeLabel}
                   </span>
                 </div>
               </div>
@@ -187,7 +274,7 @@ export function AdminSidebar({
             </div>
           )}
 
-          {adminNavItems.slice(0, 7).map((item) => {
+          {operationalItems.map((item) => {
             const isActive =
               item.href === "/admin"
                 ? pathname === "/admin"
@@ -242,69 +329,76 @@ export function AdminSidebar({
             );
           })}
 
-          {isCollapsed ? (
-            <div className="my-2 border-t border-white/10" />
-          ) : (
-            <div className="pt-4 text-[10px] font-bold uppercase tracking-wider text-purple-200/60 px-3 pb-1">
-              Hak Akses & Pengaturan
-            </div>
-          )}
+          {settingsItems.length > 0 && (
+            <>
+              {isCollapsed ? (
+                <div className="my-2 border-t border-white/10" />
+              ) : (
+                <div className="pt-4 text-[10px] font-bold uppercase tracking-wider text-purple-200/60 px-3 pb-1">
+                  Hak Akses & Pengaturan
+                </div>
+              )}
 
-          {adminNavItems.slice(7).map((item) => {
-            const isActive = pathname.startsWith(item.href);
-            const Icon = item.icon;
+              {settingsItems.map((item) => {
+                const isActive = pathname.startsWith(item.href);
+                const Icon = item.icon;
 
-            if (isCollapsed) {
-              return (
-                <div key={item.href} className="relative group flex justify-center">
+                if (isCollapsed) {
+                  return (
+                    <div
+                      key={item.href}
+                      className="relative group flex justify-center"
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={onCloseMobile}
+                        aria-label={item.title}
+                        className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
+                          isActive
+                            ? "bg-white text-[#5E2276] shadow-sm font-semibold"
+                            : "text-purple-100 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        <Icon
+                          className={`w-5 h-5 shrink-0 ${
+                            isActive ? "text-[#5E2276]" : "text-purple-200"
+                          }`}
+                        />
+                      </Link>
+                      {/* Floating tooltip on hover */}
+                      <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-stone-900 text-white text-xs font-medium rounded-lg shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+                        {item.title}
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
                   <Link
+                    key={item.href}
                     href={item.href}
                     onClick={onCloseMobile}
-                    aria-label={item.title}
-                    className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${
+                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                       isActive
                         ? "bg-white text-[#5E2276] shadow-sm font-semibold"
                         : "text-purple-100 hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     <Icon
-                      className={`w-5 h-5 shrink-0 ${
+                      className={`w-4 h-4 shrink-0 ${
                         isActive ? "text-[#5E2276]" : "text-purple-200"
                       }`}
                     />
+                    <span className="truncate">{item.title}</span>
                   </Link>
-                  {/* Floating tooltip on hover */}
-                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-stone-900 text-white text-xs font-medium rounded-lg shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
-                    {item.title}
-                  </div>
-                </div>
-              );
-            }
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onCloseMobile}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  isActive
-                    ? "bg-white text-[#5E2276] shadow-sm font-semibold"
-                    : "text-purple-100 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                <Icon
-                  className={`w-4 h-4 shrink-0 ${
-                    isActive ? "text-[#5E2276]" : "text-purple-200"
-                  }`}
-                />
-                <span className="truncate">{item.title}</span>
-              </Link>
-            );
-          })}
+                );
+              })}
+            </>
+          )}
         </nav>
       </div>
 
-      {/* Bottom Section: Public Portal Link & Logout (Account info removed) */}
+      {/* Bottom Section: Public Portal Link & Logout */}
       <div className="pt-3">
         {isCollapsed ? (
           // Collapsed Footer: Clean Icon Links with Tooltips
