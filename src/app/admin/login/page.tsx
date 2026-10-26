@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,7 @@ import {
   AlertCircle,
   ArrowLeft,
   CheckCircle2,
+  Clock,
 } from "lucide-react";
 import {
   authenticateUser,
@@ -28,14 +29,29 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [timeoutMessage, setTimeoutMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotModal, setShowForgotModal] = useState(false);
+
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("reason") === "timeout") {
+        setTimeoutMessage(
+          "Sesi Anda telah berakhir secara otomatis demi keamanan karena tidak ada aktivitas selama 15 menit. Silakan masuk kembali."
+        );
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMessage("");
     setSuccessMessage("");
+    setTimeoutMessage("");
 
     try {
       const res = await fetch("/api/admin/auth/login", {
@@ -136,6 +152,13 @@ export default function AdminLoginPage() {
           </div>
 
           {/* Feedback Messages */}
+          {timeoutMessage && !errorMessage && !successMessage && (
+            <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2.5 animate-in fade-in">
+              <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <span>{timeoutMessage}</span>
+            </div>
+          )}
+
           {errorMessage && (
             <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-start gap-2.5 animate-in fade-in">
               <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />

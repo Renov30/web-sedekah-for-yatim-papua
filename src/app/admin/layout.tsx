@@ -3,13 +3,18 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShieldAlert, ArrowLeft, Eye } from "lucide-react";
+import { ShieldAlert, ArrowLeft, Eye, Clock } from "lucide-react";
 import { AdminSidebar, adminNavItems } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import {
   AuthSession,
   getStoredSession,
   roleDisplayNames,
+  isSessionExpired,
+  updateLastActivity,
+  getRemainingSessionTime,
+  SESSION_WARNING_TIME_MS,
+  clearSession,
 } from "@/lib/auth";
 import {
   canRoleAccessPath,
@@ -37,6 +42,10 @@ export default function AdminLayout({
   const [session, setSession] = useState<AuthSession | null>(null);
   const [permissionsMap, setPermissionsMap] =
     useState<RolePermissionsMap>(initialPermissions);
+
+  // Inactivity / Auto-Logout State
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
+  const [secondsRemaining, setSecondsRemaining] = useState(60);
 
   useEffect(() => {
     try {
@@ -71,6 +80,11 @@ export default function AdminLayout({
     }
 
     const verifyAuthAndPermissions = () => {
+      if (isSessionExpired()) {
+        clearSession();
+        router.replace("/admin/login?reason=timeout");
+        return;
+      }
       const currentSession = getStoredSession();
       if (!currentSession) {
         router.replace("/admin/login");
@@ -93,6 +107,90 @@ export default function AdminLayout({
       window.removeEventListener("storage", verifyAuthAndPermissions);
     };
   }, [isLoginPage, pathname, router]);
+
+  // Activity Tracker & Auto Logout Watcher
+  useEffect(() => {
+    if (isLoginPage) return;
+
+    let lastWriteTime = Date.now();
+
+    const handleUserActivity = () => {
+      const now = Date.now();
+      // Throttle write ke localStorage maksimal 1x per 10 detik
+      if (now - lastWriteTime > 10000) {
+        lastWriteTime = now;
+        updateLastActivity();
+      }
+      setShowTimeoutWarning((prev) => {
+        if (prev) {
+          updateLastActivity();
+          return false;
+        }
+        return false;
+      });
+    };
+
+    const activityEvents = [
+      "mousedown",
+      "keydown",
+      "scroll",
+      "touchstart",
+      "click",
+    ];
+
+    activityEvents.forEach((ev) => {
+      window.addEventListener(ev, handleUserActivity, { passive: true });
+    });
+
+    const checkInactivity = () => {
+      if (isSessionExpired()) {
+        clearSession();
+        router.replace("/admin/login?reason=timeout");
+        return;
+      }
+
+      const remaining = getRemainingSessionTime();
+      if (remaining <= 0) {
+        clearSession();
+        router.replace("/admin/login?reason=timeout");
+      } else if (remaining <= SESSION_WARNING_TIME_MS) {
+        setShowTimeoutWarning(true);
+        setSecondsRemaining(Math.ceil(remaining / 1000));
+      } else {
+        setShowTimeoutWarning(false);
+      }
+    };
+
+    const intervalId = setInterval(checkInactivity, 1000);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkInactivity();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", checkInactivity);
+
+    return () => {
+      activityEvents.forEach((ev) => {
+        window.removeEventListener(ev, handleUserActivity);
+      });
+      clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", checkInactivity);
+    };
+  }, [isLoginPage, router]);
+
+  const handleStayLoggedIn = () => {
+    updateLastActivity();
+    setShowTimeoutWarning(false);
+  };
+
+  const handleLogoutNow = () => {
+    clearSession();
+    router.replace("/admin/login");
+  };
 
   const roleId = session?.user.roleId || "super_admin";
   const storedRoles = getStoredRoles();
@@ -331,6 +429,50 @@ export default function AdminLayout({
           )}
         </main>
       </div>
+
+      {/* Session Inactivity Warning Modal */}
+      {showTimeoutWarning && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl border border-stone-200/90 space-y-4 text-center animate-in zoom-in-95">
+            <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shadow-xs">
+              <Clock className="w-6 h-6 animate-pulse" />
+            </div>
+
+            <div className="space-y-1.5">
+              <h3 className="text-lg font-bold text-stone-900 tracking-tight">
+                Sesi Akan Berakhir
+              </h3>
+              <p className="text-xs text-stone-600 leading-relaxed">
+                Anda tidak melakukan aktivitas selama beberapa waktu. Demi keamanan data lembaga, sesi Anda akan otomatis keluar dalam:
+              </p>
+            </div>
+
+            <div className="py-1">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 font-mono font-bold text-base">
+                <Clock className="w-4 h-4 text-amber-600" />
+                <span>{secondsRemaining} detik</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-1">
+              <button
+                type="button"
+                onClick={handleStayLoggedIn}
+                className="w-full px-4 py-2.5 rounded-xl bg-[#5E2276] hover:bg-[#4A1860] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              >
+                Tetap Masuk (Lanjutkan Sesi)
+              </button>
+              <button
+                type="button"
+                onClick={handleLogoutNow}
+                className="w-full px-4 py-2 rounded-xl border border-stone-200 hover:bg-stone-50 text-stone-600 text-xs font-medium transition-colors cursor-pointer"
+              >
+                Keluar Sekarang
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

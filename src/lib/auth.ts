@@ -11,7 +11,60 @@ export interface AuthSession {
 }
 
 export const AUTH_STORAGE_KEY = "sfy_admin_session";
+export const LAST_ACTIVITY_KEY = "sfy_admin_last_activity";
 export const USERS_STORAGE_KEY = "sfy_registered_users";
+
+// Durasi inaktivitas sebelum logout otomatis (15 Menit)
+export const SESSION_INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000;
+// Durasi peringatan sebelum logout otomatis (60 Detik)
+export const SESSION_WARNING_TIME_MS = 60 * 1000;
+
+export function updateLastActivity(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(LAST_ACTIVITY_KEY, Date.now().toString());
+  } catch {
+    // ignore
+  }
+}
+
+export function getLastActivity(): number {
+  if (typeof window === "undefined") return Date.now();
+  try {
+    const raw = localStorage.getItem(LAST_ACTIVITY_KEY);
+    if (!raw) return Date.now();
+    const time = parseInt(raw, 10);
+    return isNaN(time) ? Date.now() : time;
+  } catch {
+    return Date.now();
+  }
+}
+
+export function isSessionExpired(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const rawSession = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!rawSession) return false;
+    const rawLast = localStorage.getItem(LAST_ACTIVITY_KEY);
+    if (!rawLast) {
+      updateLastActivity();
+      return false;
+    }
+    const lastTime = parseInt(rawLast, 10);
+    if (isNaN(lastTime)) return false;
+    return Date.now() - lastTime >= SESSION_INACTIVITY_TIMEOUT_MS;
+  } catch {
+    return false;
+  }
+}
+
+export function getRemainingSessionTime(): number {
+  if (typeof window === "undefined") return SESSION_INACTIVITY_TIMEOUT_MS;
+  const lastTime = getLastActivity();
+  const elapsed = Date.now() - lastTime;
+  const remaining = SESSION_INACTIVITY_TIMEOUT_MS - elapsed;
+  return Math.max(0, remaining);
+}
 
 export const roleDisplayNames: Record<string, string> = {
   super_admin: "Super Admin Lembaga",
@@ -419,6 +472,10 @@ export function permanentDeleteStoredUser(
 
 export function getStoredSession(): AuthSession | null {
   if (typeof window === "undefined") return null;
+  if (isSessionExpired()) {
+    clearSession();
+    return null;
+  }
   try {
     const raw = localStorage.getItem(AUTH_STORAGE_KEY);
     if (!raw) return null;
@@ -447,11 +504,13 @@ export function getStoredSession(): AuthSession | null {
 export function saveSession(session: AuthSession) {
   if (typeof window === "undefined") return;
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+  updateLastActivity();
   window.dispatchEvent(new Event("sfy-permissions-updated"));
 }
 
 export function clearSession() {
   if (typeof window === "undefined") return;
   localStorage.removeItem(AUTH_STORAGE_KEY);
+  localStorage.removeItem(LAST_ACTIVITY_KEY);
   window.dispatchEvent(new Event("sfy-permissions-updated"));
 }
