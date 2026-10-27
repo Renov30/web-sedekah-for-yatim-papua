@@ -14,16 +14,9 @@ import {
   AlertTriangle,
   X,
   MapPin,
-  MapPinHouse,
   RotateCcw,
   ExternalLink,
   CheckSquare,
-  GraduationCap,
-  Heart,
-  Target,
-  Phone,
-  Briefcase,
-  Calendar,
 } from "lucide-react";
 import {
   OrphanRecord,
@@ -673,75 +666,6 @@ export default function AnakYatimAdminPage() {
         </div>
       </div>
 
-      {/* Quick Metrics Bar (3 Parts: Atas, Tengah, Bawah - No Icons) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
-          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-            Total Santri Yatim
-          </p>
-          <p className="text-2xl font-extrabold text-stone-900 my-2">
-            {activeOrphans.length}{" "}
-            <span className="text-xs font-medium text-stone-500 font-sans">Anak</span>
-          </p>
-          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
-            <span>Terverifikasi</span>
-            <span className="font-semibold text-stone-700">
-              {activeOrphans.filter((o) => o.statusVerifikasi === "Terverifikasi").length} Santri
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
-          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-            Status Yatim Piatu
-          </p>
-          <p className="text-2xl font-extrabold text-stone-900 my-2">
-            {activeOrphans.filter((o) => o.status === "Yatim Piatu").length}{" "}
-            <span className="text-xs font-medium text-stone-500 font-sans">Anak</span>
-          </p>
-          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
-            <span>Yatim / Piatu</span>
-            <span className="font-semibold text-stone-700">
-              {activeOrphans.filter((o) => o.status !== "Yatim Piatu").length} Anak
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
-          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-            Kelayakan Santunan (&lt;15 Th)
-          </p>
-          <p className="text-2xl font-extrabold text-emerald-700 my-2">
-            {activeOrphans.filter((o) => o.usia < 15).length}{" "}
-            <span className="text-xs font-medium text-stone-500 font-sans">Santunan Aktif</span>
-          </p>
-          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
-            <span>Batas Usia (≥15 th)</span>
-            <span className="font-semibold text-rose-600">
-              {activeOrphans.filter((o) => o.usia >= 15).length} Non-Santunan
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
-          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-            Menunggu Survei
-          </p>
-          <p className="text-2xl font-extrabold text-amber-600 my-2">
-            {
-              activeOrphans.filter((o) => o.statusVerifikasi === "Menunggu Survei")
-                .length
-            }{" "}
-            <span className="text-xs font-medium text-stone-500 font-sans">Anak</span>
-          </p>
-          <div className="pt-2.5 border-t border-stone-100 text-xs text-stone-500 flex items-center justify-between">
-            <span>Perlu Pembaruan</span>
-            <span className="font-semibold text-rose-600">
-              {activeOrphans.filter((o) => o.statusVerifikasi === "Perlu Pembaruan").length} Anak
-            </span>
-          </div>
-        </div>
-      </div>
 
       {/* Filters and Search Bar */}
       <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs space-y-3">
@@ -1203,9 +1127,10 @@ export default function AnakYatimAdminPage() {
               <button
                 type="button"
                 onClick={() => setSelectedOrphan(null)}
-                className="p-1 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100"
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 text-base leading-none font-medium cursor-pointer"
+                title="Tutup"
               >
-                <X className="w-5 h-5" />
+                ✕
               </button>
             </div>
 
@@ -1226,10 +1151,7 @@ export default function AnakYatimAdminPage() {
                   </p>
                 </div>
                 <div>
-                  <span className="text-stone-500 flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-[#823296]" />
-                    <span>Tempat, Tanggal Lahir:</span>
-                  </span>
+                  <span className="text-stone-500">Tempat, Tanggal Lahir:</span>
                   <p className="font-semibold text-stone-900 mt-0.5">
                     {selectedOrphan.tempatLahir || selectedOrphan.tanggalLahir
                       ? `${selectedOrphan.tempatLahir || "-"}${
@@ -1279,9 +1201,8 @@ export default function AnakYatimAdminPage() {
 
               {/* Pendidikan & Sekolah */}
               <div className="p-3 bg-stone-50 rounded-xl border border-stone-200/80">
-                <span className="font-semibold text-stone-900 flex items-center gap-1.5 text-xs mb-2">
-                  <GraduationCap className="w-4 h-4 text-[#823296]" />
-                  <span>Pendidikan & Sekolah</span>
+                <span className="font-semibold text-stone-900 block text-xs mb-2">
+                  Pendidikan & Sekolah
                 </span>
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
@@ -1302,18 +1223,16 @@ export default function AnakYatimAdminPage() {
               {/* Minat, Hobi & Cita-Cita */}
               <div className="grid grid-cols-2 gap-3 p-3 bg-stone-50 rounded-xl border border-stone-200/80">
                 <div>
-                  <span className="text-stone-500 flex items-center gap-1.5">
-                    <Heart className="w-3.5 h-3.5 text-rose-500" />
-                    <span>Hobi / Minat:</span>
+                  <span className="text-stone-500 block">
+                    Hobi / Minat:
                   </span>
                   <p className="font-semibold text-stone-900 mt-1">
                     {selectedOrphan.hobi || "Belum dicatat"}
                   </p>
                 </div>
                 <div>
-                  <span className="text-stone-500 flex items-center gap-1.5">
-                    <Target className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Cita-cita:</span>
+                  <span className="text-stone-500 block">
+                    Cita-cita:
                   </span>
                   <p className="font-semibold text-stone-900 mt-1">
                     {selectedOrphan.citaCita || "Belum dicatat"}
@@ -1323,9 +1242,8 @@ export default function AnakYatimAdminPage() {
 
               {/* Informasi Wali & Kontak */}
               <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-200/60 space-y-2">
-                <span className="font-semibold text-blue-950 flex items-center gap-1.5 text-xs">
-                  <Briefcase className="w-4 h-4 text-blue-700" />
-                  <span>Wali / Orang Tua & Kontak</span>
+                <span className="font-semibold text-blue-950 block text-xs">
+                  Wali / Orang Tua & Kontak
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
                   <div>
@@ -1347,10 +1265,9 @@ export default function AnakYatimAdminPage() {
                         href={`https://wa.me/${selectedOrphan.noHpWali.replace(/[^0-9]/g, "").replace(/^0/, "62")}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1 font-bold text-emerald-700 hover:text-emerald-800 hover:underline mt-0.5"
+                        className="inline-block font-bold text-emerald-700 hover:text-emerald-800 hover:underline mt-0.5"
                       >
-                        <Phone className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>{selectedOrphan.noHpWali}</span>
+                        {selectedOrphan.noHpWali}
                       </a>
                     ) : (
                       <p className="font-normal text-stone-500 mt-0.5">
@@ -1363,21 +1280,17 @@ export default function AnakYatimAdminPage() {
 
               <div className="space-y-1">
                 <span className="text-stone-500">Domisili & Asal:</span>
-                <p className="font-medium text-stone-900 flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-[#823296]" />
-                  <span>
-                    {selectedOrphan.kampung ? `${selectedOrphan.kampung}, ` : ""}
-                    {selectedOrphan.asalDaerah}, {selectedOrphan.kabupaten}
-                  </span>
+                <p className="font-medium text-stone-900">
+                  {selectedOrphan.kampung ? `${selectedOrphan.kampung}, ` : ""}
+                  {selectedOrphan.asalDaerah}, {selectedOrphan.kabupaten}
                 </p>
               </div>
 
               {/* Penanggung Jawab AV Box */}
               <div className="p-3 bg-purple-50/70 rounded-xl border border-purple-200/60">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-purple-950 flex items-center gap-1.5 text-xs">
-                    <MapPinHouse className="w-4 h-4 text-[#823296]" />
-                    <span>Koordinator Lapangan (PJ AV):</span>
+                  <span className="font-semibold text-purple-950 text-xs">
+                    Koordinator Lapangan (PJ AV):
                   </span>
                   <Link
                     href="/admin/av"
@@ -1436,10 +1349,9 @@ export default function AnakYatimAdminPage() {
                     handleOpenEdit(selectedOrphan);
                     setSelectedOrphan(null);
                   }}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882] cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#823296] text-white hover:bg-[#702882] cursor-pointer"
                 >
-                  <Edit2 className="w-3.5 h-3.5" />
-                  <span>Edit Data Santri</span>
+                  Edit Data Santri
                 </button>
                 <button
                   type="button"
@@ -1447,10 +1359,9 @@ export default function AnakYatimAdminPage() {
                     setSoftDeleteTarget(selectedOrphan);
                     setSelectedOrphan(null);
                   }}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-red-200 text-red-600 hover:bg-red-50 cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold border border-red-200 text-red-600 hover:bg-red-50 cursor-pointer"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Hapus</span>
+                  Hapus
                 </button>
               </div>
               <button
